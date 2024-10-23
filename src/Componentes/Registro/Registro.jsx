@@ -36,7 +36,7 @@ export default class Registro extends Component {
                     value={this.state.nombre}
                     onChange={(e) => this.setState({ nombre: e.target.value })} />
                 </h3>
-                <button>Registrar</button> <br />
+                <button onClick={this.props.enviarregistro()}>Registrar</button> <br />
                 <a href="">Iniciar sesion</a>
             </div>
         )

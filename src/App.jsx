@@ -8,7 +8,9 @@ export default class App extends Component{
 
     }
   }
-  
+  enviarregistro(){
+    axios.post
+  }
   render(){
     return(
       <div>
