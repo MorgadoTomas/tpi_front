@@ -20,8 +20,7 @@ class App extends Component {
         <Header /> <br />
         <NavBar /> <br />
         <main className="flex-grow-1 container my-4">
-          <Admin/>
-
+          <Login/>
         </main>
         <Footer />
       </div>
