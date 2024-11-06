@@ -11,18 +11,20 @@ import Productos from './Componentes/Productos';
 import ProductosDetallados from './Componentes/ProductoDetallado';
 import CarritoProductos from './Componentes/CarritoProductos';
 import Admin from './Componentes/Admin';
+import ProductosAdmin from './Componentes/ProductosAdmin';
+import UsuariosAdmin from './Componentes/UsuariosAdmin';
+import VentasAdmin from './VentasAdmin';
 
 
 class App extends Component {
   render() {
     return (
       <div className="min-vh-100 d-flex flex-column">
-        <Header /> <br />
-        <NavBar /> <br />
+    
         <main className="flex-grow-1 container my-4">
-          <MainForm/>
+          <ProductosAdmin/>
         </main>
-        <Footer />
+  
       </div>
     );
   }
