@@ -1,6 +1,6 @@
-// componentes/MainForm.jsx
 import React, { Component } from 'react';
 import { Button, Form } from 'react-bootstrap';
+import { Link } from 'react-router-dom'; // Importa Link desde react-router-dom
 
 class MainForm extends Component {
   render() {
@@ -10,7 +10,7 @@ class MainForm extends Component {
         <Form.Group>
           <Form.Control type="text" placeholder="Nombre" />
         </Form.Group>
-         <br />
+        <br />
         <Form.Group>
           <Form.Control type="text" placeholder="Nombre de usuario" />
         </Form.Group>
@@ -25,7 +25,8 @@ class MainForm extends Component {
         <br />
         <Button variant="dark" className="w-100">Crear Usuario</Button>
         <p className="text-center mt-4">
-          ¿Ya tienes una cuenta? <a href="#" className="text-primary">Inicia sesión</a>
+          ¿Ya tienes una cuenta? 
+          <Link to="/login" className="text-primary">Inicia sesión</Link> {/* Redirige al Login */}
         </p>
       </Form>
     );
