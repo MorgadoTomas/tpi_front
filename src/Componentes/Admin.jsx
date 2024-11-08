@@ -1,4 +1,3 @@
-// Admin.jsx
 import React, { Component } from 'react';
 import { LayoutDashboard, Package, Users, ShoppingCart, BarChart, Settings, User } from "lucide-react";
 import { Button } from 'react-bootstrap';
@@ -31,15 +30,16 @@ class Admin extends Component {
                 <LayoutDashboard className="mr-2" />
                 Panel de control
               </Button>
-              {/* Cambié el botón para usar Link */}
+              {/* Enlace a ProductosAdmin */}
               <Link to="/admin/productos" className="text-left mb-2 d-flex align-items-center btn btn-light">
                 <Package className="mr-2" />
                 Productos
               </Link>
-              <Button variant="light" className="text-left mb-2 d-flex align-items-center">
+              {/* Cambié el botón para usar Link */}
+              <Link to="/admin/usuarios" className="text-left mb-2 d-flex align-items-center btn btn-light">
                 <Users className="mr-2" />
                 Usuarios
-              </Button>
+              </Link>
               <Button variant="light" className="text-left mb-2 d-flex align-items-center">
                 <ShoppingCart className="mr-2" />
                 Ventas
