@@ -81,10 +81,11 @@ class ProductosAdmin extends Component {
               <Package className="mr-2" />
               Productos
             </Button>
-            <Button variant="light" className="text-left mb-2 d-flex align-items-center">
+            {/* Botón de "Usuarios" que redirige a UsuariosAdmin.jsx */}
+            <Link to="/admin/usuarios" className="text-left mb-2 d-flex align-items-center btn btn-light">
               <Users className="mr-2" />
               Usuarios
-            </Button>
+            </Link>
             <Button variant="light" className="text-left mb-2 d-flex align-items-center">
               <ShoppingCart className="mr-2" />
               Ventas
