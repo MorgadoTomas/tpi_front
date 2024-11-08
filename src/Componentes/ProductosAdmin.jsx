@@ -2,6 +2,7 @@
 import React, { Component } from 'react';
 import { Button, FormControl, Table, Form } from 'react-bootstrap';
 import { Edit2, Trash2, LayoutDashboard, Package, Users, ShoppingCart, BarChart, Settings } from "lucide-react";
+import { Link } from 'react-router-dom'; // Importa Link de react-router-dom
 
 class ProductosAdmin extends Component {
   constructor(props) {
@@ -71,10 +72,11 @@ class ProductosAdmin extends Component {
         {/* Sidebar */}
         <aside className="mr-4" style={{ width: '250px' }}>
           <nav className="d-flex flex-column">
-            <Button variant="light" className="text-left mb-2 d-flex align-items-center">
+            {/* Botón para volver a Admin.jsx */}
+            <Link to="/admin" className="text-left mb-2 d-flex align-items-center btn btn-light">
               <LayoutDashboard className="mr-2" />
               Panel de control
-            </Button>
+            </Link>
             <Button variant="light" className="text-left mb-2 d-flex align-items-center">
               <Package className="mr-2" />
               Productos
