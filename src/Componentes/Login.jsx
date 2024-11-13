@@ -8,7 +8,7 @@ class Login extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      username: '',
+      usuario: '',
       password: '',
       error: ''
     };
@@ -18,31 +18,38 @@ class Login extends Component {
     this.setState({ [event.target.name]: event.target.value });
   };
 
-  handleSubmit = async (event) => {
+  iniciarSesion = async (event) => {
     event.preventDefault();
-    const { username, password } = this.state;
+    const { usuario, password } = this.state;
+    const datos = {
+        usuario: usuario,
+        password,
+    };
+    const url = "http://localhost:4000/api/usuarios/login"; // Cambia la URL si es necesario
+
     try {
-      const response = await axios.post('http://localhost:5000/login', {
-        usuario: username,
-        password
-      });
-      localStorage.setItem('token', response.data.token);
-      this.props.history.push('/dashboard');
+        const response = await axios.post(url, datos);
+        console.log(response.data);
+        if (response.data.token) {
+            localStorage.setItem('token', response.data.token);
+            this.props.history.push('/dashboard');
+        }
     } catch (error) {
-      this.setState({ error: 'Nombre de usuario o contraseña incorrectos' });
+        console.log(error);
+        this.setState({ error: 'Nombre de usuario o contraseña incorrectos' });
     }
-  };
+};
 
   render() {
     return (
-      <Form onSubmit={this.handleSubmit} className="max-w-md mx-auto space-y-4">
+      <Form onSubmit={this.iniciarSesion} className="max-w-md mx-auto space-y-4">
         <br />
         <Form.Group>
           <Form.Control
             type="text"
             placeholder="Nombre de usuario"
-            name="username"
-            value={this.state.username}
+            name="usuario"
+            value={this.state.usuario}
             onChange={this.handleChange}
           />
         </Form.Group>
