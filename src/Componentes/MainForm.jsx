@@ -8,6 +8,7 @@ class MainForm extends Component {
     super(props);
     this.state = {
       nombre: '',
+      apellido: '',
       usuario: '',
       password: '',
       email: '',
@@ -20,28 +21,35 @@ class MainForm extends Component {
     this.setState({ [event.target.name]: event.target.value });
   };
 
-  handleSubmit = async (event) => {
+  registroDeUsuario = async (event) => {
     event.preventDefault();
-    const { nombre, usuario, password, email } = this.state;
-    try {
-      const response = await axios.post('http://localhost:5000/registrar', {
+    const { nombre, apellido, usuario, password, email } = this.state;
+    const datos = {
         nombre,
-        apellido: '', // Agrega el apellido si es necesario
+        apellido,
+        usuario,
         password,
         mail: email,
-        usuario
-      });
-      if (response.data.status === 'ok') {
-        this.setState({ success: 'Usuario creado con éxito. Ahora puedes iniciar sesión.' });
-      }
+    };
+    const url = "http://localhost:4000/api/usuarios/registrar"; // Cambia la URL si es necesario
+
+    try {
+        const resp = await axios.post(url, datos);
+        console.log(resp.data);
+        if (resp.data.status === 'ok') {
+            alert("Usuario registrado correctamente");
+            this.setState({ success: 'Usuario creado con éxito. Ahora puedes iniciar sesión.' });
+        }
     } catch (error) {
-      this.setState({ error: 'Ocurrió un error al crear el usuario.' });
+        console.log(error);
+        this.setState({ error: 'Ocurrió un error al crear el usuario.' });
     }
-  };
+};
+
 
   render() {
     return (
-      <Form onSubmit={this.handleSubmit} className="max-w-md mx-auto space-y-4">
+      <Form onSubmit={this.registroDeUsuario} className="max-w-md mx-auto space-y-4">
         <br />
         <Form.Group>
           <Form.Control
@@ -49,6 +57,16 @@ class MainForm extends Component {
             placeholder="Nombre"
             name="nombre"
             value={this.state.nombre}
+            onChange={this.handleChange}
+          />
+        </Form.Group>
+        <br />
+        <Form.Group>
+          <Form.Control
+            type="text"
+            placeholder="Apellido"
+            name="apellido"
+            value={this.state.apellido}
             onChange={this.handleChange}
           />
         </Form.Group>
