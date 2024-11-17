@@ -41,11 +41,24 @@ class MainForm extends Component {
             this.setState({ success: 'Usuario creado con éxito. Ahora puedes iniciar sesión.' });
         }
     } catch (error) {
-        console.log(error);
-        this.setState({ error: 'Ocurrió un error al crear el usuario.' });
+        // Revisar si el error tiene datos de respuesta
+        if (error.response) {
+            // Mostrar el mensaje exacto del servidor si está disponible
+            const mensajeError = error.response.data.message || "Ocurrió un error al crear el usuario.";
+            
+            if (error.response.status === 409 || mensajeError.includes("Usuario ya registrado")) {
+                alert("El usuario ya está registrado.");
+                this.setState({ error: "El usuario ya existe. Intenta con otro nombre de usuario." });
+            } else {
+                console.log("Error de registro:", mensajeError);
+                this.setState({ error: mensajeError });
+            }
+        } else {
+            // Error genérico si no hay una respuesta detallada
+            this.setState({ error: 'Ocurrió un error al crear el usuario.' });
+        }
     }
 };
-
 
   render() {
     return (
