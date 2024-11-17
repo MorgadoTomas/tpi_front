@@ -5,12 +5,16 @@ const Inicio = () => {
   const [productos, setProductos] = useState([]);
   const [error, setError] = useState(null);
 
-
+  // Función para obtener los productos desde el backend
   const fetchProductos = async () => {
     try {
       const response = await axios.get('http://localhost:4000/api/admin/productos');
-      console.log(response.data); // Verifica la estructura de la respuesta
-      setProductos(response.data.productos); // Asegúrate de que la propiedad 'productos' existe
+      console.log('Respuesta completa del servidor:', response.data);  // Imprime toda la respuesta del servidor
+      if (response.data && Array.isArray(response.data.productos)) {
+        setProductos(response.data.productos);
+      } else {
+        setError('Respuesta inesperada del servidor. No es un array de productos.');
+      }
     } catch (err) {
       setError('Error al obtener los productos');
       console.error(err);
