@@ -115,33 +115,33 @@ class ProductosAdmin extends Component {
                 style={{ maxWidth: '200px' }}
               />
               <FormControl
-                placeholder="Talle"
-                name="talle"
+                placeholder="Categoria"
+                name="categoria"
                 value={this.state.nuevoProducto.talle}
                 onChange={this.handleInputChange}
                 style={{ maxWidth: '100px' }}
               />
               <FormControl
-                placeholder="Color"
-                name="color"
+                placeholder="Precio"
+                name="precio"
                 value={this.state.nuevoProducto.color}
                 onChange={this.handleInputChange}
                 style={{ maxWidth: '100px' }}
               />
               <FormControl
-                placeholder="C. de producto"
-                name="codigo"
+                placeholder="Stock disponible"
+                name="stock"
                 value={this.state.nuevoProducto.codigo}
                 onChange={this.handleInputChange}
                 style={{ maxWidth: '150px' }}
               />
-              <FormControl
-                placeholder="Cantidad"
-                name="cantidad"
-                value={this.state.nuevoProducto.cantidad}
-                onChange={this.handleInputChange}
-                style={{ maxWidth: '100px' }}
+
+<FormControl
+                type="file"
+                onChange={this.handleImageChange}
+                style={{ maxWidth: '200px' }}
               />
+     
               <Button variant="dark" onClick={this.agregarProducto}>
                 {this.state.editando ? "Guardar Cambios" : "Agregar"}
               </Button>
