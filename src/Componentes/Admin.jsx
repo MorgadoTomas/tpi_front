@@ -1,4 +1,6 @@
 // componentes/Admin.jsx
+// componentes/Admin.jsx
+
 import React, { Component } from 'react';
 import { LayoutDashboard, Package, Users, ShoppingCart, BarChart, Settings, User } from "lucide-react";
 import { Button } from 'react-bootstrap';
