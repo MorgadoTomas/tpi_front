@@ -2,6 +2,7 @@
 import React, { Component } from 'react';
 import { Button, FormControl, Table, Form } from 'react-bootstrap';
 import { Edit2, Trash2, LayoutDashboard, Package, Users, ShoppingCart, BarChart, Settings } from "lucide-react";
+import { Link } from 'react-router-dom'; // Importa Link de react-router-dom
 
 class ProductosAdmin extends Component {
   constructor(props) {
@@ -71,18 +72,20 @@ class ProductosAdmin extends Component {
         {/* Sidebar */}
         <aside className="mr-4" style={{ width: '250px' }}>
           <nav className="d-flex flex-column">
-            <Button variant="light" className="text-left mb-2 d-flex align-items-center">
+            {/* Botón para volver a Admin.jsx */}
+            <Link to="/admin" className="text-left mb-2 d-flex align-items-center btn btn-light">
               <LayoutDashboard className="mr-2" />
               Panel de control
-            </Button>
+            </Link>
             <Button variant="light" className="text-left mb-2 d-flex align-items-center">
               <Package className="mr-2" />
               Productos
             </Button>
-            <Button variant="light" className="text-left mb-2 d-flex align-items-center">
+            {/* Botón de "Usuarios" que redirige a UsuariosAdmin.jsx */}
+            <Link to="/admin/usuarios" className="text-left mb-2 d-flex align-items-center btn btn-light">
               <Users className="mr-2" />
               Usuarios
-            </Button>
+            </Link>
             <Button variant="light" className="text-left mb-2 d-flex align-items-center">
               <ShoppingCart className="mr-2" />
               Ventas
@@ -112,33 +115,33 @@ class ProductosAdmin extends Component {
                 style={{ maxWidth: '200px' }}
               />
               <FormControl
-                placeholder="Talle"
-                name="talle"
+                placeholder="Categoria"
+                name="categoria"
                 value={this.state.nuevoProducto.talle}
                 onChange={this.handleInputChange}
                 style={{ maxWidth: '100px' }}
               />
               <FormControl
-                placeholder="Color"
-                name="color"
+                placeholder="Precio"
+                name="precio"
                 value={this.state.nuevoProducto.color}
                 onChange={this.handleInputChange}
                 style={{ maxWidth: '100px' }}
               />
               <FormControl
-                placeholder="C. de producto"
-                name="codigo"
+                placeholder="Stock disponible"
+                name="stock"
                 value={this.state.nuevoProducto.codigo}
                 onChange={this.handleInputChange}
                 style={{ maxWidth: '150px' }}
               />
-              <FormControl
-                placeholder="Cantidad"
-                name="cantidad"
-                value={this.state.nuevoProducto.cantidad}
-                onChange={this.handleInputChange}
-                style={{ maxWidth: '100px' }}
+
+<FormControl
+                type="file"
+                onChange={this.handleImageChange}
+                style={{ maxWidth: '200px' }}
               />
+     
               <Button variant="dark" onClick={this.agregarProducto}>
                 {this.state.editando ? "Guardar Cambios" : "Agregar"}
               </Button>
