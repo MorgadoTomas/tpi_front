@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-// componentes/Admin.jsx
-// componentes/Admin.jsx
-
-=======
->>>>>>> 8104b4413f9f3a2d130a27877723e5eea96e988a
 import React, { Component } from 'react';
 import { LayoutDashboard, Package, Users, ShoppingCart, BarChart, Settings, User } from "lucide-react";
 import { Button } from 'react-bootstrap';

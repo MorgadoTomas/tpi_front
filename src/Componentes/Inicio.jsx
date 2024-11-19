@@ -6,7 +6,7 @@ const Inicio = () => {
   const [error, setError] = useState(null);
   const fetchProductos = async () => {
     try {
-      const response = await axios.get('http://localhost:4000/api/admin/productos');
+      const response = await axios.get('http://localhost:8080/api/admin/productos');
       console.log(response.data); // Verifica la estructura de la respuesta
       setProductos(response.data.productos); // Asegúrate de que la propiedad 'productos' existe
     } catch (err) {
