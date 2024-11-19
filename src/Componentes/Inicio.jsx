@@ -4,22 +4,6 @@ import axios from 'axios';
 const Inicio = () => {
   const [productos, setProductos] = useState([]);
   const [error, setError] = useState(null);
-
-const Inicio = () => {
-    const [productos, setProductos] = useState([]);
-
-    useEffect(() => {
-        // Hacer la solicitud GET al backend
-        axios.get('http://localhost:8080/api/productos')
-        .then(response => {
-                // Guardar los productos obtenidos en el estado
-                setProductos(response.data);
-            })
-            .catch(error => {
-                console.error('Hubo un error al obtener los productos:', error);
-            });
-    }, []); // Se ejecuta una vez al montar el componente
-
   const fetchProductos = async () => {
     try {
       const response = await axios.get('http://localhost:4000/api/admin/productos');
