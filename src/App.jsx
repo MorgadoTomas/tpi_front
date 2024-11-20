@@ -12,6 +12,8 @@ import Productos from './Componentes/Productos';
 import ProductoDetallado from './Componentes/ProductoDetallado';
 import Admin from './Componentes/Admin';
 import ProductosAdmin from './Componentes/ProductosAdmin'; // Importar ProductosAdmin
+import UsuariosAdmin from './Componentes/UsuariosAdmin'; // Importar UsuariosAdmin
+
 
 class App extends Component {
   render() {
@@ -31,6 +33,7 @@ class App extends Component {
               <Route path="/producto/:id" element={<ProductoDetallado />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="/admin/productos" element={<ProductosAdmin />} /> {/* Ruta para ProductosAdmin */}
+              <Route path="/admin/usuarios" element={<UsuariosAdmin />} /> {/* Ruta para UsuariosAdmin */}
             </Routes>
           </main>
         </div>
