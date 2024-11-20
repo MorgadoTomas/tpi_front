@@ -35,7 +35,7 @@ const Inicio = () => {
                 <div className="card-body">
                   <h5 className="card-title">{producto.nombre}</h5>
                   <p className="card-text">{producto.descripcion.slice(0, 100)}...</p>
-                  <p className="card-text"><strong>Precio:</strong> ${producto.precio}</p>
+                  <p className="card-text"><strong>Precio:</strong> {producto.precio}</p>
                 </div>
               </div>
             </Link>

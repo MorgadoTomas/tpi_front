@@ -72,13 +72,13 @@ class Productos extends Component {
           </aside>
 
           {/* Products Grid */}
-          <div className="flex-grow ">
+          <div className="flex-grow">
             {error && <p className="text-danger">{error}</p>}
             <div className="row">
               {productos.length > 0 ? (
                 productos.map((producto) => (
-                  <div key={producto.id} className=" col-md-30 mb-10">
-                    <div className="border bg-warning rounded-lg shadow-sm p-3 h-200">
+                  <div key={producto.id} className="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+                    <div className="border bg-warning rounded-lg shadow-sm p-3 h-100">
                       {/* Product Image */}
                       {producto.imagenes?.length > 0 ? (
                         <img
@@ -98,8 +98,8 @@ class Productos extends Component {
                       {/* Product Details */}
                       <h4 className="font-weight-bold mb-2">{producto.nombre}</h4>
                       <p className="text-muted mb-1">{producto.marca}</p>
-                      <p className="font-weight-bold mb-3">${producto.precio}</p>
-                      <Link to={`/producto/${producto.id}`} className="btn btn-primary w-200">
+                      <p className="font-weight-bold mb-3">{producto.precio}</p>
+                      <Link to={`/producto/${producto.id}`} className="btn btn-primary w-100">
                         Ver Detalles
                       </Link>
                     </div>
