@@ -1,51 +1,46 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 const Inicio = () => {
   const [productos, setProductos] = useState([]);
-  const [error, setError] = useState(null);
-  const fetchProductos = async () => {
-    try {
-      const response = await axios.get('http://localhost:8080/api/admin/productos');
-      console.log(response.data); // Verifica la estructura de la respuesta
-      setProductos(response.data.productos); // Asegúrate de que la propiedad 'productos' existe
-    } catch (err) {
-      setError('Error al obtener los productos');
-      console.error(err);
-    }
-  };
-  
 
   useEffect(() => {
-    fetchProductos();
+    // Solicitar los productos desde el backend
+    axios
+      .get('http://localhost:8080/api/admin/productos')
+      .then((response) => {
+        setProductos(response.data.productos); // Establece los productos
+      })
+      .catch((error) => {
+        console.error('Error al cargar los productos:', error);
+      });
   }, []);
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h1>Productos Disponibles</h1>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '20px' }}>
-        {productos.length > 0 ? (
-          productos.map((producto) => (
-            <div
-              key={producto.id}
-              style={{
-                border: '1px solid #ccc',
-                borderRadius: '8px',
-                padding: '10px',
-                textAlign: 'center',
-              }}
-            >
-              <h2>{producto.nombre}</h2>
-              <p><strong>Precio:</strong> ${producto.precio}</p>
-              <p><strong>Stock:</strong> {producto.stock}</p>
-              <p><strong>Marca:</strong> {producto.marca}</p>
-              <p>{producto.descripcion}</p>
-            </div>
-          ))
-        ) : (
-          <p>No hay productos disponibles.</p>
-        )}
+    <div className="container">
+      <h1 className="my-4">Productos</h1>
+      <div className="row">
+        {productos.map((producto) => (
+          <div className="col-md-4 mb-4" key={producto.id}>
+            {/* Envolver todo el producto en un <Link> */}
+            <Link to={`/producto/${producto.id}`} className="text-decoration-none">
+              <div className="card">
+                <img
+                  src={`http://localhost:8080/images/${producto.imagenes ? producto.imagenes[0] : 'default.jpg'}`}
+                  className="card-img-top"
+                  alt={producto.nombre}
+                  style={{ height: '250px', objectFit: 'cover' }}
+                />
+                <div className="card-body">
+                  <h5 className="card-title">{producto.nombre}</h5>
+                  <p className="card-text">{producto.descripcion.slice(0, 100)}...</p>
+                  <p className="card-text"><strong>Precio:</strong> ${producto.precio}</p>
+                </div>
+              </div>
+            </Link>
+          </div>
+        ))}
       </div>
     </div>
   );
