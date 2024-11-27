@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 class Productos extends Component {
     constructor(props) {
@@ -114,32 +115,35 @@ class Productos extends Component {
                         <div className="row">
                             {productos.map((producto) => (
                                 <div className="col-md-3 mb-4" key={producto.id}>
-                                    <div className="card h-100">
-                                        {producto.imagenes && (
-                                            <img
-                                                src={`http://localhost:8080/public/images/${producto.imagenes.split(',')[0]}`}
-                                                className="card-img-top"
-                                                alt={producto.nombre}
-                                            />
-                                        )}
-                                        <div className="card-body">
-                                            <h5 className="card-title">{producto.nombre}</h5>
-
-                                            {/* Marca del producto */}
-                                            {producto.marca && (
-                                                <p className="card-text">
-                                                    <strong>Marca:</strong> {producto.marca}
-                                                </p>
+                                    {/* Envolver el producto con un Link */}
+                                    <Link to={`/producto/${producto.id}`} className="text-decoration-none">
+                                        <div className="card h-100">
+                                            {producto.imagenes && (
+                                                <img
+                                                    src={`http://localhost:8080/public/images/${producto.imagenes.split(',')[0]}`}
+                                                    className="card-img-top"
+                                                    alt={producto.nombre}
+                                                />
                                             )}
+                                            <div className="card-body">
+                                                <h5 className="card-title">{producto.nombre}</h5>
 
-                                            {/* Precio del producto */}
-                                            {producto.precio && (
-                                                <p className="card-text">
-                                                    <strong>Precio:</strong> ${producto.precio}
-                                                </p>
-                                            )}
+                                                {/* Marca del producto */}
+                                                {producto.marca && (
+                                                    <p className="card-text">
+                                                        <strong>Marca:</strong> {producto.marca}
+                                                    </p>
+                                                )}
+
+                                                {/* Precio del producto */}
+                                                {producto.precio && (
+                                                    <p className="card-text">
+                                                        <strong>Precio:</strong> ${producto.precio}
+                                                    </p>
+                                                )}
+                                            </div>
                                         </div>
-                                    </div>
+                                    </Link>
                                 </div>
                             ))}
                         </div>
