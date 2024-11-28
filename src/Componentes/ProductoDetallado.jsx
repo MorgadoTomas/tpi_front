@@ -19,6 +19,12 @@ const ProductoDetallado = () => {
       });
   }, [id]);
 
+  const agregarAlCarrito = () => {
+    const carrito = JSON.parse(sessionStorage.getItem('carrito')) || [];
+    carrito.push(producto);
+    sessionStorage.setItem('carrito', JSON.stringify(carrito));
+  };
+
   if (error) return <p style={{ color: 'red' }}>{error}</p>;
   if (!producto) return <p>Cargando detalles del producto...</p>;
 
@@ -58,7 +64,12 @@ const ProductoDetallado = () => {
               <li><strong>Marca:</strong> {producto.marca}</li>
               <li><strong>Stock:</strong> {producto.stock}</li>
             </ul>
-            <button className="btn btn-dark w-100">Agregar al carrito</button>
+            <button
+              className="btn btn-dark w-100"
+              onClick={agregarAlCarrito}
+            >
+              Agregar al carrito
+            </button>
           </div>
         </div>
       </main>
