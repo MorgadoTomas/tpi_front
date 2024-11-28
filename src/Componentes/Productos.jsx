@@ -1,119 +1,157 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import '../App.css';
 
 class Productos extends Component {
-  constructor() {
-    super();
-    this.state = {
-      productos: [],
-      error: null,
-    };
-  }
+    constructor(props) {
+        super(props);
+        this.state = {
+            productos: [],
+            categoriasSeleccionadas: [],
+            nombreFiltro: '',
+            categorias: [
+                'teclado', 'mouse', 'auricular', 'monitor', 'microfono', 'placadevideo', 'motherboard',
+                'ram', 'microprocesador', 'discos', 'sillas', 'gabinetes', 'fuentes', 'joysticks',
+                'webcams', 'pad', 'parlante'
+            ]
+        };
+    }
 
-  componentDidMount() {
-    this.fetchProductos();
-  }
+    componentDidMount() {
+        this.cargarProductos();
+    }
 
-  fetchProductos() {
-    axios
-      .get('http://localhost:8080/api/admin/productos')
-      .then((response) => {
-        this.setState({ productos: response.data.productos });
-      })
-      .catch((error) => {
-        console.error('Error al obtener los productos:', error);
-        this.setState({ error: 'No se pudieron cargar los productos.' });
-      });
-  }
+    componentDidUpdate(prevProps, prevState) {
+        if (
+            prevState.nombreFiltro !== this.state.nombreFiltro ||
+            prevState.categoriasSeleccionadas !== this.state.categoriasSeleccionadas
+        ) {
+            this.cargarProductos();
+        }
+    }
 
-  render() {
-    const { productos, error } = this.state;
+    cargarProductos() {
+        const { nombreFiltro, categoriasSeleccionadas } = this.state;
+        const params = {
+            nombre: nombreFiltro || undefined,
+            categorias: categoriasSeleccionadas.join(',') || undefined,
+        };
 
-    return (
-      <div className="min-vh-100 d-flex flex-column">
-        {/* Main Content */}
-        <main className="flex-grow container d-flex p-4">
-          {/* Sidebar */}
-          <aside className="w-25 mr-1">
-            <h2 className="h1 font-weight-bold mb-4 text-center">CATEGORIAS</h2>
-            <div className="mb-4">
-              <h3 className="font-weight-semibold mb-2">Periféricos</h3>
-              <div className="mb-2">
-                <input type="checkbox" id="teclados" />
-                <label htmlFor="teclados" className="ml-2">Teclados</label>
-              </div>
-              <div className="mb-2">
-                <input type="checkbox" id="mouse" />
-                <label htmlFor="mouse" className="ml-2">Mouse</label>
-              </div>
-              <div className="mb-2">
-                <input type="checkbox" id="monitores" />
-                <label htmlFor="monitores" className="ml-2">Monitores</label>
-              </div>
-            </div>
+        axios
+            .get('http://localhost:8080/api/home', { params })
+            .then((response) => {
+                this.setState({ productos: response.data.productos });
+            })
+            .catch((error) => {
+                console.error('Error al cargar los productos:', error);
+            });
+    }
 
-            <div>
-              <h3 className="font-weight-semibold mb-2">Componentes</h3>
-              <div className="mb-2">
-                <input type="checkbox" id="procesadores" />
-                <label htmlFor="procesadores" className="ml-2">Procesadores</label>
-              </div>
-              <div className="mb-2">
-                <input type="checkbox" id="motherboards" />
-                <label htmlFor="motherboards" className="ml-2">Motherboards</label>
-              </div>
-              <div className="mb-2">
-                <input type="checkbox" id="memoria-ram" />
-                <label htmlFor="memoria-ram" className="ml-2">Memoria RAM</label>
-              </div>
-            </div>
-          </aside>
+    manejarCheckbox(categoria) {
+        this.setState((prevState) => {
+            const { categoriasSeleccionadas } = prevState;
+            if (categoriasSeleccionadas.includes(categoria)) {
+                return {
+                    categoriasSeleccionadas: categoriasSeleccionadas.filter(
+                        (c) => c !== categoria
+                    ),
+                };
+            } else {
+                return {
+                    categoriasSeleccionadas: [...categoriasSeleccionadas, categoria],
+                };
+            }
+        });
+    }
 
-          {/* Products Grid */}
-          <div className="flex-grow ">
-            {error && <p className="text-danger">{error}</p>}
-            <div className="row">
-              {productos.length > 0 ? (
-                productos.map((producto) => (
-                  <div key={producto.id} className=" col-md-30 mb-10">
-                    <div className="border bg-warning rounded-lg shadow-sm p-3 h-200">
-                      {/* Product Image */}
-                      {producto.imagenes?.length > 0 ? (
-                        <img
-                          src={`http://localhost:8080/images/${producto.imagenes[0]}`}
-                          alt={producto.nombre}
-                          className="w-100 mb-3"
-                          style={{ height: '200px', objectFit: 'cover' }}
+    manejarCambioFiltro(e) {
+        this.setState({ nombreFiltro: e.target.value });
+    }
+
+    render() {
+        const { productos, categorias, categoriasSeleccionadas, nombreFiltro } = this.state;
+
+        return (
+            <div className="container my-4">
+                <h1 className="text-center mb-4">Productos</h1>
+
+                <div className="row">
+                    {/* Filtros */}
+                    <div className="col-md-3">
+                        <input
+                            type="text"
+                            placeholder="Buscar por nombre"
+                            className="form-control mb-3"
+                            value={nombreFiltro}
+                            onChange={(e) => this.manejarCambioFiltro(e)}
                         />
-                      ) : (
-                        <div
-                          className="d-flex align-items-center justify-content-center bg-secondary"
-                          style={{ height: '150px', color: 'white' }}
-                        >
-                          Sin imagen
+
+                        <div className="card">
+                            <div className="card-body">
+                                <h5 className="card-title">Filtrar por Categorías</h5>
+                                {categorias.map((categoria) => (
+                                    <div className="form-check" key={categoria}>
+                                        <input
+                                            className="form-check-input"
+                                            type="checkbox"
+                                            id={`checkbox-${categoria}`}
+                                            checked={categoriasSeleccionadas.includes(categoria)}
+                                            onChange={() => this.manejarCheckbox(categoria)}
+                                        />
+                                        <label
+                                            className="form-check-label"
+                                            htmlFor={`checkbox-${categoria}`}
+                                        >
+                                            {categoria}
+                                        </label>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
-                      )}
-                      {/* Product Details */}
-                      <h4 className="font-weight-bold mb-2">{producto.nombre}</h4>
-                      <p className="text-muted mb-1">{producto.marca}</p>
-                      <p className="font-weight-bold mb-3">${producto.precio}</p>
-                      <Link to={`/producto/${producto.id}`} className="btn btn-primary w-200">
-                        Ver Detalles
-                      </Link>
                     </div>
-                  </div>
-                ))
-              ) : (
-                <p>No hay productos disponibles.</p>
-              )}
+
+                    {/* Lista de productos */}
+                    <div className="col-md-9">
+                        <div className="row">
+                            {productos.map((producto) => (
+                                <div className="col-md-3 mb-4" key={producto.id}>
+                                    {/* Envolver el producto con un Link */}
+                                    <Link to={`/producto/${producto.id}`} className="text-decoration-none">
+                                        <div className="card h-100">
+                                            {producto.imagenes && (
+                                                <img
+                                                    src={`http://localhost:8080/public/images/${producto.imagenes.split(',')[0]}`}
+                                                    className="card-img-top"
+                                                    alt={producto.nombre}
+                                                />
+                                            )}
+                                            <div className="card-body">
+                                                <h5 className="card-title">{producto.nombre}</h5>
+
+                                                {/* Marca del producto */}
+                                                {producto.marca && (
+                                                    <p className="card-text">
+                                                        <strong>Marca:</strong> {producto.marca}
+                                                    </p>
+                                                )}
+
+                                                {/* Precio del producto */}
+                                                {producto.precio && (
+                                                    <p className="card-text">
+                                                        <strong>Precio:</strong> ${producto.precio}
+                                                    </p>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </Link>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
-        </main>
-      </div>
-    );
-  }
+        );
+    }
 }
 
 export default Productos;

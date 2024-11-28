@@ -52,7 +52,7 @@ const ProductoDetallado = () => {
           {/* Detalles */}
           <div className="col-md-6">
             <h1 className="h3 mb-3">{producto.nombre}</h1>
-            <p className="display-4 mb-2">${producto.precio}</p>
+            <p className="display-4 mb-2">{producto.precio}</p>
             <p className="text-muted">{producto.descripcion}</p>
             <ul>
               <li><strong>Marca:</strong> {producto.marca}</li>
