@@ -9,15 +9,13 @@ class CarritoProductos extends Component {
     this.state = {
       productos: [
         {
-          id:"",
-          nombre: '',
-          precio: "",
-          cantidad: "",
-          imagen: 'url',
+          id: "id producto",
+          nombre: 'Nombre producto',
+          precio: "Precio producto",
+          cantidad: "cantidad producto",
+          imagen: 'url imagen',
         },
       ],
-    
-      total: "",
     };
   }
 
@@ -45,15 +43,7 @@ class CarritoProductos extends Component {
     });
   };
 
-  handleCodigoPostalChange = (event) => {
-    this.setState({ codigoPostal: event.target.value });
-  };
-
-  calcularEnvio = () => {
-    // Aquí puedes agregar la lógica para calcular el envío según el código postal
-    const envio = this.state.codigoPostal ? 1000 : 0; // Simulación
-    this.setState({ envio });
-  };
+  
 
   render() {
     const { productos, total, envio, codigoPostal } = this.state;
@@ -105,14 +95,14 @@ class CarritoProductos extends Component {
               </div>
             ))}
 
-          
+
             {/* Total */}
             <div className="d-flex justify-content-between font-weight-bold">
               <span>Total:</span>
               <span>${subtotal.toFixed(2)}</span>
             </div>
 
-  
+
 
             {/* Finalizar compra */}
             <Button variant="dark" className="w-100">
