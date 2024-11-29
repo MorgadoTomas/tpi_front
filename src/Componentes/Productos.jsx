@@ -18,7 +18,7 @@ class Productos extends Component {
 
   fetchProductos() {
     axios
-      .get('http://localhost:8080/api/admin/productos')
+      .get('http://localhost:4000/api/admin/productos')
       .then((response) => {
         this.setState({ productos: response.data.productos });
       })
@@ -82,7 +82,7 @@ class Productos extends Component {
                       {/* Product Image */}
                       {producto.imagenes?.length > 0 ? (
                         <img
-                          src={`http://localhost:8080/images/${producto.imagenes[0]}`}
+                          src={`http://localhost:4000/images/${producto.imagenes[0]}`}
                           alt={producto.nombre}
                           className="w-100 mb-3"
                           style={{ height: '200px', objectFit: 'cover' }}
