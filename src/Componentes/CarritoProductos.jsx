@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-
+//nas
 const CarritoProductos = () => {
   const [carrito, setCarrito] = useState([]);
   const [total, setTotal] = useState(0);
