@@ -4,8 +4,15 @@ const CarritoProductos = () => {
   const [carrito, setCarrito] = useState([]);
 
   useEffect(() => {
+    // Cargar el carrito desde sessionStorage
     const carritoGuardado = JSON.parse(sessionStorage.getItem('carrito')) || [];
-    setCarrito(carritoGuardado);
+    
+    // Asegurarse de que la cantidad de cada producto sea 1 al cargar
+    const carritoInicializado = carritoGuardado.map((producto) => ({
+      ...producto,
+      cantidad: producto.cantidad || 1, // Si no tiene cantidad, inicializar en 1
+    }));
+    setCarrito(carritoInicializado);
   }, []);
 
   // Función para actualizar la cantidad de un producto en el carrito
@@ -20,6 +27,13 @@ const CarritoProductos = () => {
     }
 
     carritoActualizado[index].cantidad = cantidad;
+    setCarrito(carritoActualizado);
+    sessionStorage.setItem('carrito', JSON.stringify(carritoActualizado));
+  };
+
+  // Función para eliminar un producto del carrito
+  const eliminarProducto = (index) => {
+    const carritoActualizado = carrito.filter((_, i) => i !== index);
     setCarrito(carritoActualizado);
     sessionStorage.setItem('carrito', JSON.stringify(carritoActualizado));
   };
@@ -63,6 +77,16 @@ const CarritoProductos = () => {
                     disabled={producto.cantidad >= producto.stock} // Deshabilitar si la cantidad es igual al stock
                   >
                     +
+                  </button>
+                </div>
+
+                {/* Botón para eliminar el producto */}
+                <div className="mt-2">
+                  <button
+                    className="btn btn-danger"
+                    onClick={() => eliminarProducto(index)}
+                  >
+                    Eliminar
                   </button>
                 </div>
               </div>
