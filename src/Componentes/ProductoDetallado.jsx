@@ -9,7 +9,7 @@ const ProductoDetallado = () => {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:4000/api/admin/productos/${id}`)
+      .get(`http://localhost:8080/api/admin/productos/${id}`)
       .then((response) => {
         setProducto(response.data.producto);
       })
@@ -36,7 +36,7 @@ const ProductoDetallado = () => {
           <div className="col-md-6">
             {producto.imagenes[0] && (
               <img
-                src={`http://localhost:4000/images/${producto.imagenes[0]}`}
+                src={`http://localhost:8080/images/${producto.imagenes[0]}`}
                 alt={producto.nombre}
                 className="w-100 mb-3"
                 style={{ height: '300px', objectFit: 'cover' }}
@@ -46,7 +46,7 @@ const ProductoDetallado = () => {
               {producto.imagenes.slice(1).map((img, index) => (
                 <img
                   key={index}
-                  src={`http://localhost:4000/images/${img}`}
+                  src={`http://localhost:8080/images/${img}`}
                   alt={`Producto ${index + 1}`}
                   className="rounded"
                   style={{ width: '100px', height: '100px', objectFit: 'cover' }}
