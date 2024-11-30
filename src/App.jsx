@@ -1,5 +1,3 @@
-//////////////////
-// App.jsx
 import React, { Component } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
@@ -13,7 +11,7 @@ import Productos from './Componentes/Productos';
 import ProductoDetallado from './Componentes/ProductoDetallado';
 import Admin from './Componentes/Admin';
 import ProductosAdmin from './Componentes/ProductosAdmin';
-import FormularioCompra from './Componentes/FormularioCompra'; // Importar FormularioCompra
+import FormularioCompra from './Componentes/FormularioCompra'; // Importa el componente
 
 class App extends Component {
   constructor(props) {
@@ -32,16 +30,12 @@ class App extends Component {
     return (
       <Router>
         <div className="min-vh-100 d-flex flex-column">
-          {/* Pasamos handleSearch a Header */}
           <Header onSearch={this.handleSearch} />
           <NavBar />
           
           <main className="flex-grow-1 container my-4">
             <Routes>
-              <Route
-                path="/"
-                element={<Inicio searchTerm={this.state.searchTerm} />} // Pasamos searchTerm a Inicio
-              />
+              <Route path="/" element={<Inicio searchTerm={this.state.searchTerm} />} />
               <Route path="/productos" element={<Productos />} />
               <Route path="/registro" element={<MainForm />} />
               <Route path="/login" element={<Login />} />
@@ -49,6 +43,7 @@ class App extends Component {
               <Route path="/producto/:id" element={<ProductoDetallado />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="/admin/productos" element={<ProductosAdmin />} />
+              {/* Ruta para el formulario de compra */}
               <Route path="/formulario-compra" element={<FormularioCompra />} />
             </Routes>
           </main>

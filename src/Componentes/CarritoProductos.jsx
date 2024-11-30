@@ -75,12 +75,11 @@ class CarritoProductos extends Component {
                   <p>Stock disponible: {producto.stock}</p>
                 </div>
                 <div className="col-md-3 text-end">
-                  {/* Botones para ajustar la cantidad */}
                   <div className="d-flex justify-content-between align-items-center">
                     <button
                       className="btn btn-sm btn-secondary"
                       onClick={() => this.actualizarCantidad(index, producto.cantidad - 1)}
-                      disabled={producto.cantidad <= 1} // Deshabilitar si la cantidad es 1
+                      disabled={producto.cantidad <= 1}
                     >
                       -
                     </button>
@@ -88,16 +87,12 @@ class CarritoProductos extends Component {
                     <button
                       className="btn btn-sm btn-secondary"
                       onClick={() => this.actualizarCantidad(index, producto.cantidad + 1)}
-                      disabled={producto.cantidad >= producto.stock} // Deshabilitar si la cantidad es igual al stock
+                      disabled={producto.cantidad >= producto.stock}
                     >
                       +
                     </button>
-                  </div>
-
-                  {/* Botón para eliminar el producto */}
-                  <div className="mt-2">
                     <button
-                      className="btn btn-danger"
+                      className="btn btn-sm btn-danger"
                       onClick={() => this.eliminarProducto(index)}
                     >
                       Eliminar
@@ -107,21 +102,20 @@ class CarritoProductos extends Component {
               </div>
             ))}
 
-            {/* Mostrar precio total */}
-            <div className="d-flex justify-content-between mt-4">
-              <h3>Total:</h3>
-              <p className="h4">${totalCompra}</p>
-            </div>
-            <br />
-
-            {/* Botón de finalizar compra usando Link */}
-            <div className="text-end">
-              <Link to={{ pathname: '/formulario-compra', state: { carrito, totalCompra } }}>
-                <button className="btn btn-success">
-                  Finalizar compra
-                </button>
-              </Link>
-            </div>
+            <hr />
+            <h3>Total: ${totalCompra}</h3>
+            <Link
+              to={{
+                pathname: '/formulario-compra',
+                state: {
+                  carrito: carrito,
+                  totalCompra: totalCompra,
+                },
+              }}
+              className="btn btn-success mt-3"
+            >
+              Finalizar Compra
+            </Link>
           </div>
         )}
       </div>
