@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import { useParams, Link } from 'react-router-dom'; // Usamos useParams para obtener el parámetro `id`
 
 const ProductoDetallado = () => {
-  const { id } = useParams();
+  const { id } = useParams();  // Usamos el hook `useParams` para obtener el `id`
   const [producto, setProducto] = useState(null);
   const [error, setError] = useState(null);
 
