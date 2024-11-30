@@ -19,10 +19,17 @@ const FormularioCompra = () => {
       for (let producto of carrito) {
         const { id, cantidad, precio_u } = producto;
 
+        // Loguear los datos antes de enviarlos
+        console.log('Enviando datos al backend:', {
+          cantidad: cantidad,
+          precio_u: producto.precio,
+          id_producto: id,  // Si es necesario para el backend
+        });
+
         // Enviar los datos de cada producto al backend
         await axios.post('http://localhost:8080/api/admin/carrito', {
           cantidad: cantidad,
-          precio_u: precio_u,
+          precio_u: producto.precio,
           id_producto: id,  // Si es necesario para el backend
         });
       }
@@ -40,7 +47,7 @@ const FormularioCompra = () => {
         <ul>
           {carrito.map((producto) => (
             <li key={producto.id}>
-              {producto.nombre} - {producto.cantidad} x ${producto.precio_u}
+              {producto.nombre} - {producto.cantidad} x ${producto.precio}
             </li>
           ))}
         </ul>
