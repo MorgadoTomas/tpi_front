@@ -10,8 +10,10 @@ import Inicio from './Componentes/Inicio';
 import Productos from './Componentes/Productos';
 import ProductoDetallado from './Componentes/ProductoDetallado';
 import Admin from './Componentes/Admin';
-import ProductosAdmin from './Componentes/ProductosAdmin';
 import FormularioCompra from './Componentes/FormularioCompra'; // Importa el componente
+import ProductosAdmin from './Componentes/ProductosAdmin'; // Importar ProductosAdmin
+import UsuariosAdmin from './Componentes/UsuariosAdmin'; // Importar UsuariosAdmin
+
 
 class App extends Component {
   constructor(props) {
@@ -45,6 +47,8 @@ class App extends Component {
               <Route path="/admin/productos" element={<ProductosAdmin />} />
               {/* Ruta para el formulario de compra */}
               <Route path="/formulario-compra" element={<FormularioCompra />} />
+              <Route path="/admin/productos" element={<ProductosAdmin />} /> {/* Ruta para ProductosAdmin */}
+              <Route path="/admin/usuarios" element={<UsuariosAdmin />} /> {/* Ruta para UsuariosAdmin */}
             </Routes>
           </main>
         </div>
