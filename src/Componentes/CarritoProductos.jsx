@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const CarritoProductos = () => {
   const [carrito, setCarrito] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Cargar el carrito desde sessionStorage
@@ -36,6 +38,13 @@ const CarritoProductos = () => {
     const carritoActualizado = carrito.filter((_, i) => i !== index);
     setCarrito(carritoActualizado);
     sessionStorage.setItem('carrito', JSON.stringify(carritoActualizado));
+  };
+
+  // Función para manejar el redireccionamiento a la página de formulario de compra
+  const finalizarCompra = () => {
+    navigate('/formulario-compra', {
+      state: { carrito, totalCompra: carrito.reduce((acc, producto) => acc + parseFloat(producto.precio) * producto.cantidad, 0) }
+    });
   };
 
   return (
@@ -103,7 +112,7 @@ const CarritoProductos = () => {
           <br />
 
           <div className="text-end">
-            <button className="btn btn-success">Finalizar compra</button>
+            <button className="btn btn-success" onClick={finalizarCompra}>Finalizar compra</button>
           </div>
         </div>
       )}

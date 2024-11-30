@@ -12,6 +12,7 @@ import Productos from './Componentes/Productos';
 import ProductoDetallado from './Componentes/ProductoDetallado';
 import Admin from './Componentes/Admin';
 import ProductosAdmin from './Componentes/ProductosAdmin';
+import FormularioCompra from './Componentes/FormularioCompra'; // Importar FormularioCompra
 
 class App extends Component {
   constructor(props) {
@@ -47,6 +48,7 @@ class App extends Component {
               <Route path="/producto/:id" element={<ProductoDetallado />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="/admin/productos" element={<ProductosAdmin />} />
+              <Route path="/formulario-compra" element={<FormularioCompra />} />
             </Routes>
           </main>
         </div>
