@@ -1,113 +1,126 @@
-import React, { useState, useEffect } from 'react';
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 
-const CarritoProductos = () => {
-  const [carrito, setCarrito] = useState([]);
-  const [total, setTotal] = useState(0);
+class CarritoProductos extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      carrito: [],
+    };
+  }
 
-  useEffect(() => {
+  componentDidMount() {
+    // Cargar el carrito desde sessionStorage
     const carritoGuardado = JSON.parse(sessionStorage.getItem('carrito')) || [];
-    setCarrito(carritoGuardado);
+    
+    // Asegurarse de que la cantidad de cada producto sea 1 al cargar
+    const carritoInicializado = carritoGuardado.map((producto) => ({
+      ...producto,
+      cantidad: producto.cantidad || 1, // Si no tiene cantidad, inicializar en 1
+    }));
+    this.setState({ carrito: carritoInicializado });
+  }
 
-    // Calcular el precio total
-    const totalCalculado = carritoGuardado.reduce((acc, producto) => {
-      return acc + parseFloat(producto.precio) * producto.cantidad;
-    }, 0);
-    setTotal(totalCalculado);
-  }, []);
+  // Función para actualizar la cantidad de un producto en el carrito
+  actualizarCantidad(index, cantidad) {
+    if (cantidad < 1) return; // Evitar cantidades negativas
+    const carritoActualizado = [...this.state.carrito];
+    const producto = carritoActualizado[index];
 
-  // Función para actualizar la cantidad de un producto
-  const actualizarCantidad = (index, cantidad) => {
-    if (cantidad < 1) return; // Evitar cantidades negativas o cero
+    // Limitar la cantidad al stock disponible
+    if (cantidad > producto.stock) {
+      cantidad = producto.stock; // Si la cantidad es mayor que el stock, se ajusta a la cantidad máxima disponible
+    }
 
-    const carritoActualizado = [...carrito];
     carritoActualizado[index].cantidad = cantidad;
-    setCarrito(carritoActualizado);
+    this.setState({ carrito: carritoActualizado });
     sessionStorage.setItem('carrito', JSON.stringify(carritoActualizado));
+  }
 
-    // Recalcular el total
-    const totalCalculado = carritoActualizado.reduce((acc, producto) => {
-      return acc + parseFloat(producto.precio) * producto.cantidad;
-    }, 0);
-    setTotal(totalCalculado);
-  };
-
-  const eliminarDelCarrito = (index) => {
-    const carritoActualizado = carrito.filter((_, i) => i !== index);
-    setCarrito(carritoActualizado);
+  // Función para eliminar un producto del carrito
+  eliminarProducto(index) {
+    const carritoActualizado = this.state.carrito.filter((_, i) => i !== index);
+    this.setState({ carrito: carritoActualizado });
     sessionStorage.setItem('carrito', JSON.stringify(carritoActualizado));
+  }
 
-    // Recalcular el total
-    const totalCalculado = carritoActualizado.reduce((acc, producto) => {
-      return acc + parseFloat(producto.precio) * producto.cantidad;
-    }, 0);
-    setTotal(totalCalculado);
-  };
+  render() {
+    const { carrito } = this.state;
 
-  return (
-    <div className="container my-5">
-      <h1 className="mb-4">Tu carrito de compras</h1>
-      {carrito.length === 0 ? (
-        <p>No tienes productos en el carrito.</p>
-      ) : (
-        <div>
-          {carrito.map((producto, index) => (
-            <div key={index} className="row mb-3">
-              <div className="col-md-3">
-                <img
-                  src={`http://localhost:8080/images/${producto.imagenes[0]}`}
-                  alt={producto.nombre}
-                  className="w-100"
-                  style={{ height: '150px', objectFit: 'cover' }}
-                />
-              </div>
-              <div className="col-md-6">
-                <h4>{producto.nombre}</h4>
-                <p>{producto.descripcion}</p>
-                <p>Precio: ${producto.precio}</p>
-              </div>
-              <div className="col-md-3 text-end">
-                {/* Botones para ajustar la cantidad */}
-                <div className="d-flex justify-content-between align-items-center">
-                  <button
-                    className="btn btn-sm btn-secondary"
-                    onClick={() => actualizarCantidad(index, producto.cantidad - 1)}
-                  >
-                    -
-                  </button>
-                  <span className="mx-2">{producto.cantidad}</span>
-                  <button
-                    className="btn btn-sm btn-secondary"
-                    onClick={() => actualizarCantidad(index, producto.cantidad + 1)}
-                  >
-                    +
-                  </button>
+    const totalCompra = carrito.reduce(
+      (acc, producto) => acc + parseFloat(producto.precio) * producto.cantidad,
+      0
+    ).toFixed(2);
+
+    return (
+      <div className="container my-5">
+        <h1 className="mb-4">Tu carrito de compras</h1>
+        {carrito.length === 0 ? (
+          <p>No tienes productos en el carrito.</p>
+        ) : (
+          <div>
+            {carrito.map((producto, index) => (
+              <div key={index} className="row mb-3">
+                <div className="col-md-3">
+                  <img
+                    src={`http://localhost:8080/images/${producto.imagenes[0]}`}
+                    alt={producto.nombre}
+                    className="w-100"
+                    style={{ height: '150px', objectFit: 'cover' }}
+                  />
                 </div>
-                <div className="mt-2">
-                  <button
-                    className="btn btn-danger"
-                    onClick={() => eliminarDelCarrito(index)}
-                  >
-                    Eliminar
-                  </button>
+                <div className="col-md-6">
+                  <h4>{producto.nombre}</h4>
+                  <p>Precio: ${producto.precio}</p>
+                  <p>Stock disponible: {producto.stock}</p>
+                </div>
+                <div className="col-md-3 text-end">
+                  <div className="d-flex justify-content-between align-items-center">
+                    <button
+                      className="btn btn-sm btn-secondary"
+                      onClick={() => this.actualizarCantidad(index, producto.cantidad - 1)}
+                      disabled={producto.cantidad <= 1}
+                    >
+                      -
+                    </button>
+                    <span className="mx-2">{producto.cantidad}</span>
+                    <button
+                      className="btn btn-sm btn-secondary"
+                      onClick={() => this.actualizarCantidad(index, producto.cantidad + 1)}
+                      disabled={producto.cantidad >= producto.stock}
+                    >
+                      +
+                    </button>
+                    <button
+                      className="btn btn-sm btn-danger"
+                      onClick={() => this.eliminarProducto(index)}
+                    >
+                      Eliminar
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
 
-          {/* Mostrar precio total */}
-          <div className="d-flex justify-content-between mt-4">
-            <h3>Total:</h3>
-            <p className="h4">${total.toFixed(2)}</p>
+            <hr />
+            <h3>Total: ${totalCompra}</h3>
+            <Link
+              to={{
+                pathname: '/formulario-compra',
+                state: {
+                  carrito: carrito,
+                  totalCompra: totalCompra,
+                },
+              }}
+              className="btn btn-success mt-3"
+            >
+              Finalizar Compra
+            </Link>
           </div>
-          <br />
-
-          <div className="text-end">
-            <button className="btn btn-success">Finalizar compra</button>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
+        )}
+      </div>
+    );
+  }
+}
 
 export default CarritoProductos;

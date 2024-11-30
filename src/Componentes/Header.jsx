@@ -1,4 +1,3 @@
-// Header.jsx
 import React, { Component } from 'react';
 import { ShoppingCart, Search } from "lucide-react";
 import { Button } from 'react-bootstrap';
@@ -14,8 +13,7 @@ class Header extends Component {
 
   handleSearchChange = (event) => {
     this.setState({ searchTerm: event.target.value });
-    // Llamamos a la función de búsqueda del padre para pasar el valor del input
-    this.props.onSearch(event.target.value); // Pasar término de búsqueda al componente padre (App)
+    this.props.onSearch(event.target.value);
   };
 
   render() {
@@ -32,7 +30,7 @@ class Header extends Component {
               placeholder="Buscar..."
               className="form-control"
               value={this.state.searchTerm}
-              onChange={this.handleSearchChange} // Actualiza el estado y pasa el término al componente App
+              onChange={this.handleSearchChange}
             />
             <Search className="position-absolute" style={{ top: '50%', right: '10px', transform: 'translateY(-50%)', color: 'gray' }} />
           </div>
