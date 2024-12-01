@@ -1,60 +1,95 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 
 const FormularioCompra = () => {
-  const [carrito, setCarrito] = useState([]);
+    const [idUsuario, setIdUsuario] = useState('');
+    const [idMetodoPago, setIdMetodoPago] = useState('');
+    const [direccion, setDireccion] = useState('');
+    const [total, setTotal] = useState('');
+    const [compraId, setCompraId] = useState(null);
+    const [error, setError] = useState('');
 
-  // Obtener el carrito desde sessionStorage
-  useEffect(() => {
-    const carritoData = JSON.parse(sessionStorage.getItem('carrito')) || [];
-    setCarrito(carritoData);
-  }, []);
+    const handleSubmit = async (e) => {
+        e.preventDefault();
 
-  // Enviar los datos al backend
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+        // Verificar que todos los campos estén completos
+        if (!idUsuario || !idMetodoPago || !direccion || !total) {
+            setError('Por favor, complete todos los campos.');
+            return;
+        }
 
-    try {
-      // Iterar sobre los productos del carrito
-      for (let producto of carrito) {
-        const { id, cantidad, precio_u } = producto;
+        try {
+            // Enviar la solicitud POST al backend
+            const response = await axios.post('http://localhost:8080/api/admin/carrito', {
+                id_usuario: idUsuario,
+                id_met_de_pago: idMetodoPago,
+                direccion: direccion,
+                total: total,
+            });
 
-        // Loguear los datos antes de enviarlos
-        console.log('Enviando datos al backend:', {
-          cantidad: cantidad,
-          precio_u: producto.precio,
-          id_producto: id,  // Si es necesario para el backend
-        });
+            // Guardar el ID de la compra recién creada
+            setCompraId(response.data.compraId);
+            setError('');
+            alert(`Compra creada con éxito. ID de la compra: ${response.data.compraId}`);
+        } catch (error) {
+            console.error('Error al crear la compra:', error);
+            setError('Hubo un error al crear la compra.');
+        }
+    };
 
-        // Enviar los datos de cada producto al backend
-        await axios.post('http://localhost:8080/api/admin/carrito', {
-          cantidad: cantidad,
-          precio_u: producto.precio,
-          id_producto: id,  // Si es necesario para el backend
-        });
-      }
+    return (
+        <div>
+            <h2>Formulario de Compra</h2>
+            <form onSubmit={handleSubmit}>
+                <div>
+                    <label htmlFor="idUsuario">ID de Usuario:</label>
+                    <input
+                        type="number"
+                        id="idUsuario"
+                        value={idUsuario}
+                        onChange={(e) => setIdUsuario(e.target.value)}
+                    />
+                </div>
+                <div>
+                    <label htmlFor="idMetodoPago">ID de Método de Pago:</label>
+                    <input
+                        type="number"
+                        id="idMetodoPago"
+                        value={idMetodoPago}
+                        onChange={(e) => setIdMetodoPago(e.target.value)}
+                    />
+                </div>
+                <div>
+                    <label htmlFor="direccion">Dirección:</label>
+                    <input
+                        type="text"
+                        id="direccion"
+                        value={direccion}
+                        onChange={(e) => setDireccion(e.target.value)}
+                    />
+                </div>
+                <div>
+                    <label htmlFor="total">Total:</label>
+                    <input
+                        type="number"
+                        id="total"
+                        value={total}
+                        onChange={(e) => setTotal(e.target.value)}
+                    />
+                </div>
 
-      console.log('Compra registrada correctamente');
-    } catch (error) {
-      console.error('Error al enviar los datos:', error);
-    }
-  };
+                {error && <p style={{ color: 'red' }}>{error}</p>}
 
-  return (
-    <div>
-      <h2>Carrito de Compras</h2>
-      <form onSubmit={handleSubmit}>
-        <ul>
-          {carrito.map((producto) => (
-            <li key={producto.id}>
-              {producto.nombre} - {producto.cantidad} x ${producto.precio}
-            </li>
-          ))}
-        </ul>
-        <button type="submit">Finalizar compra</button>
-      </form>
-    </div>
-  );
+                <button type="submit">Crear Compra</button>
+            </form>
+
+            {compraId && (
+                <div>
+                    <p>Compra creada con éxito. ID de la compra: {compraId}</p>
+                </div>
+            )}
+        </div>
+    );
 };
 
 export default FormularioCompra;

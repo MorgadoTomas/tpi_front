@@ -34,9 +34,10 @@ const Login = () => {
     try {
       const response = await axios.post(url, datos);
       if (response.data.token) {
-        // Si el login es exitoso, guarda el token y el usuario en el localStorage
+        // Si el login es exitoso, guarda el token, el usuario y el id_usuario en el localStorage
         localStorage.setItem('token', response.data.token);
-        localStorage.setItem('usuario', response.data.usuario);
+        localStorage.setItem('usuario', usuario);  // Guardamos el nombre de usuario
+        localStorage.setItem('id_usuario', response.data.id_usuario);  // Guardamos el id del usuario
         // Redirige al usuario a la página de inicio
         navigate('/inicio');
       }
