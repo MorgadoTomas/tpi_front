@@ -1,75 +1,157 @@
-// componentes/Productos.jsx
 import React, { Component } from 'react';
-import { ShoppingCart, Search, Truck, CreditCard, Lock } from "lucide-react";
-import { Button, Form, InputGroup } from 'react-bootstrap';
-import '../App.css';
+import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 class Productos extends Component {
-  render() {
-    return (
-      <div className="min-vh-100 d-flex flex-column">
+    constructor(props) {
+        super(props);
+        this.state = {
+            productos: [],
+            categoriasSeleccionadas: [],
+            nombreFiltro: '',
+            categorias: [
+                'teclado', 'mouse', 'auricular', 'monitor', 'microfono', 'placadevideo', 'motherboard',
+                'ram', 'microprocesador', 'discos', 'sillas', 'gabinetes', 'fuentes', 'joysticks',
+                'webcams', 'pad', 'parlante'
+            ]
+        };
+    }
 
-        {/* Main Content */}
-        <main className="flex-grow container d-flex p-4">
-          {/* Sidebar */}
-          <aside className="w-25 mr-1">
-            <h2 className="h1 font-weight-bold mb-4 text-center">CATEGORIAS</h2>
-            <div className="mb-4">
-              <h3 className="font-weight-semibold mb-2">Periféricos</h3>
-              <div className="mb-2">
-                <input type="checkbox" id="teclados" />
-                <label htmlFor="teclados" className="ml-2">Teclados</label>
-              </div>
-              <div className="mb-2">
-                <input type="checkbox"  id="mouse" />
-                <label htmlFor="mouse" className="ml-2">Mouse</label>
-              </div>
-              <div className="mb-2">
-                <input type="checkbox" id="monitores" />
-                <label htmlFor="monitores" className="ml-2">Monitores</label>
-              </div>
-            </div>
+    componentDidMount() {
+        this.cargarProductos();
+    }
 
-            <div>
-              <h3 className="font-weight-semibold mb-2">Componentes</h3>
-              <div className="mb-2">
-                <input type="checkbox" id="procesadores" />
-                <label htmlFor="procesadores" className="ml-2">Procesadores</label>
-              </div>
-              <div className="mb-2">
-                <input type="checkbox" id="motherboards" />
-                <label htmlFor="motherboards" className="ml-2">Motherboards</label>
-              </div>
-              <div className="mb-2">
-                <input type="checkbox" id="memoria-ram" />
-                <label htmlFor="memoria-ram" className="ml-2">Memoria RAM</label>
-              </div>
-            </div>
-          </aside>
+    componentDidUpdate(prevProps, prevState) {
+        if (
+            prevState.nombreFiltro !== this.state.nombreFiltro ||
+            prevState.categoriasSeleccionadas !== this.state.categoriasSeleccionadas
+        ) {
+            this.cargarProductos();
+        }
+    }
 
-          {/* Products Grid */}
-          <div className="flex-grow">
-            <div className="row">
-              {[...Array(3)].map((_, index) => (
-                <div key={index} id="productos">
-                  <div className="border rounded-lg shadow-sm d-flex align-items-center justify-content-center" style={{ height: '200px', backgroundColor: '#e0e0e0' }}>
-                    {/* Placeholder for product image */}
-                    <div style={{ width: '80%', height: '80%', backgroundColor: '#ccc' }}></div>
-                  </div>
-                  <br />
-                  <div className="border rounded-lg shadow-sm d-flex align-items-center justify-content-center" style={{ height: '200px', backgroundColor: '#e0e0e0' }}>
-                    {/* Placeholder for product image */}
-                    <div style={{ width: '80%', height: '80%', backgroundColor: '#ccc' }}></div>
-                  </div>
+    cargarProductos() {
+        const { nombreFiltro, categoriasSeleccionadas } = this.state;
+        const params = {
+            nombre: nombreFiltro || undefined,
+            categorias: categoriasSeleccionadas.join(',') || undefined,
+        };
+
+        axios
+            .get('http://localhost:8080/api/home', { params })
+            .then((response) => {
+                this.setState({ productos: response.data.productos });
+            })
+            .catch((error) => {
+                console.error('Error al cargar los productos:', error);
+            });
+    }
+
+    manejarCheckbox(categoria) {
+        this.setState((prevState) => {
+            const { categoriasSeleccionadas } = prevState;
+            if (categoriasSeleccionadas.includes(categoria)) {
+                return {
+                    categoriasSeleccionadas: categoriasSeleccionadas.filter(
+                        (c) => c !== categoria
+                    ),
+                };
+            } else {
+                return {
+                    categoriasSeleccionadas: [...categoriasSeleccionadas, categoria],
+                };
+            }
+        });
+    }
+
+    manejarCambioFiltro(e) {
+        this.setState({ nombreFiltro: e.target.value });
+    }
+
+    render() {
+        const { productos, categorias, categoriasSeleccionadas, nombreFiltro } = this.state;
+
+        return (
+            <div className="container my-4">
+                <h1 className="text-center mb-4">Productos</h1>
+
+                <div className="row">
+                    {/* Filtros */}
+                    <div className="col-md-3">
+                        <input
+                            type="text"
+                            placeholder="Buscar por nombre"
+                            className="form-control mb-3"
+                            value={nombreFiltro}
+                            onChange={(e) => this.manejarCambioFiltro(e)}
+                        />
+
+                        <div className="card">
+                            <div className="card-body">
+                                <h5 className="card-title">Filtrar por Categorías</h5>
+                                {categorias.map((categoria) => (
+                                    <div className="form-check" key={categoria}>
+                                        <input
+                                            className="form-check-input"
+                                            type="checkbox"
+                                            id={`checkbox-${categoria}`}
+                                            checked={categoriasSeleccionadas.includes(categoria)}
+                                            onChange={() => this.manejarCheckbox(categoria)}
+                                        />
+                                        <label
+                                            className="form-check-label"
+                                            htmlFor={`checkbox-${categoria}`}
+                                        >
+                                            {categoria}
+                                        </label>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Lista de productos */}
+                    <div className="col-md-9">
+                        <div className="row">
+                            {productos.map((producto) => (
+                                <div className="col-md-3 mb-4" key={producto.id}>
+                                    {/* Envolver el producto con un Link */}
+                                    <Link to={`/producto/${producto.id}`} className="text-decoration-none">
+                                        <div className="card h-100">
+                                            {producto.imagenes && (
+                                                <img
+                                                    src={`http://localhost:8080/public/images/${producto.imagenes.split(',')[0]}`}
+                                                    className="card-img-top"
+                                                    alt={producto.nombre}
+                                                />
+                                            )}
+                                            <div className="card-body">
+                                                <h5 className="card-title">{producto.nombre}</h5>
+
+                                                {/* Marca del producto */}
+                                                {producto.marca && (
+                                                    <p className="card-text">
+                                                        <strong>Marca:</strong> {producto.marca}
+                                                    </p>
+                                                )}
+
+                                                {/* Precio del producto */}
+                                                {producto.precio && (
+                                                    <p className="card-text">
+                                                        <strong>Precio:</strong> ${producto.precio}
+                                                    </p>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </Link>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
                 </div>
-              ))}
             </div>
-          </div>
-        </main>
-
-        </div>
-    );
-  }
+        );
+    }
 }
 
 export default Productos;

@@ -1,60 +1,97 @@
-// componentes/Login.jsx
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Form } from 'react-bootstrap';
-import { Eye, EyeOff } from "lucide-react";
+import { useNavigate, Link } from 'react-router-dom'; // Usamos useNavigate en lugar de useHistory
+import axios from 'axios';
 
-class Login extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      showPassword: false
-    };
-  }
+const Login = () => {
+  const [usuario, setUsuario] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate(); // Obtiene el hook navigate
 
-  togglePasswordVisibility = () => {
-    this.setState((prevState) => ({
-      showPassword: !prevState.showPassword
-    }));
+  // Verifica si el usuario ya está logueado
+  useEffect(() => {
+    if (localStorage.getItem('token')) {
+      // Si ya hay un token, redirige automáticamente al inicio
+      navigate('/inicio');
+    }
+  }, [navigate]);
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    if (name === 'usuario') {
+      setUsuario(value);
+    } else {
+      setPassword(value);
+    }
   };
 
-  render() {
-    const { showPassword } = this.state;
+  const iniciarSesion = async (event) => {
+    event.preventDefault();
+    const datos = { usuario, password };
+    const url = "http://localhost:8080/api/usuarios/login"; 
 
-    return (
-      <Form className="max-w-md mx-auto space-y-4">
-        <Form.Group>
-          <Form.Label>Usuario</Form.Label>
-          <Form.Control type="text" placeholder="Nombre de usuario" />
-        </Form.Group>
-        <br />
-        <Form.Group>
-          <Form.Label>Contraseña</Form.Label>
+    try {
+      const response = await axios.post(url, datos);
+      if (response.data.token) {
+        // Si el login es exitoso, guarda el token, el usuario y el id_usuario en el localStorage
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('usuario', usuario);  // Guardamos el nombre de usuario
+        localStorage.setItem('id_usuario', response.data.id_usuario);  // Guardamos el id del usuario
+        // Redirige al usuario a la página de inicio
+        navigate('/inicio');
+      }
+    } catch (error) {
+      console.log(error);
+      setError('Nombre de usuario o contraseña incorrectos');
+    }
+  };
+
+  return (
+    <div>
+      {localStorage.getItem('token') ? (
+        // Si el token está presente, redirige automáticamente
+        <p>Ya estás logueado, redirigiendo...</p>
+      ) : (
+        <Form onSubmit={iniciarSesion} className="max-w-md mx-auto space-y-4">
           <br />
-          <div className="position-relative">
+          <Form.Group>
             <Form.Control
-              type={showPassword ? "text" : "password"}
-              placeholder="Contraseña"
-              className="pr-5"
+              type="text"
+              placeholder="Nombre de usuario"
+              name="usuario"
+              value={usuario}
+              onChange={handleChange}
             />
-            <button
-              type="button"
-              className="position-absolute"
-              style={{ top: '50%', right: '10px', transform: 'translateY(-50%)' }}
-              onClick={this.togglePasswordVisibility}
-            >
-              {showPassword ? <EyeOff className="text-muted" /> : <Eye className="text-muted" />}
-            </button>
+          </Form.Group>
+          <br />
+          <Form.Group>
+            <Form.Control
+              type="password"
+              placeholder="Contraseña"
+              name="password"
+              value={password}
+              onChange={handleChange}
+            />
+          </Form.Group>
+          <br />
+          <Button variant="dark" type="submit" className="w-100">Iniciar sesión</Button>
+          {error && <p className="text-danger text-center mt-2">{error}</p>}
+          <p className="text-center mt-4">
+            ¿No tienes cuenta?{' '}
+            <Link to="/registro" className="text-primary">Regístrate aquí</Link>
+          </p>
+
+          {/* Botón para acceder al panel de Admin */}
+          <div className="text-center mt-3">
+            <Link to="/admin">
+              <Button variant="secondary">ADMIN</Button>
+            </Link>
           </div>
-        </Form.Group>
-        <br />
-        <div className="text-right">
-          <a href="#" className="text-primary">¿Olvidaste tu contraseña?</a>
-        </div>
-        <br />
-        <Button variant="dark" className="w-100">INICIAR SESIÓN</Button>
-      </Form>
-    );
-  }
-}
+        </Form>
+      )}
+    </div>
+  );
+};
 
 export default Login;
