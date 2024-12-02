@@ -1,35 +1,36 @@
-import React, { useState, useEffect } from 'react';
+import React, { Component } from 'react';
 import { Button, Form } from 'react-bootstrap';
-import { useNavigate, Link } from 'react-router-dom'; // Usamos useNavigate en lugar de useHistory
+import { Link, Navigate } from 'react-router-dom';
 import axios from 'axios';
 
-const Login = () => {
-  const [usuario, setUsuario] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const navigate = useNavigate(); // Obtiene el hook navigate
+class Login extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      usuario: '',
+      password: '',
+      error: '',
+      isLoggedIn: false,
+    };
+  }
 
-  // Verifica si el usuario ya está logueado
-  useEffect(() => {
+  componentDidMount() {
+    // Verifica si el usuario ya está logueado
     if (localStorage.getItem('token')) {
-      // Si ya hay un token, redirige automáticamente al inicio
-      navigate('/inicio');
+      this.setState({ isLoggedIn: true });
     }
-  }, [navigate]);
+  }
 
-  const handleChange = (event) => {
+  handleChange = (event) => {
     const { name, value } = event.target;
-    if (name === 'usuario') {
-      setUsuario(value);
-    } else {
-      setPassword(value);
-    }
+    this.setState({ [name]: value });
   };
 
-  const iniciarSesion = async (event) => {
+  iniciarSesion = async (event) => {
     event.preventDefault();
+    const { usuario, password } = this.state;
     const datos = { usuario, password };
-    const url = "http://localhost:4000/api/usuarios/login"; 
+    const url = "http://localhost:4000/api/usuarios/login";
 
     try {
       const response = await axios.post(url, datos);
@@ -37,22 +38,26 @@ const Login = () => {
         // Si el login es exitoso, guarda el token y el usuario en el localStorage
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('usuario', response.data.usuario);
-        // Redirige al usuario a la página de inicio
-        navigate('/inicio');
+        // Actualiza el estado para redirigir
+        this.setState({ isLoggedIn: true });
       }
     } catch (error) {
-      console.log(error);
-      setError('Nombre de usuario o contraseña incorrectos');
+      console.error(error);
+      this.setState({ error: 'Nombre de usuario o contraseña incorrectos' });
     }
   };
 
-  return (
-    <div>
-      {localStorage.getItem('token') ? (
-        // Si el token está presente, redirige automáticamente
-        <p>Ya estás logueado, redirigiendo...</p>
-      ) : (
-        <Form onSubmit={iniciarSesion} className="max-w-md mx-auto space-y-4">
+  render() {
+    const { usuario, password, error, isLoggedIn } = this.state;
+
+    if (isLoggedIn) {
+      // Redirige al usuario si ya está logueado
+      return <Navigate to="/inicio" />;
+    }
+
+    return (
+      <div>
+        <Form onSubmit={this.iniciarSesion} className="max-w-md mx-auto space-y-4">
           <br />
           <Form.Group>
             <Form.Control
@@ -60,7 +65,7 @@ const Login = () => {
               placeholder="Nombre de usuario"
               name="usuario"
               value={usuario}
-              onChange={handleChange}
+              onChange={this.handleChange}
             />
           </Form.Group>
           <br />
@@ -70,7 +75,7 @@ const Login = () => {
               placeholder="Contraseña"
               name="password"
               value={password}
-              onChange={handleChange}
+              onChange={this.handleChange}
             />
           </Form.Group>
           <br />
@@ -88,9 +93,9 @@ const Login = () => {
             </Link>
           </div>
         </Form>
-      )}
-    </div>
-  );
-};
+      </div>
+    );
+  }
+}
 
 export default Login;
