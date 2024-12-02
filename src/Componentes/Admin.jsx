@@ -1,7 +1,7 @@
-// componentes/Admin.jsx
 import React, { Component } from 'react';
 import { LayoutDashboard, Package, Users, ShoppingCart, BarChart, Settings, User } from "lucide-react";
 import { Button } from 'react-bootstrap';
+import { Link } from 'react-router-dom'; // Importa Link de react-router-dom
 
 class Admin extends Component {
   render() {
@@ -30,14 +30,16 @@ class Admin extends Component {
                 <LayoutDashboard className="mr-2" />
                 Panel de control
               </Button>
-              <Button variant="light" className="text-left mb-2 d-flex align-items-center">
+              {/* Enlace a ProductosAdmin */}
+              <Link to="/admin/productos" className="text-left mb-2 d-flex align-items-center btn btn-light">
                 <Package className="mr-2" />
                 Productos
-              </Button>
-              <Button variant="light" className="text-left mb-2 d-flex align-items-center">
+              </Link>
+              {/* Cambié el botón para usar Link */}
+              <Link to="/admin/usuarios" className="text-left mb-2 d-flex align-items-center btn btn-light">
                 <Users className="mr-2" />
                 Usuarios
-              </Button>
+              </Link>
               <Button variant="light" className="text-left mb-2 d-flex align-items-center">
                 <ShoppingCart className="mr-2" />
                 Ventas
@@ -65,7 +67,6 @@ class Admin extends Component {
                 </div>
               ))}
             </div>
-
             {/* Tables */}
             <div className="row">
               {/* Top Selling Products */}
@@ -114,6 +115,7 @@ class Admin extends Component {
                 </div>
               </div>
             </div>
+
           </main>
         </div>
       </div>
@@ -122,6 +124,3 @@ class Admin extends Component {
 }
 
 export default Admin;
-
-
-

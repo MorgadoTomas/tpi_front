@@ -32,40 +32,7 @@ class CarritoProductos extends Component {
    
         {/* Main Content */}
         <main className="flex-grow-1 container p-4 position-relative">
-          <div className="row">
-            {/* Image Gallery */}
-            <div className="col-md-6">
-              <div className="bg-light mb-4" style={{ width: '100%', height: '300px' }}></div>
-              <div className="d-flex gap-4">
-                <div className="bg-light" style={{ width: '100px', height: '100px' }}></div>
-                <div className="bg-light" style={{ width: '100px', height: '100px' }}></div>
-              </div>
-            </div>
 
-            {/* Product Details */}
-            <div className="col-md-6">
-              <h1 className="h3 font-weight-bold mb-2">GG Series G203</h1>
-              <p className="h2 font-weight-bold mb-2">$36.500</p>
-              <p className="text-muted mb-4">3 cuotas sin interés de $12.166</p>
-              <ul className="list-unstyled mb-4">
-                <li>Sensor óptico de 8000 dpi para mayor precisión y rapidez</li>
-                <li>Diseño ergonómico con 6 botones configurables</li>
-                <li>Compatible con Windows 7 (o superior) y macOS 10.11 (o superior)</li>
-                <li>Conexión USB y cable para estabilidad en la conexión</li>
-                <li>Rueda de desplazamiento para fácil navegación</li>
-              </ul>
-              <div className="d-flex align-items-center mb-4">
-                <Button variant="outline-secondary" onClick={this.decrementarCantidad}>
-                  <Minus />
-                </Button>
-                <span className="mx-4">{quantity}</span>
-                <Button variant="outline-secondary" onClick={this.incrementarCantidad}>
-                  <Plus />
-                </Button>
-              </div>
-              <Button variant="dark" className="w-100">AGREGAR AL CARRITO</Button>
-            </div>
-          </div>
 
           {/* Cart Sidebar */}
           {isCartOpen && (
