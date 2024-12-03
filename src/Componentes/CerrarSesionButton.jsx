@@ -3,29 +3,18 @@ import { Button } from 'react-bootstrap';
 import { Navigate } from 'react-router-dom';
 
 class CerrarSesionButton extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      redirectToLogin: false,
-    };
-  }
-
-  handleCerrarSesion = () => {
-    // Eliminar el token y el usuario del localStorage
+  cerrarSesion = () => {
+    // Elimina el token y el usuario del localStorage
     localStorage.removeItem('token');
     localStorage.removeItem('usuario');
-
-    // Cambiar el estado para redirigir
-    this.setState({ redirectToLogin: true });
+    
+    // Redirige al inicio después de cerrar sesión
+    window.location.href = '/';
   };
 
   render() {
-    if (this.state.redirectToLogin) {
-      return <Navigate to="/login" />; // Redirige al login
-    }
-
     return (
-      <Button variant="outline-danger" onClick={this.handleCerrarSesion}>
+      <Button variant="outline-danger" onClick={this.cerrarSesion}>
         Cerrar sesión
       </Button>
     );
