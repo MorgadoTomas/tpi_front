@@ -1,4 +1,3 @@
-// App.jsx
 import React, { Component } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
@@ -43,7 +42,3 @@ class App extends Component {
 }
 
 export default App;
-
-
-
-
