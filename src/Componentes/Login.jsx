@@ -39,7 +39,7 @@ class Login extends Component {
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('usuario', response.data.usuario);
         // Actualiza el estado para redirigir
-        this.setState({ isLoggedIn: true });
+        this.setState({ isLoggedIn: true }); // Esto es cuando el login es exitoso
       }
     } catch (error) {
       console.error(error);
