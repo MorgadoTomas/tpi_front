@@ -13,6 +13,7 @@ import ProductoDetallado from './Componentes/ProductoDetallado';
 import Admin from './Componentes/Admin';
 import ProductosAdmin from './Componentes/ProductosAdmin';
 import UsuariosAdmin from './Componentes/UsuariosAdmin';
+import VentasAdmin from "./VentasAdmin";
 import PrivateRoute from './Componentes/PrivateRoute';  // Importa el componente PrivateRoute
 
 class App extends Component {
@@ -42,6 +43,11 @@ class App extends Component {
               <Route
                 path="/admin/usuarios"
                 element={<PrivateRoute><UsuariosAdmin /></PrivateRoute>}
+              />
+              {/* Agregar ruta para VentasAdmin */}
+              <Route
+                path="/admin/ventas"
+                element={<PrivateRoute><VentasAdmin /></PrivateRoute>}
               />
             </Routes>
           </main>

@@ -35,15 +35,16 @@ class Admin extends Component {
                 <Package className="mr-2" />
                 Productos
               </Link>
-              {/* Cambié el botón para usar Link */}
+              {/* Enlace a Usuarios */}
               <Link to="/admin/usuarios" className="text-left mb-2 d-flex align-items-center btn btn-light">
                 <Users className="mr-2" />
                 Usuarios
               </Link>
-              <Button variant="light" className="text-left mb-2 d-flex align-items-center">
+              {/* Cambié el botón para usar Link */}
+              <Link to="/admin/ventas" className="text-left mb-2 d-flex align-items-center btn btn-light">
                 <ShoppingCart className="mr-2" />
                 Ventas
-              </Button>
+              </Link>
               <Button variant="light" className="text-left mb-2 d-flex align-items-center">
                 <BarChart className="mr-2" />
                 Análisis y Reportes
