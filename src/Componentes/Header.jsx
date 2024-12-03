@@ -5,8 +5,30 @@ import { Link } from 'react-router-dom';
 import CerrarSesionButton from './CerrarSesionButton';  // Importar el componente de cerrar sesión
 
 class Header extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isLoggedIn: localStorage.getItem('token') !== null,  // Inicializa el estado según el localStorage
+    };
+  }
+
+  componentDidMount() {
+    // Escucha cambios en el localStorage para actualizar el estado
+    window.addEventListener('storage', this.handleStorageChange);
+  }
+
+  componentWillUnmount() {
+    // Elimina el listener cuando el componente se desmonta
+    window.removeEventListener('storage', this.handleStorageChange);
+  }
+
+  handleStorageChange = () => {
+    // Actualiza el estado cuando se detecta un cambio en el localStorage
+    this.setState({ isLoggedIn: localStorage.getItem('token') !== null });
+  };
+
   render() {
-    const isLoggedIn = localStorage.getItem('token');  // Verificar si el usuario está logueado
+    const { isLoggedIn } = this.state;
 
     return (
       <header className="bg-light py-3">

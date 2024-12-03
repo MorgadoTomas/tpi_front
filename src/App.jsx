@@ -32,14 +32,6 @@ class App extends Component {
 
               {/* Rutas protegidas */}
               <Route
-                path="/carrito"
-                element={<PrivateRoute><CarritoProductos /></PrivateRoute>}
-              />
-              <Route
-                path="/producto/:id"
-                element={<PrivateRoute><ProductoDetallado /></PrivateRoute>}
-              />
-              <Route
                 path="/admin"
                 element={<PrivateRoute><Admin /></PrivateRoute>}
               />
