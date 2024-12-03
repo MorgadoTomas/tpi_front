@@ -51,8 +51,7 @@ class Login extends Component {
     const { usuario, password, error, isLoggedIn } = this.state;
 
     if (isLoggedIn) {
-      // Redirige al usuario si ya está logueado
-      return <Navigate to="/inicio" />;
+      return <Navigate to="/" />; // Redirige a la raíz
     }
 
     return (

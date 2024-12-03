@@ -8,10 +8,16 @@ class Inicio extends Component {
     this.state = {
       productos: [],
       error: null,
+      usuario: '', // Agregar el estado para el nombre del usuario
     };
   }
 
   componentDidMount() {
+    // Obtener el nombre del usuario desde localStorage si está logueado
+    const usuario = localStorage.getItem('usuario');
+    if (usuario) {
+      this.setState({ usuario });
+    }
     this.fetchProductos();
   }
 
@@ -26,15 +32,12 @@ class Inicio extends Component {
   };
 
   render() {
-    const { productos, error } = this.state;
-
-    // Obtener el nombre del usuario
-    const usuario = localStorage.getItem('usuario');
+    const { productos, error, usuario } = this.state;
 
     return (
       <div className="container">
-        <h1 className="my-4">Bienvenido, {usuario}</h1>
         <h2 className="my-4">Productos</h2>
+        {usuario && <h3>Bienvenido, {usuario}!</h3>} {/* Mostrar el nombre del usuario si está logueado */}
         {error && <p className="text-danger">{error}</p>}
         <div className="row">
           {productos.map((producto) => (
