@@ -6,6 +6,8 @@ import CerrarSesionButton from './CerrarSesionButton';  // Importar el component
 
 class Header extends Component {
   render() {
+    const isLoggedIn = localStorage.getItem('token');  // Verificar si el usuario está logueado
+
     return (
       <header className="bg-light py-3">
         <div className="container d-flex justify-content-between align-items-center">
@@ -23,8 +25,14 @@ class Header extends Component {
               <ShoppingCart />
             </Link>
 
-            {/* Muestra el botón de Cerrar sesión */}
-            <CerrarSesionButton />
+            {/* Mostrar el botón adecuado según si el usuario está logueado */}
+            {isLoggedIn ? (
+              <CerrarSesionButton />
+            ) : (
+              <Link to="/login">
+                <Button variant="outline-primary">Iniciar sesión</Button>
+              </Link>
+            )}
           </div>
         </div>
       </header>

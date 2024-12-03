@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import './App.css';  // o el archivo correspondiente con los estilos globales
+import 'bootstrap/dist/css/bootstrap.min.css';
 import Header from './Componentes/Header';
 import NavBar from './Componentes/NavBar';
 import MainForm from './Componentes/MainForm';
@@ -27,14 +29,28 @@ class App extends Component {
               <Route path="/productos" element={<Productos />} />
               <Route path="/registro" element={<MainForm />} />
               <Route path="/login" element={<Login />} />
-              
+
               {/* Rutas protegidas */}
-              <PrivateRoute path="/inicio" element={<Inicio />} />
-              <PrivateRoute path="/carrito" element={<CarritoProductos />} />
-              <PrivateRoute path="/producto/:id" element={<ProductoDetallado />} />
-              <PrivateRoute path="/admin" element={<Admin />} />
-              <PrivateRoute path="/admin/productos" element={<ProductosAdmin />} />
-              <PrivateRoute path="/admin/usuarios" element={<UsuariosAdmin />} />
+              <Route
+                path="/carrito"
+                element={<PrivateRoute><CarritoProductos /></PrivateRoute>}
+              />
+              <Route
+                path="/producto/:id"
+                element={<PrivateRoute><ProductoDetallado /></PrivateRoute>}
+              />
+              <Route
+                path="/admin"
+                element={<PrivateRoute><Admin /></PrivateRoute>}
+              />
+              <Route
+                path="/admin/productos"
+                element={<PrivateRoute><ProductosAdmin /></PrivateRoute>}
+              />
+              <Route
+                path="/admin/usuarios"
+                element={<PrivateRoute><UsuariosAdmin /></PrivateRoute>}
+              />
             </Routes>
           </main>
         </div>
