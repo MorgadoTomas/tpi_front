@@ -8,12 +8,12 @@ class Productos extends Component {
         this.state = {
             productos: [],
             categoriasSeleccionadas: [],
-            nombreFiltro: '',
+            ordenPrecio: '',
             categorias: [
                 'teclado', 'mouse', 'auricular', 'monitor', 'microfono', 'placadevideo', 'motherboard',
                 'ram', 'microprocesador', 'discos', 'sillas', 'gabinetes', 'fuentes', 'joysticks',
-                'webcams', 'pad', 'parlante'
-            ]
+                'webcams', 'pad', 'parlante',
+            ],
         };
     }
 
@@ -23,18 +23,18 @@ class Productos extends Component {
 
     componentDidUpdate(prevProps, prevState) {
         if (
-            prevState.nombreFiltro !== this.state.nombreFiltro ||
-            prevState.categoriasSeleccionadas !== this.state.categoriasSeleccionadas
+            prevState.categoriasSeleccionadas !== this.state.categoriasSeleccionadas ||
+            prevState.ordenPrecio !== this.state.ordenPrecio
         ) {
             this.cargarProductos();
         }
     }
 
     cargarProductos() {
-        const { nombreFiltro, categoriasSeleccionadas } = this.state;
+        const { categoriasSeleccionadas, ordenPrecio } = this.state;
         const params = {
-            nombre: nombreFiltro || undefined,
             categorias: categoriasSeleccionadas.join(',') || undefined,
+            orden: ordenPrecio || undefined,
         };
 
         axios
@@ -64,12 +64,12 @@ class Productos extends Component {
         });
     }
 
-    manejarCambioFiltro(e) {
-        this.setState({ nombreFiltro: e.target.value });
+    manejarCambioOrden(e) {
+        this.setState({ ordenPrecio: e.target.value });
     }
 
     render() {
-        const { productos, categorias, categoriasSeleccionadas, nombreFiltro } = this.state;
+        const { productos, categorias, categoriasSeleccionadas, ordenPrecio } = this.state;
 
         return (
             <div className="container my-4">
@@ -78,15 +78,7 @@ class Productos extends Component {
                 <div className="row">
                     {/* Filtros */}
                     <div className="col-md-3">
-                        <input
-                            type="text"
-                            placeholder="Buscar por nombre"
-                            className="form-control mb-3"
-                            value={nombreFiltro}
-                            onChange={(e) => this.manejarCambioFiltro(e)}
-                        />
-
-                        <div className="card">
+                        <div className="card mb-3">
                             <div className="card-body">
                                 <h5 className="card-title">Filtrar por Categorías</h5>
                                 {categorias.map((categoria) => (
@@ -108,6 +100,21 @@ class Productos extends Component {
                                 ))}
                             </div>
                         </div>
+
+                        <div className="card">
+                            <div className="card-body">
+                                <h5 className="card-title">Ordenar por Precio</h5>
+                                <select
+                                    className="form-control"
+                                    value={ordenPrecio}
+                                    onChange={(e) => this.manejarCambioOrden(e)}
+                                >
+                                    <option value="">Sin orden</option>
+                                    <option value="asc">Mayor a menor</option>
+                                    <option value="desc">Menor a mayor</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
 
                     {/* Lista de productos */}
@@ -115,7 +122,6 @@ class Productos extends Component {
                         <div className="row">
                             {productos.map((producto) => (
                                 <div className="col-md-3 mb-4" key={producto.id}>
-                                    {/* Envolver el producto con un Link */}
                                     <Link to={`/producto/${producto.id}`} className="text-decoration-none">
                                         <div className="card h-100">
                                             {producto.imagenes && (
@@ -127,15 +133,6 @@ class Productos extends Component {
                                             )}
                                             <div className="card-body">
                                                 <h5 className="card-title">{producto.nombre}</h5>
-
-                                                {/* Marca del producto */}
-                                                {producto.marca && (
-                                                    <p className="card-text">
-                                                        <strong>Marca:</strong> {producto.marca}
-                                                    </p>
-                                                )}
-
-                                                {/* Precio del producto */}
                                                 {producto.precio && (
                                                     <p className="card-text">
                                                         <strong>Precio:</strong> ${producto.precio}

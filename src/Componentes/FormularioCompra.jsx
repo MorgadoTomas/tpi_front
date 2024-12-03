@@ -1,141 +1,170 @@
-import React, { useState, useEffect } from 'react';
+import React, { Component } from 'react';
 import axios from 'axios';
 
-const FormularioCompra = () => {
-    const [idUsuario, setIdUsuario] = useState('');
-    const [idMetodoPago, setIdMetodoPago] = useState('');
-    const [direccion, setDireccion] = useState('');
-    const [total, setTotal] = useState('');
-    const [compraId, setCompraId] = useState(null);
-    const [carrito, setCarrito] = useState([]);
-    const [error, setError] = useState('');
+class FormularioCompra extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            idUsuario: '',
+            idMetodoPago: '',
+            direccion: '',
+            total: '',
+            compraId: null,
+            carrito: [],
+            error: '',
+        };
+    }
 
-    useEffect(() => {
+    componentDidMount() {
         // Obtener el carrito desde sessionStorage
         const carritoGuardado = JSON.parse(sessionStorage.getItem('carrito')) || [];
-        setCarrito(carritoGuardado);
+        const totalCompra = carritoGuardado
+            .reduce((acc, producto) => acc + parseFloat(producto.precio) * producto.cantidad, 0)
+            .toFixed(2);
 
-        // Calcular el total sumando el precio de los productos
-        const totalCompra = carritoGuardado.reduce(
-            (acc, producto) => acc + parseFloat(producto.precio) * producto.cantidad,
-            0
-        ).toFixed(2);
+        this.setState({ carrito: carritoGuardado, total: totalCompra });
+    }
 
-        setTotal(totalCompra); // Establecer el total en el estado
-    }, []);
+    handleChange = (e) => {
+        const { id, value } = e.target;
+        this.setState({ [id]: value });
+    };
 
-    const handleSubmit = (e) => {
+    handleMetodoPagoChange = (e) => {
+        this.setState({ idMetodoPago: e.target.value });
+    };
+
+    handleSubmit = async (e) => {
         e.preventDefault();
+
+        const { idUsuario, idMetodoPago, direccion, total, carrito } = this.state;
 
         // Verificar que todos los campos estén completos
         if (!idUsuario || !idMetodoPago || !direccion || !total) {
-            setError('Por favor, complete todos los campos.');
+            this.setState({ error: 'Por favor, complete todos los campos.' });
             return;
         }
 
-        // Registrar la compra
-        axios.post('http://localhost:8080/api/admin/carrito', {
-            id_usuario: idUsuario,
-            id_met_de_pago: idMetodoPago, // Enviar la ID del método de pago
-            direccion: direccion,
-            total: total,
-        })
-        .then((response) => {
-            const compraIdGenerada = response.data.compraId; // Guardar el ID de la compra generada
-            setCompraId(compraIdGenerada);
+        try {
+            // Registrar la compra
+            const compraResponse = await axios.post('http://localhost:8080/api/admin/carrito', {
+                id_usuario: idUsuario,
+                id_met_de_pago: idMetodoPago,
+                direccion,
+                total,
+            });
+
+            const compraIdGenerada = compraResponse.data.compraId;
+            this.setState({ compraId: compraIdGenerada });
 
             // Registrar los detalles de la compra (productos del carrito)
-            const promises = carrito.map((producto) => {
+            const detallePromises = carrito.map((producto) => {
                 const { id, cantidad, precio } = producto;
 
                 return axios.post('http://localhost:8080/api/admin/carrito/detalle', {
-                    id_compra: compraIdGenerada, // Enviar el ID de la compra
+                    id_compra: compraIdGenerada,
                     id_producto: id,
-                    cantidad: cantidad,
+                    cantidad,
                     precio_u: precio,
                 });
             });
 
-            // Manejar todas las solicitudes en paralelo
-            return Promise.all(promises);
-        })
-        .then(() => {
-            setError('');
-            alert(`Compra registrada con éxito. ID de la compra: ${compraId}`);
-        })
-        .catch((error) => {
-            console.error('Error al procesar la compra:', error);
-            setError('Hubo un error al registrar la compra.');
-        });
+            await Promise.all(detallePromises);
+
+            // Actualizar el stock de cada producto
+            const stockPromises = carrito.map((producto) => {
+                const { id, cantidad } = producto;
+
+                return axios.put('http://localhost:8080/api/admin/carrito', {
+                    stock: cantidad,
+                    id,
+                });
+            });
+
+            await Promise.all(stockPromises);
+
+            // Vaciar el carrito
+            sessionStorage.removeItem('carrito'); // Eliminar el carrito del almacenamiento
+            this.setState({ carrito: [], error: '' }); // Actualizar el estado local
+
+            alert(`Compra registrada con éxito. ID de la compra: ${compraIdGenerada}`);
+        } catch (err) {
+            console.error('Error al procesar la compra:', err);
+            this.setState({ error: 'Hubo un error al registrar la compra.' });
+        }
     };
 
-    return (
-        <div>
-            <h2>Formulario de Compra</h2>
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label htmlFor="idUsuario">ID de Usuario:</label>
-                    <input
-                        type="number"
-                        id="idUsuario"
-                        value={idUsuario}
-                        onChange={(e) => setIdUsuario(e.target.value)}
-                    />
-                </div>
-                <div>
-                    <label>Metodo de Pago:</label>
+    render() {
+        const { idUsuario, idMetodoPago, direccion, total, compraId, error } = this.state;
+
+        return (
+            <div>
+                <h2>Formulario de Compra</h2>
+                <form onSubmit={this.handleSubmit}>
                     <div>
+                        <label htmlFor="idUsuario">ID de Usuario:</label>
                         <input
-                            type="radio"
-                            id="metodo1"
-                            name="metodoPago"
-                            value="1" // ID del primer método de pago
-                            onChange={(e) => setIdMetodoPago(e.target.value)}
+                            type="number"
+                            id="idUsuario"
+                            value={idUsuario}
+                            onChange={this.handleChange}
                         />
-                        <label htmlFor="metodo1">Método de Pago 1</label>
                     </div>
                     <div>
-                        <input
-                            type="radio"
-                            id="metodo2"
-                            name="metodoPago"
-                            value="2" // ID del segundo método de pago
-                            onChange={(e) => setIdMetodoPago(e.target.value)}
-                        />
-                        <label htmlFor="metodo2">Método de Pago 2</label>
+                        <label>Método de Pago:</label>
+                        <div>
+                            <input
+                                type="radio"
+                                id="metodo1"
+                                name="metodoPago"
+                                value="1"
+                                onChange={this.handleMetodoPagoChange}
+                            />
+                            <label htmlFor="metodo1">Método de Pago 1</label>
+                        </div>
+                        <div>
+                            <input
+                                type="radio"
+                                id="metodo2"
+                                name="metodoPago"
+                                value="2"
+                                onChange={this.handleMetodoPagoChange}
+                            />
+                            <label htmlFor="metodo2">Método de Pago 2</label>
+                        </div>
                     </div>
-                </div>
-                <div>
-                    <label htmlFor="direccion">Dirección:</label>
-                    <input
-                        type="text"
-                        id="direccion"
-                        value={direccion}
-                        onChange={(e) => setDireccion(e.target.value)}
-                    />
-                </div>
-                <div>
-                    <label htmlFor="total">Total:</label>
-                    <input
-                        type="number"
-                        id="total"
-                        value={total}
-                        readOnly // El campo es solo lectura
-                    />
-                </div>
+                    <div>
+                        <label htmlFor="direccion">Dirección:</label>
+                        <input
+                            type="text"
+                            id="direccion"
+                            value={direccion}
+                            onChange={this.handleChange}
+                        />
+                    </div>
+                    <div>
+                        <label htmlFor="total">Total:</label>
+                        <input
+                            type="number"
+                            id="total"
+                            value={total}
+                            readOnly // El campo es solo lectura
+                        />
+                    </div>
 
-                {error && <p style={{ color: 'red' }}>{error}</p>}
+                    {error && <p style={{ color: 'red' }}>{error}</p>}
 
-                <button type="submit">Crear Compra</button>
-            </form>
+                    <button type="submit">Crear Compra</button>
+                </form>
 
-            {compraId && (
-                <div>
-                    <p>Compra creada con éxito. ID de la compra: {compraId}</p>
-                </div>
-            )}
-        </div>
-    );
-};
+                {compraId && (
+                    <div>
+                        <p>Compra creada con éxito. ID de la compra: {compraId}</p>
+                    </div>
+                )}
+            </div>
+        );
+    }
+}
 
 export default FormularioCompra;
