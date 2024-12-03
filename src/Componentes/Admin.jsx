@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { LayoutDashboard, Package, Users, ShoppingCart, BarChart, Settings, User } from "lucide-react";
 import { Button } from 'react-bootstrap';
-import { Link } from 'react-router-dom'; // Importa Link de react-router-dom
+import { LayoutDashboard, Package, Users, ShoppingCart, BarChart, Settings, User } from 'lucide-react';
+import { Link } from 'react-router-dom'; // Importa Link
 
 class Admin extends Component {
   render() {
@@ -26,21 +26,18 @@ class Admin extends Component {
           {/* Sidebar */}
           <aside className="mr-4" style={{ width: '250px' }}>
             <nav className="d-flex flex-column">
-              <Button variant="light" className="text-left mb-2 d-flex align-items-center">
+              <Link to="/admin" className="text-left mb-2 d-flex align-items-center btn btn-light">
                 <LayoutDashboard className="mr-2" />
                 Panel de control
-              </Button>
-              {/* Enlace a ProductosAdmin */}
+              </Link>
               <Link to="/admin/productos" className="text-left mb-2 d-flex align-items-center btn btn-light">
                 <Package className="mr-2" />
                 Productos
               </Link>
-              {/* Enlace a Usuarios */}
               <Link to="/admin/usuarios" className="text-left mb-2 d-flex align-items-center btn btn-light">
                 <Users className="mr-2" />
                 Usuarios
               </Link>
-              {/* Cambié el botón para usar Link */}
               <Link to="/admin/ventas" className="text-left mb-2 d-flex align-items-center btn btn-light">
                 <ShoppingCart className="mr-2" />
                 Ventas
@@ -103,12 +100,10 @@ class Admin extends Component {
                   <h3 className="h6 font-weight-bold mb-3">Últimos Pedidos</h3>
                   <table className="table">
                     <tbody>
-                      {["Juan Perez", "Maria Garcia", "Carlos Lopez", "Ana Martinez"].map((name, index) => (
-                        <tr key={index}>
-                          <td>#{12345 + index} - {name}</td>
-                          <td className="text-right">
-                            <Button variant="link" size="sm">Ver detalles</Button>
-                          </td>
+                      {["Juan Perez", "Maria Garcia", "Carlos Lopez", "Ana Martinez"].map((cliente, i) => (
+                        <tr key={i}>
+                          <td>{cliente}</td>
+                          <td className="text-right">#1000{i}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -116,7 +111,6 @@ class Admin extends Component {
                 </div>
               </div>
             </div>
-
           </main>
         </div>
       </div>

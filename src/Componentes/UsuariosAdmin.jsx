@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Button, FormControl, Table, Form } from 'react-bootstrap';
 import { Trash2, LayoutDashboard, Package, Users, ShoppingCart, BarChart, Settings } from 'lucide-react';
+import { Link } from 'react-router-dom'; // Importa Link
 
 class UsuariosAdmin extends Component {
   constructor(props) {
@@ -26,10 +27,6 @@ class UsuariosAdmin extends Component {
     }));
   };
 
-  handleNavigation = (path) => {
-    this.props.navigate(path); // Usamos navigate en lugar de history.push
-  };
-
   render() {
     const { usuarios, filtro } = this.state;
     const usuariosFiltrados = usuarios.filter((usuario) =>
@@ -41,22 +38,14 @@ class UsuariosAdmin extends Component {
         {/* Sidebar */}
         <aside className="mr-4" style={{ width: '250px' }}>
           <nav className="d-flex flex-column">
-            <Button
-              variant="light"
-              className="text-left mb-2 d-flex align-items-center"
-              onClick={() => this.handleNavigation('/admin')}
-            >
+            <Link to="/admin" className="text-left mb-2 d-flex align-items-center btn btn-light">
               <LayoutDashboard className="mr-2" />
               Panel de control
-            </Button>
-            <Button
-              variant="light"
-              className="text-left mb-2 d-flex align-items-center"
-              onClick={() => this.handleNavigation('/admin/productos')}
-            >
+            </Link>
+            <Link to="/admin/productos" className="text-left mb-2 d-flex align-items-center btn btn-light">
               <Package className="mr-2" />
               Productos
-            </Button>
+            </Link>
             <Button variant="light" className="text-left mb-2 d-flex align-items-center">
               <Users className="mr-2" />
               Usuarios
