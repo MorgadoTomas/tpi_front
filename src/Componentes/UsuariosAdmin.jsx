@@ -1,17 +1,16 @@
 import React, { Component } from 'react';
 import { Button, FormControl, Table, Form } from 'react-bootstrap';
-import { Trash2, LayoutDashboard, Package, Users, ShoppingCart, BarChart, Settings } from "lucide-react";
-import { withRouter } from 'react-router-dom';
+import { Trash2, LayoutDashboard, Package, Users, ShoppingCart, BarChart, Settings } from 'lucide-react';
 
 class UsuariosAdmin extends Component {
   constructor(props) {
     super(props);
     this.state = {
       usuarios: [
-        { id: 1, nombre: "Juan Perez", email: "juanperez@example.com" },
-        { id: 2, nombre: "Maria Garcia", email: "mariagarcia@example.com" },
-        { id: 3, nombre: "Carlos Lopez", email: "carloslopez@example.com" },
-        { id: 4, nombre: "Ana Martinez", email: "anamartinez@example.com" }
+        { id: 1, nombre: 'Juan Perez', email: 'juanperez@example.com' },
+        { id: 2, nombre: 'Maria Garcia', email: 'mariagarcia@example.com' },
+        { id: 3, nombre: 'Carlos Lopez', email: 'carloslopez@example.com' },
+        { id: 4, nombre: 'Ana Martinez', email: 'anamartinez@example.com' }
       ],
       filtro: ''
     };
@@ -27,13 +26,13 @@ class UsuariosAdmin extends Component {
     }));
   };
 
-  navigate = (path) => {
-    this.props.history.push(path);
+  handleNavigation = (path) => {
+    this.props.navigate(path); // Usamos navigate en lugar de history.push
   };
 
   render() {
     const { usuarios, filtro } = this.state;
-    const usuariosFiltrados = usuarios.filter(usuario =>
+    const usuariosFiltrados = usuarios.filter((usuario) =>
       usuario.nombre.toLowerCase().includes(filtro.toLowerCase())
     );
 
@@ -45,7 +44,7 @@ class UsuariosAdmin extends Component {
             <Button
               variant="light"
               className="text-left mb-2 d-flex align-items-center"
-              onClick={() => this.navigate('/admin')} // Redirige a Admin
+              onClick={() => this.handleNavigation('/admin')}
             >
               <LayoutDashboard className="mr-2" />
               Panel de control
@@ -53,7 +52,7 @@ class UsuariosAdmin extends Component {
             <Button
               variant="light"
               className="text-left mb-2 d-flex align-items-center"
-              onClick={() => this.navigate('/admin/productos')} // Redirige a ProductosAdmin
+              onClick={() => this.handleNavigation('/admin/productos')}
             >
               <Package className="mr-2" />
               Productos
@@ -129,4 +128,4 @@ class UsuariosAdmin extends Component {
   }
 }
 
-export default withRouter(UsuariosAdmin);
+export default UsuariosAdmin;
