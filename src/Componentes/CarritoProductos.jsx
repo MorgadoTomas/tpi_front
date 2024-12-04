@@ -63,7 +63,7 @@ class CarritoProductos extends Component {
               <div key={index} className="row mb-3">
                 <div className="col-md-3">
                   <img
-                    src={`http://localhost:8080/images/${producto.imagenes[0]}`}
+                    src={`http://localhost:4000/images/${producto.imagenes[0]}`}
                     alt={producto.nombre}
                     className="w-100"
                     style={{ height: '150px', objectFit: 'cover' }}
