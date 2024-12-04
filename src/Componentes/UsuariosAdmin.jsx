@@ -1,30 +1,58 @@
 import React, { Component } from 'react';
 import { Button, FormControl, Table, Form } from 'react-bootstrap';
-import { Trash2, LayoutDashboard, Package, Users, ShoppingCart, BarChart, Settings } from 'lucide-react';
-import { Link } from 'react-router-dom'; // Importa Link
+import { Trash2, LayoutDashboard, Package, Users, ShoppingCart } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import axios from 'axios'; // Importa axios
 
 class UsuariosAdmin extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      usuarios: [
-        { id: 1, nombre: 'Juan Perez', email: 'juanperez@example.com' },
-        { id: 2, nombre: 'Maria Garcia', email: 'mariagarcia@example.com' },
-        { id: 3, nombre: 'Carlos Lopez', email: 'carloslopez@example.com' },
-        { id: 4, nombre: 'Ana Martinez', email: 'anamartinez@example.com' }
-      ],
+      usuarios: [],
       filtro: ''
     };
   }
 
-  handleFilterChange = (event) => {
-    this.setState({ filtro: event.target.value });
+  componentDidMount() {
+    // Cargar usuarios al montar el componente
+    this.cargarUsuarios();
+  }
+
+  cargarUsuarios = () => {
+    // Realiza la petición para obtener los usuarios
+    axios.get('http://localhost:5000/api/usuarios', {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}` // Suponiendo que tienes un token en el almacenamiento local
+      }
+    })
+    .then(response => {
+      this.setState({ usuarios: response.data.usuarios });
+    })
+    .catch(error => {
+      console.error('Error al cargar usuarios:', error);
+    });
   };
 
   eliminarUsuario = (usuarioId) => {
-    this.setState((prevState) => ({
-      usuarios: prevState.usuarios.filter((usuario) => usuario.id !== usuarioId)
-    }));
+    // Realiza la petición para eliminar un usuario
+    axios.delete(`http://localhost:5000/api/usuarios/${usuarioId}`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    })
+    .then(response => {
+      // Si la eliminación fue exitosa, actualizar la lista de usuarios
+      this.setState((prevState) => ({
+        usuarios: prevState.usuarios.filter((usuario) => usuario.id !== usuarioId)
+      }));
+    })
+    .catch(error => {
+      console.error('Error al eliminar usuario:', error);
+    });
+  };
+
+  handleFilterChange = (event) => {
+    this.setState({ filtro: event.target.value });
   };
 
   render() {
@@ -35,7 +63,6 @@ class UsuariosAdmin extends Component {
 
     return (
       <div className="d-flex min-vh-100 bg-light">
-        {/* Sidebar */}
         <aside className="mr-4" style={{ width: '250px' }}>
           <nav className="d-flex flex-column">
             <Link to="/admin" className="text-left mb-2 d-flex align-items-center btn btn-light">
@@ -50,16 +77,14 @@ class UsuariosAdmin extends Component {
               <Users className="mr-2" />
               Usuarios
             </Button>
-            <Link to="/admin/ventas" className="text-left mb-2 d-flex align-items-center btn btn-light"> {/* Envolviendo con Link */}
+            <Link to="/admin/ventas" className="text-left mb-2 d-flex align-items-center btn btn-light">
               <ShoppingCart className="mr-2" />
               Ventas
             </Link>
           </nav>
         </aside>
 
-        {/* Main Content */}
         <main className="flex-grow-1 container">
-          {/* Filtro de usuarios */}
           <div className="py-4">
             <h5>Administrar Usuarios</h5>
             <Form className="d-flex gap-3">
@@ -72,7 +97,6 @@ class UsuariosAdmin extends Component {
             </Form>
           </div>
 
-          {/* Users Table */}
           <div className="py-4">
             <Table striped bordered hover responsive>
               <thead>
