@@ -1,60 +1,192 @@
-import React, { useState, useEffect } from 'react';
+import React, { Component } from 'react';
 import axios from 'axios';
 
-const FormularioCompra = () => {
-  const [carrito, setCarrito] = useState([]);
-
-  // Obtener el carrito desde sessionStorage
-  useEffect(() => {
-    const carritoData = JSON.parse(sessionStorage.getItem('carrito')) || [];
-    setCarrito(carritoData);
-  }, []);
-
-  // Enviar los datos al backend
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-      // Iterar sobre los productos del carrito
-      for (let producto of carrito) {
-        const { id, cantidad, precio_u } = producto;
-
-        // Loguear los datos antes de enviarlos
-        console.log('Enviando datos al backend:', {
-          cantidad: cantidad,
-          precio_u: producto.precio,
-          id_producto: id,  // Si es necesario para el backend
-        });
-
-        // Enviar los datos de cada producto al backend
-        await axios.post('http://localhost:8080/api/admin/carrito', {
-          cantidad: cantidad,
-          precio_u: producto.precio,
-          id_producto: id,  // Si es necesario para el backend
-        });
-      }
-
-      console.log('Compra registrada correctamente');
-    } catch (error) {
-      console.error('Error al enviar los datos:', error);
+class FormularioCompra extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            idUsuario: '',
+            idMetodoPago: '',
+            direccion: '',
+            total: 0,
+            compraId: null,
+            carrito: [],
+            error: '',
+            isSubmitting: false, // Nuevo estado para controlar el envío
+        };
     }
-  };
 
-  return (
-    <div>
-      <h2>Carrito de Compras</h2>
-      <form onSubmit={handleSubmit}>
-        <ul>
-          {carrito.map((producto) => (
-            <li key={producto.id}>
-              {producto.nombre} - {producto.cantidad} x ${producto.precio}
-            </li>
-          ))}
-        </ul>
-        <button type="submit">Finalizar compra</button>
-      </form>
-    </div>
-  );
-};
+    componentDidMount() {
+        const carritoGuardado = JSON.parse(sessionStorage.getItem('carrito')) || [];
+
+        // Normalizar las cantidades de los productos (mínimo 1)
+        const carritoNormalizado = carritoGuardado.map((producto) => ({
+            ...producto,
+            cantidad: producto.cantidad < 1 || isNaN(producto.cantidad) ? 1 : producto.cantidad,
+        }));
+
+        // Calcular el total de la misma manera que en CarritoProductos
+        const totalCompra = carritoNormalizado
+            .reduce((acc, producto) => acc + parseFloat(producto.precio) * producto.cantidad, 0)
+            .toFixed(2);
+
+        // Actualizar el carrito en el estado y en sessionStorage
+        this.setState({ carrito: carritoNormalizado, total: totalCompra });
+        sessionStorage.setItem('carrito', JSON.stringify(carritoNormalizado));
+    }
+
+    handleChange = (e) => {
+        const { id, value } = e.target;
+        this.setState({ [id]: value });
+    };
+
+    handleMetodoPagoChange = (e) => {
+        this.setState({ idMetodoPago: e.target.value });
+    };
+
+    handleSubmit = async (e) => {
+        e.preventDefault();
+
+        const { idUsuario, idMetodoPago, direccion, total, carrito, isSubmitting } = this.state;
+
+        // Evitar envíos múltiples
+        if (isSubmitting) {
+            return;
+        }
+
+        if (!idUsuario || !idMetodoPago || !direccion || !total) {
+            this.setState({ error: 'Por favor, complete todos los campos.' });
+            return;
+        }
+
+        this.setState({ isSubmitting: true, error: '' }); // Desactivar el botón y limpiar errores
+
+        try {
+            const compraResponse = await axios.post('http://localhost:8080/api/admin/carrito', {
+                id_usuario: idUsuario,
+                id_met_de_pago: idMetodoPago,
+                direccion,
+                total,
+            });
+
+            const compraIdGenerada = compraResponse.data.compraId;
+            this.setState({ compraId: compraIdGenerada });
+
+            const detallePromises = carrito.map((producto) => {
+                const { id, cantidad, precio } = producto;
+                return axios.post('http://localhost:8080/api/admin/carrito/detalle', {
+                    id_compra: compraIdGenerada,
+                    id_producto: id,
+                    cantidad,
+                    precio_u: precio,
+                });
+            });
+
+            await Promise.all(detallePromises);
+
+            const stockPromises = carrito.map((producto) => {
+                const { id, cantidad } = producto;
+                return axios.put('http://localhost:8080/api/admin/carrito', {
+                    stock: cantidad,
+                    id,
+                });
+            });
+
+            await Promise.all(stockPromises);
+
+            sessionStorage.removeItem('carrito');
+            this.setState({ carrito: [] });
+
+            alert(`Compra registrada con éxito. ID de la compra: ${compraIdGenerada}`);
+        } catch (err) {
+            console.error('Error al procesar la compra:', err);
+            this.setState({ error: 'Hubo un error al registrar la compra.' });
+        } finally {
+            this.setState({ isSubmitting: false }); // Reactivar el botón solo si hubo un error
+        }
+    };
+
+    render() {
+        const { idUsuario, idMetodoPago, direccion, total, compraId, error, isSubmitting } = this.state;
+
+        return (
+            <div className="container mt-4">
+                <h2 className="text-center mb-4">Formulario de Compra</h2>
+                <form className="card p-4 shadow" onSubmit={this.handleSubmit}>
+                    <div className="mb-3">
+                        <label htmlFor="idUsuario" className="form-label">ID de Usuario:</label>
+                        <input
+                            type="number"
+                            id="idUsuario"
+                            className="form-control"
+                            value={idUsuario}
+                            onChange={this.handleChange}
+                            placeholder="Ingrese su ID de usuario"
+                        />
+                    </div>
+                    <div className="mb-3">
+                        <label className="form-label">Método de Pago:</label>
+                        <div className="form-check">
+                            <input
+                                type="radio"
+                                id="metodo1"
+                                name="metodoPago"
+                                value="1"
+                                className="form-check-input"
+                                onChange={this.handleMetodoPagoChange}
+                            />
+                            <label htmlFor="metodo1" className="form-check-label">Método de Pago 1</label>
+                        </div>
+                        <div className="form-check">
+                            <input
+                                type="radio"
+                                id="metodo2"
+                                name="metodoPago"
+                                value="2"
+                                className="form-check-input"
+                                onChange={this.handleMetodoPagoChange}
+                            />
+                            <label htmlFor="metodo2" className="form-check-label">Método de Pago 2</label>
+                        </div>
+                    </div>
+                    <div className="mb-3">
+                        <label htmlFor="direccion" className="form-label">Dirección:</label>
+                        <input
+                            type="text"
+                            id="direccion"
+                            className="form-control"
+                            value={direccion}
+                            onChange={this.handleChange}
+                            placeholder="Ingrese su dirección"
+                        />
+                    </div>
+                    <div className="mb-3">
+                        <label htmlFor="total" className="form-label">Total:</label>
+                        <input
+                            type="number"
+                            id="total"
+                            className="form-control"
+                            value={total}
+                            readOnly
+                        />
+                    </div>
+                    {error && <div className="alert alert-danger">{error}</div>}
+                    <button
+                        type="submit"
+                        className="btn btn-primary w-100"
+                        disabled={isSubmitting || !!compraId} // Deshabilitar si ya se envió o hay una compra registrada
+                    >
+                        {isSubmitting ? 'Procesando...' : 'Crear Compra'}
+                    </button>
+                </form>
+                {compraId && (
+                    <div className="alert alert-success mt-4">
+                        Compra creada con éxito. ID de la compra: {compraId}
+                    </div>
+                )}
+            </div>
+        );
+    }
+}
 
 export default FormularioCompra;

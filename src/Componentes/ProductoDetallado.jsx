@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useParams, Link } from 'react-router-dom'; // Usamos useParams para obtener el parámetro `id`
+import { useParams } from 'react-router-dom';
 
 const ProductoDetallado = () => {
-  const { id } = useParams();  // Usamos el hook `useParams` para obtener el `id`
+  const { id } = useParams();
   const [producto, setProducto] = useState(null);
   const [error, setError] = useState(null);
+  const [mensaje, setMensaje] = useState(''); // Mensaje para el usuario
 
   useEffect(() => {
     axios
@@ -21,8 +22,19 @@ const ProductoDetallado = () => {
 
   const agregarAlCarrito = () => {
     const carrito = JSON.parse(sessionStorage.getItem('carrito')) || [];
-    carrito.push(producto);
-    sessionStorage.setItem('carrito', JSON.stringify(carrito));
+    
+    // Verificar si el producto ya está en el carrito
+    const existeProducto = carrito.some((item) => item.id === producto.id);
+
+    if (existeProducto) {
+      setMensaje('Este producto ya está en el carrito.');
+      setTimeout(() => setMensaje(''), 3000); // Ocultar mensaje después de 3 segundos
+    } else {
+      carrito.push(producto);
+      sessionStorage.setItem('carrito', JSON.stringify(carrito));
+      setMensaje('Producto agregado al carrito.');
+      setTimeout(() => setMensaje(''), 3000); // Ocultar mensaje después de 3 segundos
+    }
   };
 
   if (error) return <p style={{ color: 'red' }}>{error}</p>;
@@ -70,6 +82,7 @@ const ProductoDetallado = () => {
             >
               Agregar al carrito
             </button>
+            {mensaje && <p style={{ color: 'green', marginTop: '10px' }}>{mensaje}</p>}
           </div>
         </div>
       </main>
