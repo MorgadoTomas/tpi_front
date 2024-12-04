@@ -26,15 +26,16 @@ class App extends Component {
           
           <main className="flex-grow-1 container my-4">
           <Routes>
-          <Route path="/" element={<Inicio />} />
-          <Route path="/productos" element={<Productos />} />
-          <Route path="/registro" element={<MainForm />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/admin" element={<Admin />} />
-          <Route path="/admin/productos" element={<ProductosAdmin />} />
-          <Route path="/admin/usuarios" element={<UsuariosAdmin />} />
-          <Route path="/admin/ventas" element={<VentasAdmin />} />
-        </Routes>
+            <Route path="/" element={<Inicio />} />
+            <Route path="/inicio" element={<Inicio />} /> {/* Ruta explícita para /inicio */}
+            <Route path="/productos" element={<Productos />} />
+            <Route path="/registro" element={<MainForm />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/admin" element={<Admin />} />
+            <Route path="/admin/productos" element={<ProductosAdmin />} />
+            <Route path="/admin/usuarios" element={<UsuariosAdmin />} />
+            <Route path="/admin/ventas" element={<VentasAdmin />} />
+          </Routes>
       </main>
       </div>
       </Router>
