@@ -14,25 +14,24 @@ class UsuariosAdmin extends Component {
   }
 
   componentDidMount() {
-    // Cargar usuarios al montar el componente
     this.cargarUsuarios();
-  }
+}
 
-  cargarUsuarios = () => {
-    // Realiza la petición para obtener los usuarios
-    axios.get('http://localhost:5000/api/usuarios', {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}` // Suponiendo que tienes un token en el almacenamiento local
-      }
+cargarUsuarios = () => {
+    // Asegúrate de que el token esté en el almacenamiento local y que la URL sea correcta
+    axios.get('http://localhost:4000/api/usuarios', {
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}` // Obtener el token de localStorage
+        }
     })
     .then(response => {
-      this.setState({ usuarios: response.data.usuarios });
+        // Guardar los usuarios en el estado
+        this.setState({ usuarios: response.data.usuarios });
     })
     .catch(error => {
-      console.error('Error al cargar usuarios:', error);
+        console.error('Error al cargar usuarios:', error);
     });
-  };
-
+};
 
   handleFilterChange = (event) => {
     this.setState({ filtro: event.target.value });
