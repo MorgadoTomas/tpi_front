@@ -6,11 +6,19 @@ class Inicio extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      productos: []
+      productos: [],
+      error: null,
+      usuario: '', // Estado para el nombre de usuario
     };
   }
 
   componentDidMount() {
+    // Suponiendo que el nombre del usuario viene de un token o API
+    const usuario = localStorage.getItem('usuario'); // o desde una API que traiga el usuario logueado
+    if (usuario) {
+      this.setState({ usuario });
+    }
+
     axios
       .get('http://localhost:8080/api/admin/productos')
       .then((response) => {
@@ -22,7 +30,7 @@ class Inicio extends Component {
   }
 
   render() {
-    const { productos } = this.state;
+    const { productos, usuario } = this.state;
     const { searchTerm } = this.props;
 
     const productosFiltrados = productos.filter((producto) =>
@@ -32,6 +40,14 @@ class Inicio extends Component {
 
     return (
       <div className="container">
+        {/* Mostrar bienvenida si el usuario está logueado */}
+        {usuario && (
+          <div className="alert alert-info text-center mt-4">
+            <h2>¡Bienvenido, {usuario}!</h2>
+            <p>¡Estamos felices de verte de nuevo!</p>
+          </div>
+        )}
+
         <h1 className="my-4">Productos</h1>
         <div className="row">
           {productosFiltrados.map((producto) => (

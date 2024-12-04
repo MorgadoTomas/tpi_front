@@ -10,7 +10,7 @@ const ProductoDetallado = () => {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:8080/api/admin/productos/${id}`)
+      .get(http://localhost:4000/api/admin/productos/${id})
       .then((response) => {
         setProducto(response.data.producto);
       })
@@ -21,8 +21,16 @@ const ProductoDetallado = () => {
   }, [id]);
 
   const agregarAlCarrito = () => {
+    // Verificar si el usuario está logueado
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setMensaje('Debes iniciar sesión para agregar productos al carrito.');
+      setTimeout(() => setMensaje(''), 3000); // Ocultar mensaje después de 3 segundos
+      return; // Detener ejecución si el usuario no está logueado
+    }
+
     const carrito = JSON.parse(sessionStorage.getItem('carrito')) || [];
-    
+
     // Verificar si el producto ya está en el carrito
     const existeProducto = carrito.some((item) => item.id === producto.id);
 
@@ -37,6 +45,16 @@ const ProductoDetallado = () => {
     }
   };
 
+  // Determinar el color del mensaje
+  const getMensajeColor = () => {
+    if (mensaje === 'Debes iniciar sesión para agregar productos al carrito.') {
+      return 'red'; // Color rojo para error
+    }
+    if (mensaje === 'Este producto ya está en el carrito.' || 'Producto agregado al carrito.') {
+      return 'green'; // Color verde para éxito
+    }
+  };
+
   if (error) return <p style={{ color: 'red' }}>{error}</p>;
   if (!producto) return <p>Cargando detalles del producto...</p>;
 
@@ -48,7 +66,7 @@ const ProductoDetallado = () => {
           <div className="col-md-6">
             {producto.imagenes[0] && (
               <img
-                src={`http://localhost:8080/images/${producto.imagenes[0]}`}
+                src={http://localhost:4000/images/${producto.imagenes[0]}}
                 alt={producto.nombre}
                 className="w-100 mb-3"
                 style={{ height: '300px', objectFit: 'cover' }}
@@ -58,8 +76,8 @@ const ProductoDetallado = () => {
               {producto.imagenes.slice(1).map((img, index) => (
                 <img
                   key={index}
-                  src={`http://localhost:8080/images/${img}`}
-                  alt={`Producto ${index + 1}`}
+                  src={http://localhost:4000/images/${img}}
+                  alt={Producto ${index + 1}}
                   className="rounded"
                   style={{ width: '100px', height: '100px', objectFit: 'cover' }}
                 />
@@ -82,7 +100,7 @@ const ProductoDetallado = () => {
             >
               Agregar al carrito
             </button>
-            {mensaje && <p style={{ color: 'green', marginTop: '10px' }}>{mensaje}</p>}
+            {mensaje && <p style={{ color: getMensajeColor(), marginTop: '10px' }}>{mensaje}</p>}
           </div>
         </div>
       </main>
