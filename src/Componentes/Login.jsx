@@ -26,34 +26,45 @@ class Login extends Component {
     this.setState({ [name]: value });
   };
 
-  iniciarSesion = async (event) => {
+  iniciarSesion = (event) => {
     event.preventDefault();
     const { usuario, password } = this.state;
     const datos = { usuario, password };
     const url = "http://localhost:4000/api/usuarios/login";
-
-    try {
-      const response = await axios.post(url, datos);
-      if (response.data.token) {
-        // Si el login es exitoso, guarda el token y el usuario en el localStorage
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('usuario', response.data.usuario);
-        // Actualiza el estado para redirigir
-        this.setState({ isLoggedIn: true }); // Esto es cuando el login es exitoso
-      }
-    } catch (error) {
-      console.error(error);
-      this.setState({ error: 'Nombre de usuario o contraseña incorrectos' });
-    }
-  };
+  
+    // Realizamos la solicitud POST usando axios
+    axios.post(url, datos)
+      .then((response) => {
+        if (response.data.token) {
+          // Si el login es exitoso, guarda el token, el usuario y la verificación de admin en el localStorage
+          localStorage.setItem('token', response.data.token);
+          localStorage.setItem('usuario', response.data.usuario);
+          localStorage.setItem('isAdmin', response.data.adminVerificacion); // Guardar si es admin          
+          
+          // Actualiza el estado para redirigir
+          this.setState({
+            isLoggedIn: true,
+            isAdmin: response.data.adminVerificacion  // Guarda el estado del admin
+          });
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        this.setState({ error: 'Nombre de usuario o contraseña incorrectos' });
+      });
+  };  
 
   render() {
-    const { usuario, password, error, isLoggedIn } = this.state;
-
+    const { usuario, password, error, isLoggedIn, isAdmin } = this.state;
+  
     if (isLoggedIn) {
-      return <Navigate to="/" />; // Redirige a la raíz
+      if (isAdmin) {
+        return <Navigate to="/admin" />;  // Redirige a Admin si es admin
+      } else {
+        return <Navigate to="/" />;  // Redirige a la página de inicio si no es admin
+      }
     }
-
+  
     return (
       <div>
         <Form onSubmit={this.iniciarSesion} className="max-w-md mx-auto space-y-4">
@@ -84,17 +95,10 @@ class Login extends Component {
             ¿No tienes cuenta?{' '}
             <Link to="/registro" className="text-primary">Regístrate aquí</Link>
           </p>
-
-          {/* Botón para acceder al panel de Admin */}
-          <div className="text-center mt-3">
-            <Link to="/admin">
-              <Button variant="secondary">ADMIN</Button>
-            </Link>
-          </div>
         </Form>
       </div>
     );
-  }
+  }  
 }
 
 export default Login;
