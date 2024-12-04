@@ -62,7 +62,7 @@ class MainForm extends Component {
     const { nombre, apellido, usuario, password, email, error, success, isLoggedIn } = this.state;
 
   if (isLoggedIn) {
-    return <Navigate to="/inicio" />;
+    return <Navigate to="/" />;
   }
 
     return (

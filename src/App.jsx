@@ -46,12 +46,9 @@ class App extends Component {
               <Route path="/carrito" element={<CarritoProductos />} />
               <Route path="/producto/:id" element={<ProductoDetallado />} />
               <Route path="/admin" element={<Admin />} />
-              {/* Ruta para el formulario de compra */}
               <Route path="/formulario-compra" element={<FormularioCompra />} />
-              <Route path="/admin/productos" element={<ProductosAdmin />} /> {/* Ruta para ProductosAdmin */}
-              <Route path="/admin/usuarios" element={<UsuariosAdmin />} /> {/* Ruta para UsuariosAdmin */}
-              <Route path="/" element={<Inicio />} />
-              <Route path="/inicio" element={<Inicio />} /> {/* Ruta explícita para /inicio */}
+              <Route path="/admin/productos" element={<ProductosAdmin />} />
+              <Route path="/admin/usuarios" element={<UsuariosAdmin />} />
               <Route path="/admin/ventas" element={<VentasAdmin />} />
             </Routes>
           </main>
