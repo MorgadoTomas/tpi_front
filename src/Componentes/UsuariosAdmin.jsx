@@ -50,10 +50,10 @@ class UsuariosAdmin extends Component {
               <Users className="mr-2" />
               Usuarios
             </Button>
-            <Button variant="light" className="text-left mb-2 d-flex align-items-center">
+            <Link to="/admin/ventas" className="text-left mb-2 d-flex align-items-center btn btn-light"> {/* Envolviendo con Link */}
               <ShoppingCart className="mr-2" />
               Ventas
-            </Button>
+            </Link>
           </nav>
         </aside>
 

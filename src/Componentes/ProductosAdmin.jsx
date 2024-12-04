@@ -1,4 +1,3 @@
-// ProductosAdmin.jsx
 import React, { Component } from 'react';
 import { Button, FormControl, Table, Form } from 'react-bootstrap';
 import { Edit2, Trash2, LayoutDashboard, Package, Users, ShoppingCart, BarChart, Settings } from "lucide-react";
@@ -86,10 +85,11 @@ class ProductosAdmin extends Component {
               <Users className="mr-2" />
               Usuarios
             </Link>
-            <Button variant="light" className="text-left mb-2 d-flex align-items-center">
+            {/* Botón de "Ventas" que redirige a AdminVentas.jsx */}
+            <Link to="/admin/ventas" className="text-left mb-2 d-flex align-items-center btn btn-light">
               <ShoppingCart className="mr-2" />
               Ventas
-            </Button>
+            </Link>
           </nav>
         </aside>
 
@@ -127,13 +127,11 @@ class ProductosAdmin extends Component {
                 onChange={this.handleInputChange}
                 style={{ maxWidth: '150px' }}
               />
-
-<FormControl
+              <FormControl
                 type="file"
                 onChange={this.handleImageChange}
                 style={{ maxWidth: '200px' }}
               />
-     
               <Button variant="dark" onClick={this.agregarProducto}>
                 {this.state.editando ? "Guardar Cambios" : "Agregar"}
               </Button>

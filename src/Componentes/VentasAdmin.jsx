@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Table, FormControl, Form } from 'react-bootstrap';
-import { Trash2, LayoutDashboard, Package, Users, ShoppingCart, BarChart, Settings } from "lucide-react";
+import { Trash2, LayoutDashboard, Package, Users, ShoppingCart } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 
 const VentasAdmin = () => {
