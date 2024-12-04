@@ -15,13 +15,26 @@ import ProductosAdmin from './Componentes/ProductosAdmin';
 import UsuariosAdmin from './Componentes/UsuariosAdmin';
 import VentasAdmin from "./Componentes/VentasAdmin";
 import PrivateRoute from './Componentes/PrivateRoute';  // Importa el componente PrivateRoute
+import FormularioCompra from './Componentes/FormularioCompra'; // Importa el componente
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      searchTerm: ''
+    };
+  }
+
+  // Función para actualizar el término de búsqueda
+  handleSearch = (term) => {
+    this.setState({ searchTerm: term });
+  };
+
   render() {
     return (
       <Router>
         <div className="min-vh-100 d-flex flex-column">
-          <Header />
+          <Header onSearch={this.handleSearch} />
           <NavBar />
           
           <main className="flex-grow-1 container my-4">

@@ -10,22 +10,8 @@ class NavBar extends Component {
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav" className="justify-content-center">
             <Nav className="text-center">
-              <Nav.Link
-                as={Link}
-                to="/"
-                className="mx-3"
-                style={{ fontSize: '1.25rem', color: 'white' }}
-              >
-                Inicio
-              </Nav.Link>
-              <Nav.Link
-                as={Link}
-                to="/productos"
-                className="mx-3"
-                style={{ fontSize: '1.25rem', color: 'white' }}
-              >
-                Productos
-              </Nav.Link>
+              <Nav.Link as={Link} to="/" className="mx-3" style={{ fontSize: '1.25rem', color: 'white' }}>Inicio</Nav.Link>
+              <Nav.Link as={Link} to="/productos" className="mx-3" style={{ fontSize: '1.25rem', color: 'white' }}>Productos</Nav.Link>
             </Nav>
           </Navbar.Collapse>
         </div>

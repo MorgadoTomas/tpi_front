@@ -13,39 +13,35 @@ class Inicio extends Component {
   }
 
   componentDidMount() {
-    // Obtener el nombre del usuario desde localStorage si está logueado
-    const usuario = localStorage.getItem('usuario');
-    if (usuario) {
-      this.setState({ usuario });
-    }
-    this.fetchProductos();
+    axios
+      .get('http://localhost:8080/api/admin/productos')
+      .then((response) => {
+        this.setState({ productos: response.data.productos });
+      })
+      .catch((error) => {
+        console.error('Error al cargar los productos:', error);
+      });
   }
 
-  fetchProductos = async () => {
-    try {
-      const response = await axios.get('http://localhost:4000/api/admin/productos'); // Ajusta la URL si es necesario
-      this.setState({ productos: response.data.productos });
-    } catch (err) {
-      this.setState({ error: 'Error al obtener los productos' });
-      console.error(err);
-    }
-  };
-
   render() {
-    const { productos, error, usuario } = this.state;
+    const { productos } = this.state;
+    const { searchTerm } = this.props;
+
+    const productosFiltrados = productos.filter((producto) =>
+      producto.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      producto.descripcion.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     return (
       <div className="container">
-        <h2 className="my-4">Productos</h2>
-        {usuario && <h3>Bienvenido, {usuario}!</h3>} {/* Mostrar el nombre del usuario si está logueado */}
-        {error && <p className="text-danger">{error}</p>}
+        <h1 className="my-4">Productos</h1>
         <div className="row">
-          {productos.map((producto) => (
+          {productosFiltrados.map((producto) => (
             <div className="col-md-4 mb-4" key={producto.id}>
               <Link to={`/producto/${producto.id}`} className="text-decoration-none">
                 <div className="card">
                   <img
-                    src={`http://localhost:4000/images/${producto.imagenes?.[0] || 'default.jpg'}`}
+                    src={`http://localhost:8080/images/${producto.imagenes ? producto.imagenes[0] : 'default.jpg'}`}
                     className="card-img-top"
                     alt={producto.nombre}
                     style={{ height: '250px', objectFit: 'cover' }}
@@ -53,7 +49,7 @@ class Inicio extends Component {
                   <div className="card-body">
                     <h5 className="card-title">{producto.nombre}</h5>
                     <p className="card-text">{producto.descripcion.slice(0, 100)}...</p>
-                    <p className="card-text"><strong>Precio:</strong> ${producto.precio}</p>
+                    <p className="card-text"><strong>Precio: $</strong> {producto.precio}</p>
                   </div>
                 </div>
               </Link>

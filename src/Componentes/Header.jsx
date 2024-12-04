@@ -8,6 +8,18 @@ class Header extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      searchTerm: ''
+    };
+  }
+
+  handleSearchChange = (event) => {
+    this.setState({ searchTerm: event.target.value });
+    this.props.onSearch(event.target.value);
+  };
+
+  constructor(props) {
+    super(props);
+    this.state = {
       isLoggedIn: localStorage.getItem('token') !== null,
     };
   }
@@ -40,6 +52,14 @@ class Header extends Component {
               className="position-absolute"
               style={{ top: '50%', right: '10px', transform: 'translateY(-50%)', color: 'gray' }}
             />
+            <input
+              type="search"
+              placeholder="Buscar..."
+              className="form-control"
+              value={this.state.searchTerm}
+              onChange={this.handleSearchChange}
+            />
+            <Search className="position-absolute" style={{ top: '50%', right: '10px', transform: 'translateY(-50%)', color: 'gray' }} />
           </div>
 
           <div className="d-flex align-items-center gap-3">
@@ -53,11 +73,13 @@ class Header extends Component {
                 <Button variant="outline-primary">Iniciar sesión</Button>
               </Link>
             )}
+            <Link to="/login">
+              <Button variant="outline-secondary">Iniciar Sesión</Button>
+            </Link>
           </div>
         </div>
       </header>
     );
   }
 }
-
 export default Header;
