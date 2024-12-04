@@ -14,7 +14,7 @@ class Inicio extends Component {
 
   componentDidMount() {
     // Suponiendo que el nombre del usuario viene de un token o API
-    const usuario = localStorage.getItem('nombreUsuario'); // o desde una API que traiga el usuario logueado
+    const usuario = localStorage.getItem('usuario'); // o desde una API que traiga el usuario logueado
     if (usuario) {
       this.setState({ usuario });
     }
@@ -41,7 +41,12 @@ class Inicio extends Component {
     return (
       <div className="container">
         {/* Mostrar bienvenida si el usuario está logueado */}
-        {usuario && <h2>Bienvenido, {usuario}!</h2>}
+        {usuario && (
+          <div className="alert alert-info text-center mt-4">
+            <h2>¡Bienvenido, {usuario}!</h2>
+            <p>¡Estamos felices de verte de nuevo!</p>
+          </div>
+        )}
 
         <h1 className="my-4">Productos</h1>
         <div className="row">
