@@ -21,6 +21,20 @@ class ProductosAdmin extends Component {
       editando: false,
     };
   }
+
+
+  obtenerProductos = async () => {
+    try {
+      const response = await axios.get('http://localhost:4000/api/admin/productos');
+      console.log("Productos cargados:", response.data);
+      this.setState({ productos: response.data });
+    } catch (error) {
+      console.error("Error al cargar productos:", error);
+    }
+  };
+  
+
+
   
   componentDidMount() {
     // Suponiendo que el nombre del usuario viene de un token o API
