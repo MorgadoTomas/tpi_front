@@ -42,38 +42,40 @@ class ProductosAdmin extends Component {
     });
   }
 
-  agregarProducto = async () => {
-    const { nuevoProducto, editando, productoEditadoId } = this.state;
-    
-    try {
-      if (editando) {
-        // Actualizar el producto existente
-        await axios.put(`/api/productos/${productoEditadoId}`, nuevoProducto);
-        this.setState((prevState) => ({
-          productos: prevState.productos.map((producto) =>
-            producto.id === productoEditadoId
-              ? { ...producto, ...nuevoProducto }
-              : producto
-          ),
-          nuevoProducto: { nombre: '', categoria: '', precio: '', stock: '', descripcion: '', marca: '' },
-          editando: false,
-          productoEditadoId: null
-        }));
-      } else {
-        // Agregar un nuevo producto
-        const response = await axios.post('/api/productos', nuevoProducto);
-        this.setState((prevState) => ({
-          productos: [
-            ...prevState.productos,
-            { id: response.data.producto_id, ...nuevoProducto }
-          ],
-          nuevoProducto: { nombre: '', categoria: '', precio: '', stock: '', descripcion: '', marca: '' }
-        }));
-      }
-    } catch (error) {
-      console.error("Error al agregar/editar producto:", error);
+  agregarProducto = () => {
+    const { nuevoProducto, imagenes } = this.state; // Asumiendo que 'imagenes' es un arreglo de archivos seleccionados
+    const formData = new FormData();
+
+    // Agregar los datos del producto al FormData
+    formData.append('nombre', nuevoProducto.nombre);
+    formData.append('stock', nuevoProducto.stock);
+    formData.append('precio', nuevoProducto.precio);
+    formData.append('descrip', nuevoProducto.descripcion);
+    formData.append('marca', nuevoProducto.marca);
+
+    // Si hay imágenes, agregarlas al FormData
+    if (imagenes && imagenes.length > 0) {
+        imagenes.forEach(imagen => {
+            formData.append('imagen', imagen); // Asegúrate de que 'imagen' sea el nombre correcto que usa el backend
+        });
     }
-  }
+
+    // Realizamos la solicitud POST con axios usando promesas
+    axios.post('http://localhost:4000/api/admin/productos', formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data', // Indicamos que estamos enviando un formulario con archivos
+        },
+    })
+    .then(response => {
+        console.log('Producto agregado con éxito:', response);
+        // Aquí puedes actualizar el estado o hacer algo con la respuesta, como mostrar un mensaje de éxito o redirigir
+    })
+    .catch(error => {
+        console.error('Error al agregar producto:', error);
+        // Aquí puedes manejar el error, mostrando un mensaje al usuario
+    });
+};
+
 
   iniciarEdicion = (producto) => {
     this.setState({
