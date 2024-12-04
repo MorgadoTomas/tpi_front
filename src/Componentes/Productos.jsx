@@ -38,7 +38,7 @@ class Productos extends Component {
         };
 
         axios
-            .get('http://localhost:4000/api/home', { params })
+            .get('http://localhost:8080/api/home', { params })
             .then((response) => {
                 this.setState({ productos: response.data.productos });
             })
@@ -120,7 +120,7 @@ class Productos extends Component {
                                         <div className="card h-100">
                                             {producto.imagenes && (
                                                 <img
-                                                    src={`http://localhost:4000/public/images/${producto.imagenes.split(',')[0]}`}
+                                                    src={`http://localhost:8080/public/images/${producto.imagenes.split(',')[0]}`}
                                                     className="card-img-top"
                                                     alt={producto.nombre}
                                                 />
