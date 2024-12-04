@@ -44,7 +44,7 @@ class Inicio extends Component {
         {usuario && (
           <div className="alert alert-info text-center mt-4">
             <h2>¡Bienvenido, {usuario}!</h2>
-            <p>¡Estamos felices de verte de nuevo!</p>
+            <p>¡Estamos felices de verte!</p>
           </div>
         )}
 
