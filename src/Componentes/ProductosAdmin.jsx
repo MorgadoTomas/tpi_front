@@ -138,77 +138,83 @@ class ProductosAdmin extends Component {
             </Link>
           </nav>
         </aside>
-
+  
         {/* Main Content */}
         <main className="flex-grow-1 container">
           {/* Formulario para agregar o editar producto */}
           <div className="py-4">
             <h5>{this.state.editando ? "Editar Producto" : "Agregar Nuevo Producto"}</h5>
-            <Form className="d-flex flex-wrap gap-3">
-              <FormControl
-                placeholder="Nombre del producto"
-                name="nombre"
-                value={this.state.nuevoProducto.nombre || ''}
-                onChange={this.handleInputChange}
-                style={{ maxWidth: '200px' }}
-              />
-              <Form.Group>
-                <Form.Label>Categoría</Form.Label>
-                <Form.Control
-                  as="select"
-                  name="categoria"
-                  value={this.state.nuevoProducto.categoria || ''}
+            <Form className="d-flex flex-column gap-3">
+              <div className="d-flex flex-wrap gap-3">
+                <FormControl
+                  placeholder="Nombre del producto"
+                  name="nombre"
+                  value={this.state.nuevoProducto.nombre || ''}
                   onChange={this.handleInputChange}
-                >
-                  <option value="">Selecciona una categoría</option>
-                  <option value="1">Teclado</option>
-                  <option value="2">Mouse</option>
-                  <option value="3">Auricular</option>
-                  <option value="4">Monitor</option>
-                  <option value="5">Micrófono</option>
-                  <option value="6">Placa de video</option>
-                  <option value="7">Motherboard</option>
-                  <option value="8">RAM</option>
-                  <option value="9">Microprocesador</option>
-                  <option value="10">Discos</option>
-                  <option value="11">Sillas</option>
-                  <option value="12">Gabinetes</option>
-                  <option value="13">Fuentes</option>
-                  <option value="14">Joysticks</option>
-                  <option value="15">Webcams</option>
-                  <option value="16">Pad</option>
-                  <option value="17">Parlante</option>
-                </Form.Control>
-              </Form.Group>
-              <FormControl
-                placeholder="Precio"
-                name="precio"
-                value={this.state.nuevoProducto.precio || ''}
-                onChange={this.handleInputChange}
-                style={{ maxWidth: '100px' }}
-              />
-              <FormControl
-                placeholder="Stock"
-                name="stock"
-                value={this.state.nuevoProducto.stock || ''}
-                onChange={this.handleInputChange}
-                style={{ maxWidth: '100px' }}
-              />
-              <FormControl
-                placeholder="Descripción"
-                name="descripcion"
-                value={this.state.nuevoProducto.descripcion || ''}
-                onChange={this.handleInputChange}
-                style={{ maxWidth: '250px' }}
-              />
-              <FormControl
-                placeholder="Marca"
-                name="marca"
-                value={this.state.nuevoProducto.marca || ''}
-                onChange={this.handleInputChange}
-                style={{ maxWidth: '150px' }}
-              />
-
+                  style={{ maxWidth: '300px' }}
+                />
+                <Form.Group className="w-100">
+                  <Form.Label>Categoría</Form.Label>
+                  <Form.Control
+                    as="select"
+                    name="categoria"
+                    value={this.state.nuevoProducto.categoria || ''}
+                    onChange={this.handleInputChange}
+                  >
+                    <option value="">Selecciona una categoría</option>
+                    {/* Agregar más opciones aquí si es necesario */}
+                    <option value="1">Teclado</option>
+                    <option value="2">Mouse</option>
+                    <option value="3">Auricular</option>
+                    <option value="4">Monitor</option>
+                    <option value="5">Micrófono</option>
+                    <option value="6">Placa de video</option>
+                    <option value="7">Motherboard</option>
+                    <option value="8">RAM</option>
+                    <option value="9">Microprocesador</option>
+                    <option value="10">Discos</option>
+                    <option value="11">Sillas</option>
+                    <option value="12">Gabinetes</option>
+                    <option value="13">Fuentes</option>
+                    <option value="14">Joysticks</option>
+                    <option value="15">Webcams</option>
+                    <option value="16">Pad</option>
+                    <option value="17">Parlante</option>
+                  </Form.Control>
+                </Form.Group>
+                <FormControl
+                  placeholder="Precio"
+                  name="precio"
+                  value={this.state.nuevoProducto.precio || ''}
+                  onChange={this.handleInputChange}
+                  style={{ maxWidth: '150px' }}
+                />
+                <FormControl
+                  placeholder="Stock"
+                  name="stock"
+                  value={this.state.nuevoProducto.stock || ''}
+                  onChange={this.handleInputChange}
+                  style={{ maxWidth: '150px' }}
+                />
+              </div>
+  
+              <div className="d-flex flex-wrap gap-3">
+                <FormControl
+                  placeholder="Descripción"
+                  name="descripcion"
+                  value={this.state.nuevoProducto.descripcion || ''}
+                  onChange={this.handleInputChange}
+                  style={{ maxWidth: '350px' }}
+                />
+                <FormControl
+                  placeholder="Marca"
+                  name="marca"
+                  value={this.state.nuevoProducto.marca || ''}
+                  onChange={this.handleInputChange}
+                  style={{ maxWidth: '200px' }}
+                />
+              </div>
+  
               {/* Campo para seleccionar imagen */}
               <Form.Group>
                 <Form.Label>Cargar Imagen</Form.Label>
@@ -218,13 +224,15 @@ class ProductosAdmin extends Component {
                   multiple
                 />
               </Form.Group>
-
-              <Button variant="dark" onClick={this.agregarProducto}>
-                {this.state.editando ? "Guardar Cambios" : "Agregar"}
-              </Button>
+  
+              <div className="d-flex justify-content-end">
+                <Button variant="dark" onClick={this.agregarProducto}>
+                  {this.state.editando ? "Guardar Cambios" : "Agregar"}
+                </Button>
+              </div>
             </Form>
           </div>
-
+  
           {/* Tabla de productos */}
           <div className="py-4">
             <Table striped bordered hover responsive>
@@ -271,6 +279,7 @@ class ProductosAdmin extends Component {
       </div>
     );
   }
+  
 }
 
 export default ProductosAdmin;
