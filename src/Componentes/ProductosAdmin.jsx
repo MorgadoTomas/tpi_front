@@ -1,19 +1,35 @@
 import React, { Component } from 'react';
 import { Button, FormControl, Table, Form } from 'react-bootstrap';
-import { Edit2, Trash2, LayoutDashboard, Package, Users, ShoppingCart, BarChart, Settings } from "lucide-react";
+import { Edit2, Trash2, LayoutDashboard, Package, Users, ShoppingCart } from "lucide-react";
 import { Link } from 'react-router-dom'; // Importa Link de react-router-dom
+import axios from 'axios'; // Asegúrate de tener axios instalado
 
 class ProductosAdmin extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      productos: [
-        { id: 1, nombre: "Bizo", talle: "M", color: "Negro", codigo: "999999", cantidad: 99 }
-      ],
-      nuevoProducto: { nombre: '', talle: '', color: '', codigo: '', cantidad: '' },
+      productos: [],
+      nuevoProducto: { nombre: '', categoria: '', precio: '', stock: '', descripcion: '', marca: '' },
       editando: false,
       productoEditadoId: null,
     };
+  }
+
+  componentDidMount() {
+    // Suponiendo que el nombre del usuario viene de un token o API
+    const usuario = localStorage.getItem('usuario'); // o desde una API que traiga el usuario logueado
+    if (usuario) {
+      this.setState({ usuario });
+    }
+
+    axios
+      .get('http://localhost:4000/api/admin/productos')
+      .then((response) => {
+        this.setState({ productos: response.data.productos });
+      })
+      .catch((error) => {
+        console.error('Error al cargar los productos:', error);
+      });
   }
 
   handleInputChange = (event) => {
@@ -26,28 +42,36 @@ class ProductosAdmin extends Component {
     });
   }
 
-  agregarProducto = () => {
-    if (this.state.editando) {
-      // Actualizar el producto existente
-      this.setState((prevState) => ({
-        productos: prevState.productos.map((producto) =>
-          producto.id === prevState.productoEditadoId
-            ? { ...producto, ...prevState.nuevoProducto }
-            : producto
-        ),
-        nuevoProducto: { nombre: '', talle: '', color: '', codigo: '', cantidad: '' },
-        editando: false,
-        productoEditadoId: null
-      }));
-    } else {
-      // Agregar un nuevo producto
-      this.setState((prevState) => ({
-        productos: [
-          ...prevState.productos,
-          { id: Date.now(), ...prevState.nuevoProducto }
-        ],
-        nuevoProducto: { nombre: '', talle: '', color: '', codigo: '', cantidad: '' }
-      }));
+  agregarProducto = async () => {
+    const { nuevoProducto, editando, productoEditadoId } = this.state;
+    
+    try {
+      if (editando) {
+        // Actualizar el producto existente
+        await axios.put(`/api/productos/${productoEditadoId}`, nuevoProducto);
+        this.setState((prevState) => ({
+          productos: prevState.productos.map((producto) =>
+            producto.id === productoEditadoId
+              ? { ...producto, ...nuevoProducto }
+              : producto
+          ),
+          nuevoProducto: { nombre: '', categoria: '', precio: '', stock: '', descripcion: '', marca: '' },
+          editando: false,
+          productoEditadoId: null
+        }));
+      } else {
+        // Agregar un nuevo producto
+        const response = await axios.post('/api/productos', nuevoProducto);
+        this.setState((prevState) => ({
+          productos: [
+            ...prevState.productos,
+            { id: response.data.producto_id, ...nuevoProducto }
+          ],
+          nuevoProducto: { nombre: '', categoria: '', precio: '', stock: '', descripcion: '', marca: '' }
+        }));
+      }
+    } catch (error) {
+      console.error("Error al agregar/editar producto:", error);
     }
   }
 
@@ -59,10 +83,15 @@ class ProductosAdmin extends Component {
     });
   }
 
-  eliminarProducto = (productoId) => {
-    this.setState((prevState) => ({
-      productos: prevState.productos.filter((producto) => producto.id !== productoId)
-    }));
+  eliminarProducto = async (productoId) => {
+    try {
+      await axios.delete(`/api/productos/${productoId}`);
+      this.setState((prevState) => ({
+        productos: prevState.productos.filter((producto) => producto.id !== productoId)
+      }));
+    } catch (error) {
+      console.error("Error al eliminar producto:", error);
+    }
   }
 
   render() {
@@ -71,7 +100,6 @@ class ProductosAdmin extends Component {
         {/* Sidebar */}
         <aside className="mr-4" style={{ width: '250px' }}>
           <nav className="d-flex flex-column">
-            {/* Botón para volver a Admin.jsx */}
             <Link to="/admin" className="text-left mb-2 d-flex align-items-center btn btn-light">
               <LayoutDashboard className="mr-2" />
               Panel de control
@@ -80,12 +108,10 @@ class ProductosAdmin extends Component {
               <Package className="mr-2" />
               Productos
             </Button>
-            {/* Botón de "Usuarios" que redirige a UsuariosAdmin.jsx */}
             <Link to="/admin/usuarios" className="text-left mb-2 d-flex align-items-center btn btn-light">
               <Users className="mr-2" />
               Usuarios
             </Link>
-            {/* Botón de "Ventas" que redirige a AdminVentas.jsx */}
             <Link to="/admin/ventas" className="text-left mb-2 d-flex align-items-center btn btn-light">
               <ShoppingCart className="mr-2" />
               Ventas
@@ -107,30 +133,39 @@ class ProductosAdmin extends Component {
                 style={{ maxWidth: '200px' }}
               />
               <FormControl
-                placeholder="Categoria"
+                placeholder="Categoría"
                 name="categoria"
-                value={this.state.nuevoProducto.talle}
-                onChange={this.handleInputChange}
-                style={{ maxWidth: '100px' }}
-              />
-              <FormControl
-                placeholder="Precio"
-                name="precio"
-                value={this.state.nuevoProducto.color}
-                onChange={this.handleInputChange}
-                style={{ maxWidth: '100px' }}
-              />
-              <FormControl
-                placeholder="Stock disponible"
-                name="stock"
-                value={this.state.nuevoProducto.codigo}
+                value={this.state.nuevoProducto.categoria}
                 onChange={this.handleInputChange}
                 style={{ maxWidth: '150px' }}
               />
               <FormControl
-                type="file"
-                onChange={this.handleImageChange}
-                style={{ maxWidth: '200px' }}
+                placeholder="Precio"
+                name="precio"
+                value={this.state.nuevoProducto.precio}
+                onChange={this.handleInputChange}
+                style={{ maxWidth: '100px' }}
+              />
+              <FormControl
+                placeholder="Stock"
+                name="stock"
+                value={this.state.nuevoProducto.stock}
+                onChange={this.handleInputChange}
+                style={{ maxWidth: '100px' }}
+              />
+              <FormControl
+                placeholder="Descripción"
+                name="descripcion"
+                value={this.state.nuevoProducto.descripcion}
+                onChange={this.handleInputChange}
+                style={{ maxWidth: '250px' }}
+              />
+              <FormControl
+                placeholder="Marca"
+                name="marca"
+                value={this.state.nuevoProducto.marca}
+                onChange={this.handleInputChange}
+                style={{ maxWidth: '150px' }}
               />
               <Button variant="dark" onClick={this.agregarProducto}>
                 {this.state.editando ? "Guardar Cambios" : "Agregar"}
@@ -144,21 +179,24 @@ class ProductosAdmin extends Component {
               <thead>
                 <tr>
                   <th>Nombre</th>
-                  <th>Talle</th>
-                  <th>Color</th>
-                  <th>C. de producto</th>
-                  <th>Cantidad</th>
+                  <th>Categoría</th>
+                  <th>Precio</th>
+                  <th>Stock</th>
+                  <th>Descripción</th>
+                  <th>Marca</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
               <tbody>
-                {this.state.productos.map((producto) => (
+              {Array.isArray(this.state.productos) && this.state.productos.length > 0 ? (
+                this.state.productos.map((producto) => (
                   <tr key={producto.id}>
                     <td>{producto.nombre}</td>
-                    <td>{producto.talle}</td>
-                    <td>{producto.color}</td>
-                    <td>{producto.codigo}</td>
-                    <td>{producto.cantidad}</td>
+                    <td>{producto.categoria}</td>
+                    <td>{producto.precio}</td>
+                    <td>{producto.stock}</td>
+                    <td>{producto.descripcion}</td>
+                    <td>{producto.marca}</td>
                     <td>
                       <div className="d-flex gap-2">
                         <Button variant="light" className="p-1" onClick={() => this.iniciarEdicion(producto)}>
@@ -170,8 +208,13 @@ class ProductosAdmin extends Component {
                       </div>
                     </td>
                   </tr>
-                ))}
-              </tbody>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="7" className="text-center">No hay productos disponibles</td>
+                </tr>
+              )}
+            </tbody>
             </Table>
           </div>
         </main>
