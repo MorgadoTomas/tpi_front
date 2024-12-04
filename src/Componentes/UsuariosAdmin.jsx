@@ -54,14 +54,6 @@ class UsuariosAdmin extends Component {
               <ShoppingCart className="mr-2" />
               Ventas
             </Button>
-            <Button variant="light" className="text-left mb-2 d-flex align-items-center">
-              <BarChart className="mr-2" />
-              Análisis y Reportes
-            </Button>
-            <Button variant="light" className="text-left mb-2 d-flex align-items-center">
-              <Settings className="mr-2" />
-              Configuración
-            </Button>
           </nav>
         </aside>
 

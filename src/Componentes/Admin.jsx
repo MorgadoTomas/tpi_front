@@ -7,20 +7,6 @@ class Admin extends Component {
   render() {
     return (
       <div className="min-vh-100 bg-light">
-        {/* Header */}
-        <header className="bg-white shadow-sm">
-          <div className="container px-4 py-3 d-flex align-items-center justify-content-between">
-            <div className="d-flex align-items-center">
-              <h1 className="h5 font-weight-bold mr-4">TechStore Admin</h1>
-              <div className="h2 font-weight-bold">(LOGO)</div>
-            </div>
-            <div className="d-flex align-items-center">
-              <User className="mr-2" />
-              <span>Admin</span>
-            </div>
-          </div>
-        </header>
-
         {/* Main Content */}
         <div className="container py-4 d-flex">
           {/* Sidebar */}
@@ -42,14 +28,6 @@ class Admin extends Component {
                 <ShoppingCart className="mr-2" />
                 Ventas
               </Link>
-              <Button variant="light" className="text-left mb-2 d-flex align-items-center">
-                <BarChart className="mr-2" />
-                Análisis y Reportes
-              </Button>
-              <Button variant="light" className="text-left mb-2 d-flex align-items-center">
-                <Settings className="mr-2" />
-                Configuración
-              </Button>
             </nav>
           </aside>
 

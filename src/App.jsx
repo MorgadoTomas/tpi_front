@@ -13,7 +13,7 @@ import ProductoDetallado from './Componentes/ProductoDetallado';
 import Admin from './Componentes/Admin';
 import ProductosAdmin from './Componentes/ProductosAdmin';
 import UsuariosAdmin from './Componentes/UsuariosAdmin';
-import VentasAdmin from "./VentasAdmin";
+import VentasAdmin from "./Componentes/VentasAdmin";
 import PrivateRoute from './Componentes/PrivateRoute';  // Importa el componente PrivateRoute
 
 class App extends Component {
@@ -25,33 +25,18 @@ class App extends Component {
           <NavBar />
           
           <main className="flex-grow-1 container my-4">
-            <Routes>
-              <Route path="/" element={<Inicio />} />
-              <Route path="/productos" element={<Productos />} />
-              <Route path="/registro" element={<MainForm />} />
-              <Route path="/login" element={<Login />} />
-
-              {/* Rutas protegidas */}
-              <Route
-                path="/admin"
-                element={<PrivateRoute><Admin /></PrivateRoute>}
-              />
-              <Route
-                path="/admin/productos"
-                element={<PrivateRoute><ProductosAdmin /></PrivateRoute>}
-              />
-              <Route
-                path="/admin/usuarios"
-                element={<PrivateRoute><UsuariosAdmin /></PrivateRoute>}
-              />
-              {/* Agregar ruta para VentasAdmin */}
-              <Route
-                path="/admin/ventas"
-                element={<PrivateRoute><VentasAdmin /></PrivateRoute>}
-              />
-            </Routes>
-          </main>
-        </div>
+          <Routes>
+          <Route path="/" element={<Inicio />} />
+          <Route path="/productos" element={<Productos />} />
+          <Route path="/registro" element={<MainForm />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/admin" element={<Admin />} />
+          <Route path="/admin/productos" element={<ProductosAdmin />} />
+          <Route path="/admin/usuarios" element={<UsuariosAdmin />} />
+          <Route path="/admin/ventas" element={<VentasAdmin />} />
+        </Routes>
+      </main>
+      </div>
       </Router>
     );
   }
