@@ -27,7 +27,7 @@ const FormularioCompra = () => {
         });
 
         // Enviar los datos de cada producto al backend
-        await axios.post('http://localhost:4000/api/admin/carrito', {
+        await axios.post('http://localhost:8080/api/admin/carrito', {
           cantidad: cantidad,
           precio_u: producto.precio,
           id_producto: id,  // Si es necesario para el backend
