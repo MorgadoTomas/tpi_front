@@ -38,19 +38,24 @@ class App extends Component {
           <NavBar />
           
           <main className="flex-grow-1 container my-4">
-          <Routes>
-            <Route path="/" element={<Inicio />} />
-            <Route path="/inicio" element={<Inicio />} /> {/* Ruta explícita para /inicio */}
-            <Route path="/productos" element={<Productos />} />
-            <Route path="/registro" element={<MainForm />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route path="/admin/productos" element={<ProductosAdmin />} />
-            <Route path="/admin/usuarios" element={<UsuariosAdmin />} />
-            <Route path="/admin/ventas" element={<VentasAdmin />} />
-          </Routes>
-      </main>
-      </div>
+            <Routes>
+              <Route path="/" element={<Inicio searchTerm={this.state.searchTerm} />} />
+              <Route path="/productos" element={<Productos />} />
+              <Route path="/registro" element={<MainForm />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/carrito" element={<CarritoProductos />} />
+              <Route path="/producto/:id" element={<ProductoDetallado />} />
+              <Route path="/admin" element={<Admin />} />
+              {/* Ruta para el formulario de compra */}
+              <Route path="/formulario-compra" element={<FormularioCompra />} />
+              <Route path="/admin/productos" element={<ProductosAdmin />} /> {/* Ruta para ProductosAdmin */}
+              <Route path="/admin/usuarios" element={<UsuariosAdmin />} /> {/* Ruta para UsuariosAdmin */}
+              <Route path="/" element={<Inicio />} />
+              <Route path="/inicio" element={<Inicio />} /> {/* Ruta explícita para /inicio */}
+              <Route path="/admin/ventas" element={<VentasAdmin />} />
+            </Routes>
+          </main>
+        </div>
       </Router>
     );
   }

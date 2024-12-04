@@ -8,13 +8,19 @@ class Inicio extends Component {
     this.state = {
       productos: [],
       error: null,
-      usuario: '', // Agregar el estado para el nombre del usuario
+      usuario: '', // Estado para el nombre de usuario
     };
   }
 
   componentDidMount() {
+    // Suponiendo que el nombre del usuario viene de un token o API
+    const usuario = localStorage.getItem('nombreUsuario'); // o desde una API que traiga el usuario logueado
+    if (usuario) {
+      this.setState({ usuario });
+    }
+
     axios
-      .get('http://localhost:8080/api/admin/productos')
+      .get('http://localhost:4000/api/admin/productos')
       .then((response) => {
         this.setState({ productos: response.data.productos });
       })
@@ -24,7 +30,7 @@ class Inicio extends Component {
   }
 
   render() {
-    const { productos } = this.state;
+    const { productos, usuario } = this.state;
     const { searchTerm } = this.props;
 
     const productosFiltrados = productos.filter((producto) =>
@@ -34,6 +40,9 @@ class Inicio extends Component {
 
     return (
       <div className="container">
+        {/* Mostrar bienvenida si el usuario está logueado */}
+        {usuario && <h2>Bienvenido, {usuario}!</h2>}
+
         <h1 className="my-4">Productos</h1>
         <div className="row">
           {productosFiltrados.map((producto) => (
@@ -41,7 +50,7 @@ class Inicio extends Component {
               <Link to={`/producto/${producto.id}`} className="text-decoration-none">
                 <div className="card">
                   <img
-                    src={`http://localhost:8080/images/${producto.imagenes ? producto.imagenes[0] : 'default.jpg'}`}
+                    src={`http://localhost:4000/images/${producto.imagenes ? producto.imagenes[0] : 'default.jpg'}`}
                     className="card-img-top"
                     alt={producto.nombre}
                     style={{ height: '250px', objectFit: 'cover' }}

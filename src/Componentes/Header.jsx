@@ -8,7 +8,8 @@ class Header extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      searchTerm: ''
+      searchTerm: '',
+      isLoggedIn: localStorage.getItem('token') !== null
     };
   }
 
@@ -16,13 +17,6 @@ class Header extends Component {
     this.setState({ searchTerm: event.target.value });
     this.props.onSearch(event.target.value);
   };
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      isLoggedIn: localStorage.getItem('token') !== null,
-    };
-  }
 
   componentDidMount() {
     window.addEventListener('storage', this.handleStorageChange);
@@ -47,11 +41,6 @@ class Header extends Component {
           </Link>
 
           <div className="flex-grow-1 mx-4 position-relative">
-            <input type="search" placeholder="Buscar..." className="form-control" />
-            <Search
-              className="position-absolute"
-              style={{ top: '50%', right: '10px', transform: 'translateY(-50%)', color: 'gray' }}
-            />
             <input
               type="search"
               placeholder="Buscar..."
@@ -73,9 +62,6 @@ class Header extends Component {
                 <Button variant="outline-primary">Iniciar sesión</Button>
               </Link>
             )}
-            <Link to="/login">
-              <Button variant="outline-secondary">Iniciar Sesión</Button>
-            </Link>
           </div>
         </div>
       </header>
