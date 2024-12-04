@@ -85,16 +85,21 @@ class ProductosAdmin extends Component {
     });
   }
 
-  eliminarProducto = async (productoId) => {
-    try {
-      await axios.delete(`/api/productos/${productoId}`);
-      this.setState((prevState) => ({
-        productos: prevState.productos.filter((producto) => producto.id !== productoId)
-      }));
-    } catch (error) {
-      console.error("Error al eliminar producto:", error);
-    }
-  }
+  eliminarProducto = (productoId) => {
+    axios.delete(`http://localhost:4000/api/admin/productos/${productoId}`)
+        .then(response => {
+            console.log('Producto eliminado con éxito:', response);
+            // Aquí puedes actualizar el estado para eliminar el producto de la lista
+            this.setState((prevState) => ({
+                productos: prevState.productos.filter(producto => producto.id !== productoId)
+            }));
+        })
+        .catch(error => {
+            console.error('Error al eliminar el producto:', error);
+            // Aquí puedes mostrar un mensaje de error al usuario si algo falla
+        });
+};
+
 
   render() {
     return (
@@ -200,14 +205,14 @@ class ProductosAdmin extends Component {
                     <td>{producto.descripcion}</td>
                     <td>{producto.marca}</td>
                     <td>
-                      <div className="d-flex gap-2">
-                        <Button variant="light" className="p-1" onClick={() => this.iniciarEdicion(producto)}>
-                          <Edit2 size={16} />
-                        </Button>
-                        <Button variant="light" className="p-1" onClick={() => this.eliminarProducto(producto.id)}>
-                          <Trash2 size={16} />
-                        </Button>
-                      </div>
+                    <div className="d-flex gap-2">
+                      <Button variant="light" className="p-1" onClick={() => this.iniciarEdicion(producto)}>
+                        <Edit2 size={16} />
+                      </Button>
+                      <Button variant="light" className="p-1" onClick={() => this.eliminarProducto(producto.id)}>
+                        <Trash2 size={16} />
+                      </Button>
+                    </div>
                     </td>
                   </tr>
                 ))
