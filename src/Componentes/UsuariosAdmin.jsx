@@ -33,23 +33,6 @@ class UsuariosAdmin extends Component {
     });
   };
 
-  eliminarUsuario = (usuarioId) => {
-    // Realiza la petición para eliminar un usuario
-    axios.delete(`http://localhost:5000/api/usuarios/${usuarioId}`, {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
-    })
-    .then(response => {
-      // Si la eliminación fue exitosa, actualizar la lista de usuarios
-      this.setState((prevState) => ({
-        usuarios: prevState.usuarios.filter((usuario) => usuario.id !== usuarioId)
-      }));
-    })
-    .catch(error => {
-      console.error('Error al eliminar usuario:', error);
-    });
-  };
 
   handleFilterChange = (event) => {
     this.setState({ filtro: event.target.value });
