@@ -9,9 +9,14 @@ class Header extends Component {
     super(props);
     this.state = {
       searchTerm: '',
-      isLoggedIn: localStorage.getItem('token') !== null
+      isLoggedIn: localStorage.getItem('token') !== null // Verificación inicial del token
     };
   }
+
+  // Método para verificar si el usuario está logueado
+  checkLoginStatus = () => {
+    return localStorage.getItem('token') !== null;
+  };
 
   handleSearchChange = (event) => {
     this.setState({ searchTerm: event.target.value });
@@ -19,15 +24,22 @@ class Header extends Component {
   };
 
   componentDidMount() {
-    window.addEventListener('storage', this.handleStorageChange);
+    this.updateLoginStatus();  // Aseguramos que el estado se establezca cuando se monta el componente
+
+    window.addEventListener('storage', this.handleStorageChange); // Escucha cambios en el almacenamiento local
   }
 
   componentWillUnmount() {
-    window.removeEventListener('storage', this.handleStorageChange);
+    window.removeEventListener('storage', this.handleStorageChange); // Limpieza del evento
   }
 
   handleStorageChange = () => {
-    this.setState({ isLoggedIn: localStorage.getItem('token') !== null });
+    this.updateLoginStatus(); // Actualiza el estado cada vez que cambia el `localStorage`
+  };
+
+  updateLoginStatus = () => {
+    // Actualiza el estado del login basado en el localStorage
+    this.setState({ isLoggedIn: this.checkLoginStatus() });
   };
 
   render() {
@@ -68,4 +80,5 @@ class Header extends Component {
     );
   }
 }
+
 export default Header;
