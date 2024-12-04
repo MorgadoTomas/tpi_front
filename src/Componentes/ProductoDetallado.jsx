@@ -21,8 +21,16 @@ const ProductoDetallado = () => {
   }, [id]);
 
   const agregarAlCarrito = () => {
+    // Verificar si el usuario está logueado
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setMensaje('Debes iniciar sesión para agregar productos al carrito.');
+      setTimeout(() => setMensaje(''), 3000); // Ocultar mensaje después de 3 segundos
+      return; // Detener ejecución si el usuario no está logueado
+    }
+
     const carrito = JSON.parse(sessionStorage.getItem('carrito')) || [];
-    
+
     // Verificar si el producto ya está en el carrito
     const existeProducto = carrito.some((item) => item.id === producto.id);
 
@@ -34,6 +42,16 @@ const ProductoDetallado = () => {
       sessionStorage.setItem('carrito', JSON.stringify(carrito));
       setMensaje('Producto agregado al carrito.');
       setTimeout(() => setMensaje(''), 3000); // Ocultar mensaje después de 3 segundos
+    }
+  };
+
+  // Determinar el color del mensaje
+  const getMensajeColor = () => {
+    if (mensaje === 'Debes iniciar sesión para agregar productos al carrito.') {
+      return 'red'; // Color rojo para error
+    }
+    if (mensaje === 'Este producto ya está en el carrito.' || 'Producto agregado al carrito.') {
+      return 'green'; // Color verde para éxito
     }
   };
 
@@ -82,7 +100,7 @@ const ProductoDetallado = () => {
             >
               Agregar al carrito
             </button>
-            {mensaje && <p style={{ color: 'green', marginTop: '10px' }}>{mensaje}</p>}
+            {mensaje && <p style={{ color: getMensajeColor(), marginTop: '10px' }}>{mensaje}</p>}
           </div>
         </div>
       </main>
