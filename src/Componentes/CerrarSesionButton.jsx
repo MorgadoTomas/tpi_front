@@ -8,6 +8,9 @@ class CerrarSesionButton extends Component {
     localStorage.removeItem('token');
     localStorage.removeItem('usuario');
     
+    // Vacía el carrito del sessionStorage
+    sessionStorage.removeItem('carrito');
+    
     // Redirige al inicio después de cerrar sesión
     window.location.href = '/';
   };
