@@ -37,7 +37,7 @@ class ProductosAdmin extends Component {
         console.error("Error al cargar productos:", error);
       });
   };  
-
+  
   componentDidMount() {
     this.obtenerProductos(); // Cargar los productos cuando el componente se monta
   }
@@ -114,20 +114,6 @@ class ProductosAdmin extends Component {
         console.error('Error al agregar producto:', error);
       });
   };  
-  
-  // Función para obtener los productos actualizados
-  obtenerProductos = () => {
-    axios.get('http://localhost:4000/api/admin/productos')
-      .then(response => {
-        if (response.data.status === 'ok') {
-          this.setState({ productos: response.data.productos });
-        }
-      })
-      .catch(error => {
-        console.error('Error al obtener los productos:', error);
-      });
-  }
-  
 
   iniciarEdicion = (producto) => {
     this.setState({
