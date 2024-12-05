@@ -64,21 +64,25 @@ class ProductosAdmin extends Component {
 
   agregarProducto = () => {
     const { nuevoProducto, imagenes } = this.state;
-  
+
     const formData = new FormData();
     formData.append('nombre', nuevoProducto.nombre);
     formData.append('stock', nuevoProducto.stock);
     formData.append('precio', nuevoProducto.precio);
     formData.append('descrip', nuevoProducto.descripcion);
     formData.append('marca', nuevoProducto.marca);
-  
+    formData.append('categoria', nuevoProducto.categoria);  // Añadir categoría
+    
     // Agregar las imágenes al FormData
     if (imagenes && imagenes.length > 0) {
       Array.from(imagenes).forEach(imagen => {
         formData.append('imagen', imagen);
       });
     }
-  
+
+    // Log para verificar los datos enviados
+    console.log('Datos enviados del producto:', Object.fromEntries(formData.entries()));
+
     axios.post('http://localhost:4000/api/admin/productos', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
@@ -91,8 +95,8 @@ class ProductosAdmin extends Component {
     .catch(error => {
       console.error('Error al agregar producto:', error);
     });
-  }
-
+}
+ 
   iniciarEdicion = (producto) => {
     this.setState({
       nuevoProducto: { ...producto },
