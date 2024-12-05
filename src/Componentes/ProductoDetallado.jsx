@@ -21,8 +21,16 @@ const ProductoDetallado = () => {
   }, [id]);
 
   const agregarAlCarrito = () => {
+    // Verificar si el usuario está logueado
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setMensaje('Debes iniciar sesión para agregar productos al carrito.');
+      setTimeout(() => setMensaje(''), 3000); // Ocultar mensaje después de 3 segundos
+      return; // Detener ejecución si el usuario no está logueado
+    }
+
     const carrito = JSON.parse(sessionStorage.getItem('carrito')) || [];
-    
+
     // Verificar si el producto ya está en el carrito
     const existeProducto = carrito.some((item) => item.id === producto.id);
 
@@ -35,6 +43,17 @@ const ProductoDetallado = () => {
       setMensaje('Producto agregado al carrito.');
       setTimeout(() => setMensaje(''), 3000); // Ocultar mensaje después de 3 segundos
     }
+  };
+
+  // Determinar el color del mensaje
+  const getMensajeColor = () => {
+    if (mensaje === 'Debes iniciar sesión para agregar productos al carrito.') {
+      return 'red'; // Color rojo para error
+    }
+    if (mensaje === 'Este producto ya está en el carrito.' || mensaje === 'Producto agregado al carrito.') {
+      return 'green'; // Color verde para éxito
+    }
+    return 'black'; // Color por defecto
   };
 
   if (error) return <p style={{ color: 'red' }}>{error}</p>;
@@ -70,7 +89,7 @@ const ProductoDetallado = () => {
           {/* Detalles */}
           <div className="col-md-6">
             <h1 className="h3 mb-3">{producto.nombre}</h1>
-            <p className="display-4 mb-2">{producto.precio}</p>
+            <p className="display-4 mb-2">${producto.precio}</p>
             <p className="text-muted">{producto.descripcion}</p>
             <ul>
               <li><strong>Marca:</strong> {producto.marca}</li>
@@ -82,7 +101,7 @@ const ProductoDetallado = () => {
             >
               Agregar al carrito
             </button>
-            {mensaje && <p style={{ color: 'green', marginTop: '10px' }}>{mensaje}</p>}
+            {mensaje && <p style={{ color: getMensajeColor(), marginTop: '10px' }}>{mensaje}</p>}
           </div>
         </div>
       </main>
