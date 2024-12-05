@@ -13,7 +13,7 @@ const VentasAdmin = () => {
   useEffect(() => {
     const fetchVentas = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/api/admin/ventas');
+        const response = await axios.get('http://localhost:4000/api/admin/ventas');
         setVentas(response.data);
       } catch (error) {
         console.error('Error al obtener las ventas:', error);

@@ -32,7 +32,7 @@ class MainForm extends Component {
       password,
       mail: email,
     };
-    const url = "http://localhost:8080/api/usuarios/registrar";
+    const url = "http://localhost:4000/api/usuarios/registrar";
 
     try {
       const resp = await axios.post(url, datos);
