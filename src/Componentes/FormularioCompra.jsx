@@ -87,7 +87,7 @@ class FormularioCompra extends Component {
         this.setState({ isSubmitting: true, error: '' }); // Desactivar el botón y limpiar errores
 
         try {
-            const compraResponse = await axios.post('http://localhost:4000/api/admin/carrito', {
+            const compraResponse = await axios.post('http://localhost:8080/api/admin/carrito', {
                 id_usuario: idUsuario, // Aquí enviamos el idUsuario
                 id_met_de_pago: idMetodoPago,
                 direccion,
@@ -99,7 +99,7 @@ class FormularioCompra extends Component {
 
             const detallePromises = carrito.map((producto) => {
                 const { id, cantidad, precio } = producto;
-                return axios.post('http://localhost:4000/api/admin/carrito/detalle', {
+                return axios.post('http://localhost:8080/api/admin/carrito/detalle', {
                     id_compra: compraIdGenerada,
                     id_producto: id,
                     cantidad,
@@ -111,7 +111,7 @@ class FormularioCompra extends Component {
 
             const stockPromises = carrito.map((producto) => {
                 const { id, cantidad } = producto;
-                return axios.put('http://localhost:4000/api/admin/carrito', {
+                return axios.put('http://localhost:8080/api/admin/carrito', {
                     stock: cantidad,
                     id,
                 });
