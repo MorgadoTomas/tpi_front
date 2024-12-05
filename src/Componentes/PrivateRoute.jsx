@@ -5,7 +5,8 @@ class PrivateRoute extends Component {
   render() {
     const { children } = this.props; // Usamos children en lugar de element
 
-    // Aquí va tu lógica para verificar si el usuario está autenticado
+    // Verifica si el usuario está autenticado (por ejemplo, si hay un token en el localStorage)
+    const isAuthenticated = localStorage.getItem('token'); 
 
     if (!isAuthenticated) {
       // Si no está autenticado, redirige a la página de login

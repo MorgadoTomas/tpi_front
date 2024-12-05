@@ -1,23 +1,42 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 
-class FormularioCompra extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            idUsuario: '', // El ID de usuario ya no será ingresado manualmente
-            idMetodoPago: '',
-            direccion: '',
-            total: 0,
-            compraId: null,
-            carrito: [],
-            error: '',
-            isSubmitting: false,
-            nombreTitular: '',
-            numeroTarjeta: '',
-            fechaExpiracion: '',
-            codigoSeguridad: '',
-        };
+const FormularioCompra = () => {
+  const [carrito, setCarrito] = useState([]);
+
+  // Obtener el carrito desde sessionStorage
+  useEffect(() => {
+    const carritoData = JSON.parse(sessionStorage.getItem('carrito')) || [];
+    setCarrito(carritoData);
+  }, []);
+
+  // Enviar los datos al backend
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      // Iterar sobre los productos del carrito
+      for (let producto of carrito) {
+        const { id, cantidad, precio_u } = producto;
+
+        // Loguear los datos antes de enviarlos
+        console.log('Enviando datos al backend:', {
+          cantidad: cantidad,
+          precio_u: producto.precio,
+          id_producto: id,  // Si es necesario para el backend
+        });
+
+        // Enviar los datos de cada producto al backend
+        await axios.post('http://localhost:4000/api/admin/carrito', {
+          cantidad: cantidad,
+          precio_u: producto.precio,
+          id_producto: id,  // Si es necesario para el backend
+        });
+      }
+
+      console.log('Compra registrada correctamente');
+    } catch (error) {
+      console.error('Error al enviar los datos:', error);
     }
 
     componentDidMount() {

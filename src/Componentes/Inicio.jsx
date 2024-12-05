@@ -20,7 +20,7 @@ class Inicio extends Component {
     }
 
     axios
-      .get('http://localhost:8080/api/admin/productos')
+      .get('http://localhost:4000/api/admin/productos')
       .then((response) => {
         this.setState({ productos: response.data.productos });
       })
@@ -44,7 +44,7 @@ class Inicio extends Component {
         {usuario && (
           <div className="alert alert-info text-center mt-4">
             <h2>¡Bienvenido, {usuario}!</h2>
-            <p>¡Estamos felices de verte de nuevo!</p>
+            <p>¡Estamos felices de verte!</p>
           </div>
         )}
 
@@ -55,7 +55,7 @@ class Inicio extends Component {
               <Link to={`/producto/${producto.id}`} className="text-decoration-none">
                 <div className="card">
                   <img
-                    src={`http://localhost:8080/images/${producto.imagenes ? producto.imagenes[0] : 'default.jpg'}`}
+                    src={`http://localhost:4000/images/${producto.imagenes ? producto.imagenes[0] : 'default.jpg'}`}
                     className="card-img-top"
                     alt={producto.nombre}
                     style={{ height: '250px', objectFit: 'cover' }}
