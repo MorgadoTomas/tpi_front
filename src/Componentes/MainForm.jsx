@@ -42,6 +42,9 @@ class MainForm extends Component {
           error: '',
           isLoggedIn: true,
         });
+
+        // Guardar el ID del usuario y el token
+        localStorage.setItem('userId', resp.data.userId);  // Guardar el ID del usuario
         localStorage.setItem('token', resp.data.token);
         localStorage.setItem('usuario', usuario);
         window.dispatchEvent(new Event('storage')); // Actualiza otros componentes si escuchan el evento
@@ -61,9 +64,9 @@ class MainForm extends Component {
   render() {
     const { nombre, apellido, usuario, password, email, error, success, isLoggedIn } = this.state;
 
-  if (isLoggedIn) {
-    return <Navigate to="/" />;
-  }
+    if (isLoggedIn) {
+      return <Navigate to="/" />;
+    }
 
     return (
       <Form onSubmit={this.registroDeUsuario} className="max-w-md mx-auto space-y-4">

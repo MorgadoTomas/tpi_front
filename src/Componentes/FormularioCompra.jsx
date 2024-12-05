@@ -5,7 +5,7 @@ class FormularioCompra extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            idUsuario: '',
+            idUsuario: '', // El ID de usuario ya no será ingresado manualmente
             idMetodoPago: '',
             direccion: '',
             total: 0,
@@ -21,6 +21,18 @@ class FormularioCompra extends Component {
     }
 
     componentDidMount() {
+        // Obtener el idUsuario desde el localStorage (el ID del usuario logueado)
+        const idUsuario = localStorage.getItem('userId'); 
+
+        // Si el usuario no está logueado, redirigir o manejar el error
+        if (!idUsuario) {
+            this.setState({ error: 'Debe iniciar sesión para realizar una compra.' });
+            return;
+        }
+
+        // Establecer el idUsuario en el estado
+        this.setState({ idUsuario });
+
         const carritoGuardado = JSON.parse(sessionStorage.getItem('carrito')) || [];
 
         // Normalizar las cantidades de los productos (mínimo 1)
@@ -76,7 +88,7 @@ class FormularioCompra extends Component {
 
         try {
             const compraResponse = await axios.post('http://localhost:8080/api/admin/carrito', {
-                id_usuario: idUsuario,
+                id_usuario: idUsuario, // Aquí enviamos el idUsuario
                 id_met_de_pago: idMetodoPago,
                 direccion,
                 total,
@@ -120,23 +132,12 @@ class FormularioCompra extends Component {
     };
 
     render() {
-        const { idUsuario, idMetodoPago, direccion, total, compraId, error, isSubmitting, nombreTitular, numeroTarjeta, fechaExpiracion, codigoSeguridad } = this.state;
+        const { idMetodoPago, direccion, total, compraId, error, isSubmitting, nombreTitular, numeroTarjeta, fechaExpiracion, codigoSeguridad } = this.state;
 
         return (
             <div className="container mt-4">
                 <h2 className="text-center mb-4">Formulario de Compra</h2>
                 <form className="card p-4 shadow" onSubmit={this.handleSubmit}>
-                    <div className="mb-3">
-                        <label htmlFor="idUsuario" className="form-label">ID de Usuario:</label>
-                        <input
-                            type="number"
-                            id="idUsuario"
-                            className="form-control"
-                            value={idUsuario}
-                            onChange={this.handleChange}
-                            placeholder="Ingrese su ID de usuario"
-                        />
-                    </div>
                     <div className="mb-3">
                         <label className="form-label">Método de Pago:</label>
                         <div className="form-check">
@@ -236,16 +237,11 @@ class FormularioCompra extends Component {
                     <button
                         type="submit"
                         className="btn btn-primary w-100"
-                        disabled={isSubmitting || !!compraId} // Deshabilitar si ya se envió o hay una compra registrada
+                        disabled={isSubmitting}
                     >
-                        {isSubmitting ? 'Procesando...' : 'Crear Compra'}
+                        {isSubmitting ? 'Procesando...' : 'Finalizar Compra'}
                     </button>
                 </form>
-                {compraId && (
-                    <div className="alert alert-success mt-4">
-                        Compra creada con éxito. ID de la compra: {compraId}
-                    </div>
-                )}
             </div>
         );
     }
