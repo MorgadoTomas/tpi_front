@@ -1,9 +1,3 @@
-import React, { Component } from 'react';
-import { Button, FormControl, Table, Form } from 'react-bootstrap';
-import { Edit2, Trash2, LayoutDashboard, Package, Users, ShoppingCart } from "lucide-react";
-import { Link } from 'react-router-dom'; // Importa Link de react-router-dom
-import axios from 'axios'; // Asegúrate de tener axios instalado
-
 class ProductosAdmin extends Component {
   constructor(props) {
     super(props);
@@ -15,37 +9,27 @@ class ProductosAdmin extends Component {
         stock: '',
         descripcion: '',
         marca: '',
-        imagen: null,  // Inicializa el valor de imagen
+        imagen: null,
       },
       productos: [],
       editando: false,
     };
+    // Crear una referencia para el campo de archivo
+    this.inputFileRef = React.createRef();
   }
 
   obtenerProductos = async () => {
     try {
       const response = await axios.get('http://localhost:4000/api/admin/productos');
       console.log("Productos cargados:", response.data);
-      this.setState({ productos: response.data });
+      this.setState({ productos: response.data.productos || [] });
     } catch (error) {
       console.error("Error al cargar productos:", error);
     }
   };
 
   componentDidMount() {
-    const usuario = localStorage.getItem('usuario'); // o desde una API que traiga el usuario logueado
-    if (usuario) {
-      this.setState({ usuario });
-    }
-
-    axios
-      .get('http://localhost:4000/api/admin/productos')
-      .then((response) => {
-        this.setState({ productos: response.data.productos });
-      })
-      .catch((error) => {
-        console.error('Error al cargar los productos:', error);
-      });
+    this.obtenerProductos();
   }
 
   handleInputChange = (event) => {
@@ -56,33 +40,32 @@ class ProductosAdmin extends Component {
         [name]: value
       }
     });
-  }
+  };
 
   handleFileChange = (e) => {
     this.setState({ imagenes: e.target.files });
-  }
+  };
 
   agregarProducto = () => {
     const { nuevoProducto, imagenes } = this.state;
-  
+
     const formData = new FormData();
     formData.append('nombre', nuevoProducto.nombre);
     formData.append('stock', nuevoProducto.stock);
     formData.append('precio', nuevoProducto.precio);
     formData.append('descrip', nuevoProducto.descripcion);
     formData.append('marca', nuevoProducto.marca);
-    formData.append('categoria', nuevoProducto.categoria);  // Añadir categoría
-  
+    formData.append('categoria', nuevoProducto.categoria);
+
     // Agregar las imágenes al FormData
     if (imagenes && imagenes.length > 0) {
       Array.from(imagenes).forEach(imagen => {
         formData.append('imagen', imagen);
       });
     }
-  
-    // Log para verificar los datos enviados
+
     console.log('Datos enviados del producto:', Object.fromEntries(formData.entries()));
-  
+
     axios.post('http://localhost:4000/api/admin/productos', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
@@ -90,7 +73,7 @@ class ProductosAdmin extends Component {
     })
     .then(response => {
       console.log('Producto agregado con éxito:', response);
-  
+
       // Limpiar el formulario y las imágenes después de agregar el producto
       this.setState({
         nuevoProducto: {
@@ -100,26 +83,31 @@ class ProductosAdmin extends Component {
           stock: '',
           descripcion: '',
           marca: '',
-          imagen: null,  // Limpiar la imagen
+          imagen: null,
         },
-        imagenes: [] // Limpiar las imágenes
+        imagenes: [], // Limpiar las imágenes
       });
-  
-      // Llamar a obtenerProductos para recargar la lista de productos
-      this.obtenerProductos(); // Esta función debe actualizar correctamente el estado
+
+      // Limpiar el campo de archivo
+      if (this.inputFileRef.current) {
+        this.inputFileRef.current.value = ''; // Limpiar el input de archivo
+      }
+
+      // Recargar la lista de productos
+      this.obtenerProductos();
     })
     .catch(error => {
       console.error('Error al agregar producto:', error);
     });
-  };  
- 
+  };
+
   iniciarEdicion = (producto) => {
     this.setState({
       nuevoProducto: { ...producto },
       editando: true,
       productoEditadoId: producto.id
     });
-  }
+  };
 
   eliminarProducto = (productoId) => {
     axios.delete(`http://localhost:4000/api/admin/productos/${productoId}`)
@@ -158,7 +146,7 @@ class ProductosAdmin extends Component {
             </Link>
           </nav>
         </aside>
-  
+
         {/* Main Content */}
         <main className="flex-grow-1 container">
           {/* Formulario para agregar o editar producto */}
@@ -217,7 +205,7 @@ class ProductosAdmin extends Component {
                   style={{ maxWidth: '150px' }}
                 />
               </div>
-  
+
               <div className="d-flex flex-wrap gap-3">
                 <FormControl
                   placeholder="Descripción"
@@ -234,7 +222,7 @@ class ProductosAdmin extends Component {
                   style={{ maxWidth: '200px' }}
                 />
               </div>
-  
+
               {/* Campo para seleccionar imagen */}
               <Form.Group>
                 <Form.Label>Cargar Imagen</Form.Label>
@@ -242,9 +230,10 @@ class ProductosAdmin extends Component {
                   type="file"
                   onChange={this.handleFileChange}
                   multiple
+                  ref={this.inputFileRef}  {/* Asignamos la referencia */}
                 />
               </Form.Group>
-  
+
               <div className="d-flex justify-content-end">
                 <Button variant="dark" onClick={this.agregarProducto}>
                   {this.state.editando ? "Guardar Cambios" : "Agregar"}
@@ -252,45 +241,47 @@ class ProductosAdmin extends Component {
               </div>
             </Form>
           </div>
-  
+
           {/* Tabla de productos */}
           <div className="py-4">
             <Table striped bordered hover responsive>
               <thead>
                 <tr>
                   <th>Nombre</th>
-                  <th>Categoría</th>
+                  <th>Categoria</th>
                   <th>Precio</th>
                   <th>Stock</th>
-                  <th>Descripción</th>
-                  <th>Marca</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
               <tbody>
-                {Array.isArray(this.state.productos) && this.state.productos.length > 0 ? (
-                  this.state.productos.map((producto, index) => (
-                    <tr key={producto.id || index}>
+                {this.state.productos.length === 0 ? (
+                  <tr>
+                    <td colSpan="5">No hay productos disponibles.</td>
+                  </tr>
+                ) : (
+                  this.state.productos.map((producto) => (
+                    <tr key={producto.id}>
                       <td>{producto.nombre}</td>
-                      <td>{producto.categoria}</td> {/* Mostrar la categoría aquí */}
-                      <td>{producto.precio}</td>
+                      <td>{producto.categoria}</td>
+                      <td>${producto.precio}</td>
                       <td>{producto.stock}</td>
-                      <td>{producto.descripcion}</td>
-                      <td>{producto.marca}</td>
                       <td>
-                        <div className="d-flex gap-2">
-                          <Button variant="light" className="p-1" onClick={() => this.iniciarEdicion(producto)}>
-                            <Edit2 size={16} />
-                          </Button>
-                          <Button variant="light" className="p-1" onClick={() => this.eliminarProducto(producto.id)}>
-                            <Trash2 size={16} />
-                          </Button>
-                        </div>
+                        <Button
+                          variant="primary"
+                          onClick={() => this.iniciarEdicion(producto)}
+                        >
+                          Editar
+                        </Button>
+                        <Button
+                          variant="danger"
+                          onClick={() => this.eliminarProducto(producto.id)}
+                        >
+                          Eliminar
+                        </Button>
                       </td>
                     </tr>
                   ))
-                ) : (
-                  <tr><td colSpan="7">No hay productos disponibles.</td></tr>
                 )}
               </tbody>
             </Table>
@@ -299,7 +290,6 @@ class ProductosAdmin extends Component {
       </div>
     );
   }
-  
 }
 
 export default ProductosAdmin;
