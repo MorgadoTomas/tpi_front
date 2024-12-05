@@ -62,7 +62,7 @@ class Header extends Component {
       <header className="bg-light py-3">
         <div className="container d-flex justify-content-between align-items-center">
           <Link to="/" className="h2 font-weight-bold text-decoration-none">
-            (LOGO)
+            TECHSHOP
           </Link>
 
           <div className="flex-grow-1 mx-4 position-relative">
