@@ -24,7 +24,7 @@ class ProductosAdmin extends Component {
 
   obtenerProductos = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/api/admin/productos');
+      const response = await axios.get('http://localhost:4000/api/admin/productos');
       console.log("Productos cargados:", response.data);
       this.setState({ productos: response.data });
     } catch (error) {
@@ -39,7 +39,7 @@ class ProductosAdmin extends Component {
     }
 
     axios
-      .get('http://localhost:8080/api/admin/productos')
+      .get('http://localhost:4000/api/admin/productos')
       .then((response) => {
         this.setState({ productos: response.data.productos });
       })
@@ -64,7 +64,7 @@ class ProductosAdmin extends Component {
 
   agregarProducto = () => {
     const { nuevoProducto, imagenes } = this.state;
-
+  
     const formData = new FormData();
     formData.append('nombre', nuevoProducto.nombre);
     formData.append('stock', nuevoProducto.stock);
@@ -72,30 +72,46 @@ class ProductosAdmin extends Component {
     formData.append('descrip', nuevoProducto.descripcion);
     formData.append('marca', nuevoProducto.marca);
     formData.append('categoria', nuevoProducto.categoria);  // Añadir categoría
-    
+  
     // Agregar las imágenes al FormData
     if (imagenes && imagenes.length > 0) {
       Array.from(imagenes).forEach(imagen => {
         formData.append('imagen', imagen);
       });
     }
-
+  
     // Log para verificar los datos enviados
     console.log('Datos enviados del producto:', Object.fromEntries(formData.entries()));
-
-    axios.post('http://localhost:8080/api/admin/productos', formData, {
+  
+    axios.post('http://localhost:4000/api/admin/productos', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     })
     .then(response => {
       console.log('Producto agregado con éxito:', response);
-      this.setState({ productos: [...this.state.productos, response.data], nuevoProducto: {}, imagenes: [] });
+  
+      // Limpiar el formulario y las imágenes después de agregar el producto
+      this.setState({
+        nuevoProducto: {
+          nombre: '',
+          categoria: '',
+          precio: '',
+          stock: '',
+          descripcion: '',
+          marca: '',
+          imagen: null,  // Limpiar la imagen
+        },
+        imagenes: [] // Limpiar las imágenes
+      });
+  
+      // Llamar a obtenerProductos para recargar la lista de productos
+      this.obtenerProductos(); // Esta función debe actualizar correctamente el estado
     })
     .catch(error => {
       console.error('Error al agregar producto:', error);
     });
-}
+  };  
  
   iniciarEdicion = (producto) => {
     this.setState({
@@ -106,7 +122,7 @@ class ProductosAdmin extends Component {
   }
 
   eliminarProducto = (productoId) => {
-    axios.delete(`http://localhost:8080/api/admin/productos/${productoId}`)
+    axios.delete(`http://localhost:4000/api/admin/productos/${productoId}`)
         .then(response => {
             console.log('Producto eliminado con éxito:', response);
             this.setState((prevState) => ({
