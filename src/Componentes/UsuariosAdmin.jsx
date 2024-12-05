@@ -20,7 +20,7 @@ class UsuariosAdmin extends Component {
 
 cargarUsuarios = () => {
     // Asegúrate de que el token esté en el almacenamiento local y que la URL sea correcta
-    axios.get('http://localhost:4000/api/usuarios', {
+    axios.get('http://localhost:8080/api/usuarios', {
         headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}` // Obtener el token de localStorage
         }

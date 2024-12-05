@@ -30,7 +30,7 @@ class Login extends Component {
     event.preventDefault();
     const { usuario, password } = this.state;
     const datos = { usuario, password };
-    const url = "http://localhost:4000/api/usuarios/login";
+    const url = "http://localhost:8080/api/usuarios/login";
   
     // Realizamos la solicitud POST usando axios
     axios.post(url, datos)
