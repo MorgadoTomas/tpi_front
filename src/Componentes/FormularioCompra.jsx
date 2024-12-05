@@ -5,7 +5,7 @@ class FormularioCompra extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            idUsuario: '',
+            idUsuario: '', 
             idMetodoPago: '',
             direccion: '',
             total: 0,
@@ -33,32 +33,41 @@ class FormularioCompra extends Component {
             ...producto,
             cantidad: producto.cantidad < 1 || isNaN(producto.cantidad) ? 1 : producto.cantidad,
         }));
-
         const totalCompra = carritoNormalizado
             .reduce((acc, producto) => acc + parseFloat(producto.precio) * producto.cantidad, 0)
             .toFixed(2);
-
         this.setState({ carrito: carritoNormalizado, total: totalCompra });
         sessionStorage.setItem('carrito', JSON.stringify(carritoNormalizado));
     }
 
     handleChange = (e) => {
         const { id, value } = e.target;
-        this.setState({ [id]: value });
+
+        if (id === 'numeroTarjeta') {
+            const numericValue = value.replace(/\D/g, ''); // Solo números
+            if (numericValue.length <= 16) {
+                this.setState({ numeroTarjeta: numericValue });
+            }
+        } else if (id === 'codigoSeguridad') {
+            const numericValue = value.replace(/\D/g, ''); // Solo números
+            if (numericValue.length <= 3) {
+                this.setState({ codigoSeguridad: numericValue });
+            }
+        } else {
+            this.setState({ [id]: value });
+        }
     };
 
     handleMetodoPagoChange = (e) => {
         this.setState({ idMetodoPago: e.target.value });
     };
 
-    handleSubmit = (e) => {
+    handleSubmit = async (e) => {
         e.preventDefault();
 
-        const { idUsuario, idMetodoPago, direccion, total, carrito, isSubmitting } = this.state;
+        const { idUsuario, idMetodoPago, direccion, total, carrito, isSubmitting, nombreTitular, numeroTarjeta, fechaExpiracion, codigoSeguridad } = this.state;
 
-        if (isSubmitting) {
-            return;
-        }
+        if (isSubmitting) return;
 
         if (!idUsuario || !idMetodoPago || !direccion || !total) {
             this.setState({ error: 'Por favor, complete todos los campos.' });
@@ -66,22 +75,30 @@ class FormularioCompra extends Component {
         }
 
         if (idMetodoPago === '2') {
-            const { nombreTitular, numeroTarjeta, fechaExpiracion, codigoSeguridad } = this.state;
             if (!nombreTitular || !numeroTarjeta || !fechaExpiracion || !codigoSeguridad) {
                 this.setState({ error: 'Por favor, complete todos los campos de la tarjeta.' });
+                return;
+            }
+            if (numeroTarjeta.length !== 16) {
+                this.setState({ error: 'El número de tarjeta debe tener 16 dígitos.' });
+                return;
+            }
+            if (codigoSeguridad.length !== 3) {
+                this.setState({ error: 'El código de seguridad debe tener 3 dígitos.' });
                 return;
             }
         }
 
         this.setState({ isSubmitting: true, error: '' });
 
-        axios.post('http://localhost:4000/api/admin/carrito', {
-            id_usuario: idUsuario,
-            id_met_de_pago: idMetodoPago,
-            direccion,
-            total,
-        })
-        .then((compraResponse) => {
+        try {
+            const compraResponse = await axios.post('http://localhost:4000/api/admin/carrito', {
+                id_usuario: idUsuario,
+                id_met_de_pago: idMetodoPago,
+                direccion,
+                total,
+            });
+
             const compraIdGenerada = compraResponse.data.compraId;
             this.setState({ compraId: compraIdGenerada });
 
@@ -95,9 +112,8 @@ class FormularioCompra extends Component {
                 });
             });
 
-            return Promise.all(detallePromises).then(() => compraIdGenerada);
-        })
-        .then((compraIdGenerada) => {
+            await Promise.all(detallePromises);
+
             const stockPromises = carrito.map((producto) => {
                 const { id, cantidad } = producto;
                 return axios.put('http://localhost:4000/api/admin/carrito', {
@@ -106,21 +122,18 @@ class FormularioCompra extends Component {
                 });
             });
 
-            return Promise.all(stockPromises).then(() => compraIdGenerada);
-        })
-        .then((compraIdGenerada) => {
+            await Promise.all(stockPromises);
+
             sessionStorage.removeItem('carrito');
             this.setState({ carrito: [] });
 
             alert(`Compra registrada con éxito. ID de la compra: ${compraIdGenerada}`);
-        })
-        .catch((err) => {
+        } catch (err) {
             console.error('Error al procesar la compra:', err);
             this.setState({ error: 'Hubo un error al registrar la compra.' });
-        })
-        .finally(() => {
+        } finally {
             this.setState({ isSubmitting: false });
-        });
+        }
     };
 
     render() {
@@ -131,18 +144,6 @@ class FormularioCompra extends Component {
                 <h2 className="text-center mb-4">Formulario de Compra</h2>
                 <form className="card p-4 shadow" onSubmit={this.handleSubmit}>
                     <div className="mb-3">
-                        <label className="form-label">Método de Pago:</label>
-                        <div className="form-check">
-                            <input
-                                type="radio"
-                                id="metodo1"
-                                name="metodoPago"
-                                value="1"
-                                className="form-check-input"
-                                onChange={this.handleMetodoPagoChange}
-                            />
-                            <label htmlFor="metodo1" className="form-check-label">Método de Pago 1</label>
-                        </div>
                         <div className="form-check">
                             <input
                                 type="radio"
@@ -152,7 +153,7 @@ class FormularioCompra extends Component {
                                 className="form-check-input"
                                 onChange={this.handleMetodoPagoChange}
                             />
-                            <label htmlFor="metodo2" className="form-check-label">Método de Pago 2</label>
+                            <label htmlFor="metodo2" className="form-check-label">Toca aqui para ingresar los datos de la tarjeta</label>
                         </div>
                     </div>
 
@@ -229,7 +230,7 @@ class FormularioCompra extends Component {
                     <button
                         type="submit"
                         className="btn btn-primary w-100"
-                        disabled={isSubmitting}
+                        disabled={isSubmitting || !!compraId}
                     >
                         {isSubmitting ? 'Procesando...' : 'Finalizar Compra'}
                     </button>

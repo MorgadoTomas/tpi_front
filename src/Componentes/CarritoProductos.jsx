@@ -1,4 +1,3 @@
-//prueba
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -78,12 +77,12 @@ class CarritoProductos extends Component {
             {carrito.map((producto, index) => (
               <div key={index} className="row mb-3">
                 <div className="col-md-3">
-                  <img
-                    src={`http://localhost:4000/images/${producto.imagenes[0]}`}
-                    alt={producto.nombre}
-                    className="w-100"
-                    style={{ height: '150px', objectFit: 'cover' }}
-                  />
+                <img
+                  src={`http://localhost:4000/images/${producto.imagenes[0]}`}
+                  alt={producto.nombre}
+                  className="w-100"
+                  style={{ height: '150px', objectFit: 'cover' }}
+                />
                 </div>
                 <div className="col-md-6">
                   <h4>{producto.nombre}</h4>

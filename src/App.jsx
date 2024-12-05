@@ -38,48 +38,49 @@ class App extends Component {
           <NavBar />
           
           <main className="flex-grow-1 container my-4">
-          <Routes>
-            <Route path="/" element={<Inicio searchTerm={this.state.searchTerm} />} />
-            <Route path="/productos" element={<Productos />} />
-            <Route path="/registro" element={<MainForm />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/carrito" element={<CarritoProductos />} />
-            <Route path="/producto/:id" element={<ProductoDetallado />} />
+            <Routes>
+              <Route path="/" element={<Inicio searchTerm={this.state.searchTerm} />} />
+              <Route path="/productos" element={<Productos />} />
+              <Route path="/registro" element={<MainForm />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/carrito" element={<CarritoProductos />} />
+              <Route path="/producto/:id" element={<ProductoDetallado />} />
+              <Route path="/formulario-compra" element={<FormularioCompra />} />
 
-            {/* Rutas protegidas */}
-            <Route 
-              path="/admin" 
-              element={
-                <PrivateRoute>
-                  <Admin />
-                </PrivateRoute>
-              } 
-            />
-            <Route 
-              path="/admin/productos" 
-              element={
-                <PrivateRoute>
-                  <ProductosAdmin />
-                </PrivateRoute>
-              } 
-            />
-            <Route 
-              path="/admin/usuarios" 
-              element={
-                <PrivateRoute>
-                  <UsuariosAdmin />
-                </PrivateRoute>
-              } 
-            />
-            <Route 
-              path="/admin/ventas" 
-              element={
-                <PrivateRoute>
-                  <VentasAdmin />
-                </PrivateRoute>
-              } 
-            />
-          </Routes>
+              {/* Rutas protegidas */}
+              <Route 
+                path="/admin" 
+                element={
+                  <PrivateRoute>
+                    <Admin />
+                  </PrivateRoute>
+                } 
+              />
+              <Route 
+                path="/admin/productos" 
+                element={
+                  <PrivateRoute>
+                    <ProductosAdmin />
+                  </PrivateRoute>
+                } 
+              />
+              <Route 
+                path="/admin/usuarios" 
+                element={
+                  <PrivateRoute>
+                    <UsuariosAdmin />
+                  </PrivateRoute>
+                } 
+              />
+              <Route 
+                path="/admin/ventas" 
+                element={
+                  <PrivateRoute>
+                    <VentasAdmin />
+                  </PrivateRoute>
+                } 
+              />
+            </Routes>
           </main>
         </div>
       </Router>
