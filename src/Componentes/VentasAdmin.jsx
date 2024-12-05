@@ -11,13 +11,14 @@ const VentasAdmin = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchVentas = async () => {
-      try {
-        const response = await axios.get('http://localhost:4000/api/admin/ventas');
-        setVentas(response.data);
-      } catch (error) {
-        console.error('Error al obtener las ventas:', error);
-      }
+    const fetchVentas = () => {
+      axios.get('http://localhost:4000/api/admin/ventas')
+        .then((response) => {
+          setVentas(response.data);
+        })
+        .catch((error) => {
+          console.error('Error al obtener las ventas:', error);
+        });
     };
 
     fetchVentas();

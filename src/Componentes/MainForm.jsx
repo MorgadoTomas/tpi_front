@@ -22,7 +22,7 @@ class MainForm extends Component {
     this.setState({ [event.target.name]: event.target.value });
   };
 
-  registroDeUsuario = async (event) => {
+  registroDeUsuario = (event) => {
     event.preventDefault();
     const { nombre, apellido, usuario, password, email } = this.state;
     const datos = {
@@ -34,31 +34,32 @@ class MainForm extends Component {
     };
     const url = "http://localhost:4000/api/usuarios/registrar";
 
-    try {
-      const resp = await axios.post(url, datos);
-      if (resp.data.status === 'ok') {
-        this.setState({
-          success: 'Usuario creado con éxito. Ahora puedes iniciar sesión.',
-          error: '',
-          isLoggedIn: true,
-        });
+    axios.post(url, datos)
+      .then((resp) => {
+        if (resp.data.status === 'ok') {
+          this.setState({
+            success: 'Usuario creado con éxito. Ahora puedes iniciar sesión.',
+            error: '',
+            isLoggedIn: true,
+          });
 
-        // Guardar el ID del usuario y el token
-        localStorage.setItem('userId', resp.data.userId);  // Guardar el ID del usuario
-        localStorage.setItem('token', resp.data.token);
-        localStorage.setItem('usuario', usuario);
-        window.dispatchEvent(new Event('storage')); // Actualiza otros componentes si escuchan el evento
-      }
-    } catch (error) {
-      let mensajeError = 'Ocurrió un error al crear el usuario.';
-      if (error.response) {
-        mensajeError = error.response.data.message || mensajeError;
-      }
-      this.setState({
-        error: mensajeError,
-        success: '',
+          // Guardar el ID del usuario y el token
+          localStorage.setItem('userId', resp.data.userId);  // Guardar el ID del usuario
+          localStorage.setItem('token', resp.data.token);
+          localStorage.setItem('usuario', usuario);
+          window.dispatchEvent(new Event('storage')); // Actualiza otros componentes si escuchan el evento
+        }
+      })
+      .catch((error) => {
+        let mensajeError = 'Ocurrió un error al crear el usuario.';
+        if (error.response) {
+          mensajeError = error.response.data.message || mensajeError;
+        }
+        this.setState({
+          error: mensajeError,
+          success: '',
+        });
       });
-    }
   };
 
   render() {

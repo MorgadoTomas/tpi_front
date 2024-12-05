@@ -5,7 +5,7 @@ class FormularioCompra extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            idUsuario: '', // El ID de usuario ya no será ingresado manualmente
+            idUsuario: '',
             idMetodoPago: '',
             direccion: '',
             total: 0,
@@ -21,32 +21,23 @@ class FormularioCompra extends Component {
     }
 
     componentDidMount() {
-        // Obtener el idUsuario desde el localStorage (el ID del usuario logueado)
         const idUsuario = localStorage.getItem('userId'); 
-
-        // Si el usuario no está logueado, redirigir o manejar el error
         if (!idUsuario) {
             this.setState({ error: 'Debe iniciar sesión para realizar una compra.' });
             return;
         }
-
-        // Establecer el idUsuario en el estado
         this.setState({ idUsuario });
 
         const carritoGuardado = JSON.parse(sessionStorage.getItem('carrito')) || [];
-
-        // Normalizar las cantidades de los productos (mínimo 1)
         const carritoNormalizado = carritoGuardado.map((producto) => ({
             ...producto,
             cantidad: producto.cantidad < 1 || isNaN(producto.cantidad) ? 1 : producto.cantidad,
         }));
 
-        // Calcular el total de la misma manera que en CarritoProductos
         const totalCompra = carritoNormalizado
             .reduce((acc, producto) => acc + parseFloat(producto.precio) * producto.cantidad, 0)
             .toFixed(2);
 
-        // Actualizar el carrito en el estado y en sessionStorage
         this.setState({ carrito: carritoNormalizado, total: totalCompra });
         sessionStorage.setItem('carrito', JSON.stringify(carritoNormalizado));
     }
@@ -60,12 +51,11 @@ class FormularioCompra extends Component {
         this.setState({ idMetodoPago: e.target.value });
     };
 
-    handleSubmit = async (e) => {
+    handleSubmit = (e) => {
         e.preventDefault();
 
         const { idUsuario, idMetodoPago, direccion, total, carrito, isSubmitting } = this.state;
 
-        // Evitar envíos múltiples
         if (isSubmitting) {
             return;
         }
@@ -75,7 +65,6 @@ class FormularioCompra extends Component {
             return;
         }
 
-        // Si el método de pago es 2, verificar los datos de la tarjeta
         if (idMetodoPago === '2') {
             const { nombreTitular, numeroTarjeta, fechaExpiracion, codigoSeguridad } = this.state;
             if (!nombreTitular || !numeroTarjeta || !fechaExpiracion || !codigoSeguridad) {
@@ -84,16 +73,15 @@ class FormularioCompra extends Component {
             }
         }
 
-        this.setState({ isSubmitting: true, error: '' }); // Desactivar el botón y limpiar errores
+        this.setState({ isSubmitting: true, error: '' });
 
-        try {
-            const compraResponse = await axios.post('http://localhost:4000/api/admin/carrito', {
-                id_usuario: idUsuario, // Aquí enviamos el idUsuario
-                id_met_de_pago: idMetodoPago,
-                direccion,
-                total,
-            });
-
+        axios.post('http://localhost:4000/api/admin/carrito', {
+            id_usuario: idUsuario,
+            id_met_de_pago: idMetodoPago,
+            direccion,
+            total,
+        })
+        .then((compraResponse) => {
             const compraIdGenerada = compraResponse.data.compraId;
             this.setState({ compraId: compraIdGenerada });
 
@@ -107,8 +95,9 @@ class FormularioCompra extends Component {
                 });
             });
 
-            await Promise.all(detallePromises);
-
+            return Promise.all(detallePromises).then(() => compraIdGenerada);
+        })
+        .then((compraIdGenerada) => {
             const stockPromises = carrito.map((producto) => {
                 const { id, cantidad } = producto;
                 return axios.put('http://localhost:4000/api/admin/carrito', {
@@ -117,18 +106,21 @@ class FormularioCompra extends Component {
                 });
             });
 
-            await Promise.all(stockPromises);
-
+            return Promise.all(stockPromises).then(() => compraIdGenerada);
+        })
+        .then((compraIdGenerada) => {
             sessionStorage.removeItem('carrito');
             this.setState({ carrito: [] });
 
             alert(`Compra registrada con éxito. ID de la compra: ${compraIdGenerada}`);
-        } catch (err) {
+        })
+        .catch((err) => {
             console.error('Error al procesar la compra:', err);
             this.setState({ error: 'Hubo un error al registrar la compra.' });
-        } finally {
-            this.setState({ isSubmitting: false }); // Reactivar el botón solo si hubo un error
-        }
+        })
+        .finally(() => {
+            this.setState({ isSubmitting: false });
+        });
     };
 
     render() {
