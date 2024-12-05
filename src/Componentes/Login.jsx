@@ -15,7 +15,6 @@ class Login extends Component {
   }
 
   componentDidMount() {
-    // Verifica si el usuario ya está logueado
     if (localStorage.getItem('token')) {
       this.setState({ isLoggedIn: true });
     }
@@ -35,11 +34,9 @@ class Login extends Component {
     axios.post(url, datos)
       .then((response) => {
         if (response.data.token) {
-          // Si el login es exitoso, guarda el token y la verificación de admin en localStorage
           localStorage.setItem('token', response.data.token);
           localStorage.setItem('usuario', response.data.usuario);
-          localStorage.setItem('isAdmin', response.data.adminVerificacion); // Guardar si es admin        
-          // Redirige al usuario a la página de inicio
+          localStorage.setItem('isAdmin', response.data.adminVerificacion);        
           this.setState({
             isLoggedIn: true,
             isAdmin: response.data.adminVerificacion
@@ -57,9 +54,9 @@ class Login extends Component {
   
     if (isLoggedIn) {
       if (isAdmin) {
-        return <Navigate to="/admin" />;  // Redirige a Admin si es admin
+        return <Navigate to="/admin" />;
       } else {
-        return <Navigate to="/" />;  // Redirige a la página de inicio si no es admin
+        return <Navigate to="/" />;
       }
     }
   

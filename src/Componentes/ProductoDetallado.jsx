@@ -6,7 +6,7 @@ const ProductoDetallado = () => {
   const { id } = useParams();
   const [producto, setProducto] = useState(null);
   const [error, setError] = useState(null);
-  const [mensaje, setMensaje] = useState(''); // Mensaje para el usuario
+  const [mensaje, setMensaje] = useState('');
 
   useEffect(() => {
     axios
@@ -21,39 +21,36 @@ const ProductoDetallado = () => {
   }, [id]);
 
   const agregarAlCarrito = () => {
-    // Verificar si el usuario está logueado
     const token = localStorage.getItem('token');
     if (!token) {
       setMensaje('Debes iniciar sesión para agregar productos al carrito.');
-      setTimeout(() => setMensaje(''), 3000); // Ocultar mensaje después de 3 segundos
-      return; // Detener ejecución si el usuario no está logueado
+      setTimeout(() => setMensaje(''), 3000);
+      return;
     }
 
     const carrito = JSON.parse(sessionStorage.getItem('carrito')) || [];
 
-    // Verificar si el producto ya está en el carrito
     const existeProducto = carrito.some((item) => item.id === producto.id);
 
     if (existeProducto) {
       setMensaje('Este producto ya está en el carrito.');
-      setTimeout(() => setMensaje(''), 3000); // Ocultar mensaje después de 3 segundos
+      setTimeout(() => setMensaje(''), 3000);
     } else {
       carrito.push(producto);
       sessionStorage.setItem('carrito', JSON.stringify(carrito));
       setMensaje('Producto agregado al carrito.');
-      setTimeout(() => setMensaje(''), 3000); // Ocultar mensaje después de 3 segundos
+      setTimeout(() => setMensaje(''), 3000);
     }
   };
 
-  // Determinar el color del mensaje
   const getMensajeColor = () => {
     if (mensaje === 'Debes iniciar sesión para agregar productos al carrito.') {
-      return 'red'; // Color rojo para error
+      return 'red';
     }
     if (mensaje === 'Este producto ya está en el carrito.' || mensaje === 'Producto agregado al carrito.') {
-      return 'green'; // Color verde para éxito
+      return 'green';
     }
-    return 'black'; // Color por defecto
+    return 'black';
   };
 
   if (error) return <p style={{ color: 'red' }}>{error}</p>;
@@ -63,7 +60,6 @@ const ProductoDetallado = () => {
     <div className="min-vh-100 d-flex flex-column">
       <main className="flex-grow container p-4">
         <div className="row">
-          {/* Imágenes */}
           <div className="col-md-6">
             {producto.imagenes[0] && (
               <img
@@ -86,7 +82,6 @@ const ProductoDetallado = () => {
             </div>
           </div>
 
-          {/* Detalles */}
           <div className="col-md-6">
             <h1 className="h3 mb-3">{producto.nombre}</h1>
             <p className="display-4 mb-2">${producto.precio}</p>

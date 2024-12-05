@@ -43,11 +43,10 @@ class MainForm extends Component {
             isLoggedIn: true,
           });
 
-          // Guardar el ID del usuario y el token
-          localStorage.setItem('userId', resp.data.userId);  // Guardar el ID del usuario
+          localStorage.setItem('userId', resp.data.userId);
           localStorage.setItem('token', resp.data.token);
           localStorage.setItem('usuario', usuario);
-          window.dispatchEvent(new Event('storage')); // Actualiza otros componentes si escuchan el evento
+          window.dispatchEvent(new Event('storage'));
         }
       })
       .catch((error) => {

@@ -40,7 +40,6 @@ class Productos extends Component {
         axios
         .get('http://localhost:4000/api/home', { params })
         .then((response) => {
-            console.log('Productos cargados:', response.data.productos); // Verifica los productos
             this.setState({ productos: response.data.productos });
         })
         .catch((error) => {
@@ -77,7 +76,6 @@ class Productos extends Component {
                 <h1 className="text-center mb-4">Productos</h1>
 
                 <div className="row">
-                    {/* Filtros */}
                     <div className="col-md-3">
                         <div className="card mb-3">
                             <div className="card-body">
@@ -118,7 +116,6 @@ class Productos extends Component {
                         </div>
                     </div>
 
-                    {/* Lista de productos */}
                     <div className="col-md-9">
                         <div className="row">
                             {productos.map((producto) => (

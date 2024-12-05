@@ -44,12 +44,12 @@ class FormularioCompra extends Component {
         const { id, value } = e.target;
 
         if (id === 'numeroTarjeta') {
-            const numericValue = value.replace(/\D/g, ''); // Solo números
+            const numericValue = value.replace(/\D/g, '');
             if (numericValue.length <= 16) {
                 this.setState({ numeroTarjeta: numericValue });
             }
         } else if (id === 'codigoSeguridad') {
-            const numericValue = value.replace(/\D/g, ''); // Solo números
+            const numericValue = value.replace(/\D/g, '');
             if (numericValue.length <= 3) {
                 this.setState({ codigoSeguridad: numericValue });
             }

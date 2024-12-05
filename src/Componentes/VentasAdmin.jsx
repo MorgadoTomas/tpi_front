@@ -34,7 +34,6 @@ const VentasAdmin = () => {
 
   return (
     <div className="d-flex min-vh-100 bg-light">
-      {/* Sidebar */}
       <aside className="mr-4" style={{ width: '250px' }}>
         <nav className="d-flex flex-column">
           <Button variant="light" className="text-left mb-2 d-flex align-items-center" onClick={() => navigate('/admin')}>
@@ -56,9 +55,7 @@ const VentasAdmin = () => {
         </nav>
       </aside>
 
-      {/* Main Content */}
       <main className="flex-grow-1 container">
-        {/* Filtro de ventas */}
         <div className="py-4">
           <h5>Administrar Ventas</h5>
           <Form className="d-flex gap-3">
@@ -71,7 +68,6 @@ const VentasAdmin = () => {
           </Form>
         </div>
 
-        {/* Sales Table */}
         <div className="py-4">
           <Table striped bordered hover responsive>
             <thead>

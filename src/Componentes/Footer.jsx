@@ -1,4 +1,3 @@
-// components/Footer.jsx
 import React, { Component } from 'react';
 import { Truck, CreditCard, Lock } from "lucide-react";
 

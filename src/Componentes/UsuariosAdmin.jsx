@@ -10,7 +10,7 @@ class UsuariosAdmin extends Component {
     this.state = {
       usuarios: [],
       filtro: '',
-      filtroPor: 'nombre', // Campo por el cual se realizará el filtro
+      filtroPor: 'nombre',
     };
   }
 

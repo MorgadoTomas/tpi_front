@@ -9,19 +9,17 @@ class Header extends Component {
     super(props);
     this.state = {
       searchTerm: '',
-      isLoggedIn: this.checkLoginStatus(), // Verificación inicial del token
-      isAdmin: this.checkAdminStatus(), // Verificación inicial del estado admin
+      isLoggedIn: this.checkLoginStatus(),
+      isAdmin: this.checkAdminStatus(),
     };
   }
 
-  // Método para verificar si el usuario está logueado
   checkLoginStatus = () => {
     return localStorage.getItem('token') !== null;
   };
 
-  // Método para verificar si el usuario es admin
   checkAdminStatus = () => {
-    return localStorage.getItem('isAdmin') === 'true';  // 'true' o 'false' en formato string
+    return localStorage.getItem('isAdmin') === 'true';
   };
 
   handleSearchChange = (event) => {
@@ -30,25 +28,19 @@ class Header extends Component {
   };
 
   componentDidMount() {
-    // Verifica el estado inicial
     this.updateLoginStatus();
-    
-    // Escucha cambios en el almacenamiento
     window.addEventListener('storage', this.handleStorageChange);
   }
 
   componentWillUnmount() {
-    // Limpia el evento al desmontar el componente
     window.removeEventListener('storage', this.handleStorageChange);
   }
 
   handleStorageChange = () => {
-    // Actualiza el estado cuando el `localStorage` cambie
     this.updateLoginStatus();
   };
 
   updateLoginStatus = () => {
-    // Actualiza el estado del login y el admin basado en el `localStorage`
     this.setState({
       isLoggedIn: this.checkLoginStatus(),
       isAdmin: this.checkAdminStatus(),

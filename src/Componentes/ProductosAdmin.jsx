@@ -25,9 +25,7 @@ class ProductosAdmin extends Component {
   obtenerProductos = () => {
     axios.get('http://localhost:4000/api/admin/productos')
       .then(response => {
-        console.log("Respuesta de la API:", response.data); // Verifica la respuesta aquí
-  
-        if (Array.isArray(response.data.productos)) { // Accedemos a la propiedad 'productos'
+        if (Array.isArray(response.data.productos)) {
           this.setState({ productos: response.data.productos });
         } else {
           console.error("La respuesta de la API no tiene la propiedad 'productos' como un arreglo.");
@@ -39,7 +37,7 @@ class ProductosAdmin extends Component {
   };  
 
   componentDidMount() {
-    this.obtenerProductos(); // Cargar los productos cuando el componente se monta
+    this.obtenerProductos();
   }
 
   handleInputChange = (event) => {
@@ -58,17 +56,14 @@ class ProductosAdmin extends Component {
 
   agregarProducto = () => {
     const { nuevoProducto, imagenes } = this.state;
-  
-    // Validación: Verificar que todos los campos obligatorios estén completos
     const camposRequeridos = ['nombre', 'categoria', 'precio', 'stock', 'descripcion', 'marca'];
     for (let campo of camposRequeridos) {
       if (!nuevoProducto[campo] || nuevoProducto[campo].trim() === '') {
         alert(`Por favor, completa el campo ${campo}`);
-        return; // Detener la ejecución si hay campos vacíos
+        return;
       }
     }
   
-    // Validación: Verificar que se haya cargado al menos una imagen
     if (!imagenes || imagenes.length === 0) {
       alert('Por favor, carga al menos una imagen');
       return;
@@ -92,9 +87,6 @@ class ProductosAdmin extends Component {
       },
     })
       .then(response => {
-        console.log('Producto agregado con éxito:', response);
-  
-        // Vaciar los campos de input
         this.setState({
           nuevoProducto: {
             nombre: '',
@@ -126,7 +118,6 @@ class ProductosAdmin extends Component {
   eliminarProducto = (productoId) => {
     axios.delete(`http://localhost:4000/api/admin/productos/${productoId}`)
         .then(response => {
-            console.log('Producto eliminado con éxito:', response);
             this.setState((prevState) => ({
                 productos: prevState.productos.filter(producto => producto.id !== productoId)
             }));
@@ -139,7 +130,6 @@ class ProductosAdmin extends Component {
   render() {
     return (
       <div className="d-flex min-vh-100 bg-light">
-        {/* Sidebar */}
         <aside className="mr-4" style={{ width: '250px' }}>
           <nav className="d-flex flex-column">
             <Link to="/admin" className="text-left mb-2 d-flex align-items-center btn btn-light">
@@ -162,7 +152,6 @@ class ProductosAdmin extends Component {
         </aside>
 
         <main className="flex-grow-1 container">
-          {/* Formulario para agregar o editar producto */}
           <div className="py-4">
             <h5>{this.state.editando ? "Editar Producto" : "Agregar Nuevo Producto"}</h5>
             <Form className="d-flex flex-column gap-3">
@@ -235,7 +224,6 @@ class ProductosAdmin extends Component {
                 />
               </div>
 
-              {/* Campo para seleccionar imagen */}
               <Form.Group>
                 <Form.Label>Cargar Imagen</Form.Label>
                 <Form.Control
@@ -253,7 +241,6 @@ class ProductosAdmin extends Component {
             </Form>
           </div>
 
-          {/* Tabla de productos */}
           <div className="py-4">
             <Table striped bordered hover responsive>
               <thead>
@@ -297,7 +284,7 @@ class ProductosAdmin extends Component {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="7">No hay productos disponibles.</td>
+                    <td colSpan="7">No hay productos disponibles</td>
                   </tr>
                 )}
               </tbody>

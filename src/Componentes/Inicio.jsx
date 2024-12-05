@@ -8,21 +8,19 @@ class Inicio extends Component {
     this.state = {
       productos: [],
       error: null,
-      usuario: '', // Estado para el nombre de usuario
+      usuario: '',
     };
   }
 
   componentDidMount() {
-    // Suponiendo que el nombre del usuario viene de un token o API
-    const usuario = localStorage.getItem('usuario'); // o desde una API que traiga el usuario logueado
+    const usuario = localStorage.getItem('usuario');
     if (usuario) {
       this.setState({ usuario });
     }
 
     axios
-        .get('http://localhost:4000/api/home', { })
+        .get('http://localhost:4000/api/home')
         .then((response) => {
-            console.log('Productos cargados:', response.data.productos); // Verifica los productos
             this.setState({ productos: response.data.productos });
         })
         .catch((error) => {
@@ -41,7 +39,6 @@ class Inicio extends Component {
 
     return (
       <div className="container">
-        {/* Mostrar bienvenida si el usuario está logueado */}
         {usuario && (
           <div className="alert alert-info text-center mt-4">
             <h2>¡Bienvenido, {usuario}!</h2>

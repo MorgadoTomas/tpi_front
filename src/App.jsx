@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import './App.css';  // o el archivo correspondiente con los estilos globales
+import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Header from './Componentes/Header';
 import NavBar from './Componentes/NavBar';
@@ -14,8 +14,8 @@ import Admin from './Componentes/Admin';
 import ProductosAdmin from './Componentes/ProductosAdmin';
 import UsuariosAdmin from './Componentes/UsuariosAdmin';
 import VentasAdmin from "./Componentes/VentasAdmin";
-import PrivateRoute from './Componentes/PrivateRoute';  // Importa el componente PrivateRoute
-import FormularioCompra from './Componentes/FormularioCompra'; // Importa el componente
+import PrivateRoute from './Componentes/PrivateRoute';
+import FormularioCompra from './Componentes/FormularioCompra';
 
 class App extends Component {
   constructor(props) {
@@ -25,7 +25,6 @@ class App extends Component {
     };
   }
 
-  // Función para actualizar el término de búsqueda
   handleSearch = (term) => {
     this.setState({ searchTerm: term });
   };
@@ -47,7 +46,6 @@ class App extends Component {
               <Route path="/producto/:id" element={<ProductoDetallado />} />
               <Route path="/formulario-compra" element={<FormularioCompra />} />
 
-              {/* Rutas protegidas */}
               <Route 
                 path="/admin" 
                 element={
