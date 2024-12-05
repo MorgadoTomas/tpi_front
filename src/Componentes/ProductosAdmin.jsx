@@ -256,7 +256,7 @@ class ProductosAdmin extends Component {
                   this.state.productos.map((producto, index) => (
                     <tr key={producto.id || index}>
                       <td>{producto.nombre}</td>
-                      <td>{producto.categoria}</td>
+                      <td>{producto.categoria}</td> {/* Mostrar la categoría aquí */}
                       <td>{producto.precio}</td>
                       <td>{producto.stock}</td>
                       <td>{producto.descripcion}</td>
