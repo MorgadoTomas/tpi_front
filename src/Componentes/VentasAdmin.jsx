@@ -1,28 +1,33 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Table, FormControl, Form } from 'react-bootstrap';
-import { Trash2, LayoutDashboard, Package, Users, ShoppingCart } from "lucide-react";
+import { LayoutDashboard, Package, Users, ShoppingCart } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const VentasAdmin = () => {
-  const [ventas, setVentas] = useState([
-    { id: 1, metodoPago: "Tarjeta de Crédito", producto: "Laptop Gamer XTreme", usuario: "Juan Perez" },
-    { id: 2, metodoPago: "PayPal", producto: "Mouse Inalámbrico Pro", usuario: "Maria Garcia" },
-    { id: 3, metodoPago: "Transferencia Bancaria", producto: "SSD 1TB Ultrafast", usuario: "Carlos Lopez" },
-    { id: 4, metodoPago: "Tarjeta de Débito", producto: "Monitor 4K HDR", usuario: "Ana Martinez" },
-  ]);
+  const [ventas, setVentas] = useState([]);
   const [filtro, setFiltro] = useState('');
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchVentas = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/api/admin/ventas');
+        setVentas(response.data);
+      } catch (error) {
+        console.error('Error al obtener las ventas:', error);
+      }
+    };
+
+    fetchVentas();
+  }, []);
 
   const handleFilterChange = (event) => {
     setFiltro(event.target.value);
   };
 
-  const eliminarVenta = (ventaId) => {
-    setVentas((prevState) => prevState.filter((venta) => venta.id !== ventaId));
-  };
-
-  const ventasFiltradas = ventas.filter(venta =>
+  const ventasFiltradas = ventas.filter((venta) =>
     venta.usuario.toLowerCase().includes(filtro.toLowerCase())
   );
 
@@ -74,21 +79,19 @@ const VentasAdmin = () => {
                 <th>Método de Pago</th>
                 <th>Producto</th>
                 <th>Usuario</th>
-                <th>Acciones</th>
+                <th>Cantidad</th>
+                <th>Precio Unitario</th>
               </tr>
             </thead>
             <tbody>
               {ventasFiltradas.map((venta) => (
-                <tr key={venta.id}>
-                  <td>{venta.id}</td>
+                <tr key={venta.compraId}>
+                  <td>{venta.compraId}</td>
                   <td>{venta.metodoPago}</td>
                   <td>{venta.producto}</td>
                   <td>{venta.usuario}</td>
-                  <td>
-                    <Button variant="light" className="p-1" onClick={() => eliminarVenta(venta.id)}>
-                      <Trash2 size={16} />
-                    </Button>
-                  </td>
+                  <td>{venta.cantidad}</td>
+                  <td>{venta.precio_u}</td>
                 </tr>
               ))}
             </tbody>
