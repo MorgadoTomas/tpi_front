@@ -59,45 +59,61 @@ class ProductosAdmin extends Component {
   agregarProducto = () => {
     const { nuevoProducto, imagenes } = this.state;
   
+    // Validación: Verificar que todos los campos obligatorios estén completos
+    const camposRequeridos = ['nombre', 'categoria', 'precio', 'stock', 'descripcion', 'marca'];
+    for (let campo of camposRequeridos) {
+      if (!nuevoProducto[campo] || nuevoProducto[campo].trim() === '') {
+        alert(`Por favor, completa el campo ${campo}`);
+        return; // Detener la ejecución si hay campos vacíos
+      }
+    }
+  
+    // Validación: Verificar que se haya cargado al menos una imagen
+    if (!imagenes || imagenes.length === 0) {
+      alert('Por favor, carga al menos una imagen');
+      return;
+    }
+  
     const formData = new FormData();
     formData.append('nombre', nuevoProducto.nombre);
     formData.append('stock', nuevoProducto.stock);
     formData.append('precio', nuevoProducto.precio);
     formData.append('descrip', nuevoProducto.descripcion);
     formData.append('marca', nuevoProducto.marca);
-    formData.append('categoria', nuevoProducto.categoria);  // Añadir categoría
+    formData.append('categoria', nuevoProducto.categoria);
   
-    // Agregar las imágenes al FormData
-    if (imagenes && imagenes.length > 0) {
-      Array.from(imagenes).forEach(imagen => {
-        formData.append('imagen', imagen);
-      });
-    }
-  
-    // Log para verificar los datos enviados
-    console.log('Datos enviados del producto:', Object.fromEntries(formData.entries()));
+    Array.from(imagenes).forEach(imagen => {
+      formData.append('imagen', imagen);
+    });
   
     axios.post('http://localhost:4000/api/admin/productos', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     })
-    .then(response => {
-      console.log('Producto agregado con éxito:', response);
+      .then(response => {
+        console.log('Producto agregado con éxito:', response);
   
-      // Vaciar los campos de input
-      this.setState({ 
-        nuevoProducto: {}, 
-        imagenes: [] // Vaciar el campo de imágenes después de agregar el producto
+        // Vaciar los campos de input
+        this.setState({
+          nuevoProducto: {
+            nombre: '',
+            categoria: '',
+            precio: '',
+            stock: '',
+            descripcion: '',
+            marca: '',
+            imagen: null,
+          },
+          imagenes: [],
+        });
+  
+        this.obtenerProductos();
+      })
+      .catch(error => {
+        console.error('Error al agregar producto:', error);
       });
-  
-      // Refrescar la lista de productos
-      this.obtenerProductos(); // Llamar a la función para actualizar la lista de productos
-    })
-    .catch(error => {
-      console.error('Error al agregar producto:', error);
-    });
-  }
+  };  
   
   // Función para obtener los productos actualizados
   obtenerProductos = () => {
