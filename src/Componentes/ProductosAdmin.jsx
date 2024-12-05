@@ -24,7 +24,7 @@ class ProductosAdmin extends Component {
 
   obtenerProductos = async () => {
     try {
-      const response = await axios.get('http://localhost:4000/api/admin/productos');
+      const response = await axios.get('http://localhost:8080/api/admin/productos');
       console.log("Productos cargados:", response.data);
       this.setState({ productos: response.data });
     } catch (error) {
@@ -39,7 +39,7 @@ class ProductosAdmin extends Component {
     }
 
     axios
-      .get('http://localhost:4000/api/admin/productos')
+      .get('http://localhost:8080/api/admin/productos')
       .then((response) => {
         this.setState({ productos: response.data.productos });
       })
@@ -83,7 +83,7 @@ class ProductosAdmin extends Component {
     // Log para verificar los datos enviados
     console.log('Datos enviados del producto:', Object.fromEntries(formData.entries()));
 
-    axios.post('http://localhost:4000/api/admin/productos', formData, {
+    axios.post('http://localhost:8080/api/admin/productos', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -106,7 +106,7 @@ class ProductosAdmin extends Component {
   }
 
   eliminarProducto = (productoId) => {
-    axios.delete(`http://localhost:4000/api/admin/productos/${productoId}`)
+    axios.delete(`http://localhost:8080/api/admin/productos/${productoId}`)
         .then(response => {
             console.log('Producto eliminado con éxito:', response);
             this.setState((prevState) => ({
