@@ -31,20 +31,18 @@ class Login extends Component {
     const { usuario, password } = this.state;
     const datos = { usuario, password };
     const url = "http://localhost:4000/api/usuarios/login";
-  
-    // Realizamos la solicitud POST usando axios
+    
     axios.post(url, datos)
       .then((response) => {
         if (response.data.token) {
-          // Si el login es exitoso, guarda el token, el usuario y la verificación de admin en el localStorage
+          // Si el login es exitoso, guarda el token y la verificación de admin en localStorage
           localStorage.setItem('token', response.data.token);
           localStorage.setItem('usuario', response.data.usuario);
-          localStorage.setItem('isAdmin', response.data.adminVerificacion); // Guardar si es admin          
-          
-          // Actualiza el estado para redirigir
+          localStorage.setItem('isAdmin', response.data.adminVerificacion); // Guardar si es admin        
+          // Redirige al usuario a la página de inicio
           this.setState({
             isLoggedIn: true,
-            isAdmin: response.data.adminVerificacion  // Guarda el estado del admin
+            isAdmin: response.data.adminVerificacion
           });
         }
       })
