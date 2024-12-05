@@ -1,65 +1,54 @@
 import React, { Component } from 'react';
 import { Button, FormControl, Table, Form } from 'react-bootstrap';
-import { Trash2, LayoutDashboard, Package, Users, ShoppingCart } from 'lucide-react';
+import { LayoutDashboard, Package, Users, ShoppingCart } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import axios from 'axios'; // Importa axios
+import axios from 'axios';
 
 class UsuariosAdmin extends Component {
   constructor(props) {
     super(props);
     this.state = {
       usuarios: [],
-      filtro: ''
+      filtro: '',
+      filtroPor: 'nombre', // Campo por el cual se realizará el filtro
     };
   }
 
   componentDidMount() {
-    // Cargar usuarios al montar el componente
     this.cargarUsuarios();
   }
 
   cargarUsuarios = () => {
-    // Realiza la petición para obtener los usuarios
-    axios.get('http://localhost:5000/api/usuarios', {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}` // Suponiendo que tienes un token en el almacenamiento local
-      }
-    })
-    .then(response => {
-      this.setState({ usuarios: response.data.usuarios });
-    })
-    .catch(error => {
-      console.error('Error al cargar usuarios:', error);
-    });
-  };
-
-  eliminarUsuario = (usuarioId) => {
-    // Realiza la petición para eliminar un usuario
-    axios.delete(`http://localhost:5000/api/usuarios/${usuarioId}`, {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
-    })
-    .then(response => {
-      // Si la eliminación fue exitosa, actualizar la lista de usuarios
-      this.setState((prevState) => ({
-        usuarios: prevState.usuarios.filter((usuario) => usuario.id !== usuarioId)
-      }));
-    })
-    .catch(error => {
-      console.error('Error al eliminar usuario:', error);
-    });
+    const token = localStorage.getItem('token');
+    axios
+      .get('http://localhost:8080/api/usuarios/usuarios', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        this.setState({ usuarios: response.data.usuarios });
+      })
+      .catch((error) => {
+        console.error('Error al cargar usuarios:', error);
+      });
   };
 
   handleFilterChange = (event) => {
     this.setState({ filtro: event.target.value });
   };
 
+  handleFiltroPorChange = (event) => {
+    this.setState({ filtroPor: event.target.value });
+  };
+
   render() {
-    const { usuarios, filtro } = this.state;
-    const usuariosFiltrados = usuarios.filter((usuario) =>
-      usuario.nombre.toLowerCase().includes(filtro.toLowerCase())
-    );
+    const { usuarios, filtro, filtroPor } = this.state;
+
+    const usuariosFiltrados = usuarios.filter((usuario) => {
+      const campo = usuario[filtroPor]?.toLowerCase() || '';
+      return campo.includes(filtro.toLowerCase());
+    });
 
     return (
       <div className="d-flex min-vh-100 bg-light">
@@ -87,13 +76,51 @@ class UsuariosAdmin extends Component {
         <main className="flex-grow-1 container">
           <div className="py-4">
             <h5>Administrar Usuarios</h5>
-            <Form className="d-flex gap-3">
+            <Form className="d-flex flex-column gap-3">
               <FormControl
-                placeholder="Filtrar por nombre"
+                placeholder={`Filtrar por ${filtroPor}`}
                 value={filtro}
                 onChange={this.handleFilterChange}
-                style={{ maxWidth: '200px' }}
+                style={{ maxWidth: '300px' }}
               />
+              <div>
+                <Form.Check
+                  inline
+                  type="radio"
+                  name="filtroPor"
+                  value="nombre"
+                  label="Nombre"
+                  checked={filtroPor === 'nombre'}
+                  onChange={this.handleFiltroPorChange}
+                />
+                <Form.Check
+                  inline
+                  type="radio"
+                  name="filtroPor"
+                  value="apellido"
+                  label="Apellido"
+                  checked={filtroPor === 'apellido'}
+                  onChange={this.handleFiltroPorChange}
+                />
+                <Form.Check
+                  inline
+                  type="radio"
+                  name="filtroPor"
+                  value="mail"
+                  label="Email"
+                  checked={filtroPor === 'mail'}
+                  onChange={this.handleFiltroPorChange}
+                />
+                <Form.Check
+                  inline
+                  type="radio"
+                  name="filtroPor"
+                  value="usuario"
+                  label="Usuario"
+                  checked={filtroPor === 'usuario'}
+                  onChange={this.handleFiltroPorChange}
+                />
+              </div>
             </Form>
           </div>
 
@@ -101,27 +128,23 @@ class UsuariosAdmin extends Component {
             <Table striped bordered hover responsive>
               <thead>
                 <tr>
+                  <th>ID</th>
                   <th>Nombre</th>
+                  <th>Apellido</th>
                   <th>Email</th>
-                  <th>Acciones</th>
+                  <th>Usuario</th>
+                  <th>Admin</th>
                 </tr>
               </thead>
               <tbody>
                 {usuariosFiltrados.map((usuario) => (
                   <tr key={usuario.id}>
+                    <td>{usuario.id}</td>
                     <td>{usuario.nombre}</td>
-                    <td>{usuario.email}</td>
-                    <td>
-                      <div className="d-flex gap-2">
-                        <Button
-                          variant="light"
-                          className="p-1"
-                          onClick={() => this.eliminarUsuario(usuario.id)}
-                        >
-                          <Trash2 size={16} />
-                        </Button>
-                      </div>
-                    </td>
+                    <td>{usuario.apellido}</td>
+                    <td>{usuario.mail}</td>
+                    <td>{usuario.usuario}</td>
+                    <td>{usuario.admin ? 'Sí' : 'No'}</td>
                   </tr>
                 ))}
               </tbody>
