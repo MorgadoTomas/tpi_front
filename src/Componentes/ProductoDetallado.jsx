@@ -10,7 +10,7 @@ const ProductoDetallado = () => {
 
   useEffect(() => {
     axios
-      .get(http://localhost:4000/api/admin/productos/${id})
+      .get(`http://localhost:8080/api/admin/productos/${id}`)
       .then((response) => {
         setProducto(response.data.producto);
       })
@@ -50,9 +50,10 @@ const ProductoDetallado = () => {
     if (mensaje === 'Debes iniciar sesión para agregar productos al carrito.') {
       return 'red'; // Color rojo para error
     }
-    if (mensaje === 'Este producto ya está en el carrito.' || 'Producto agregado al carrito.') {
+    if (mensaje === 'Este producto ya está en el carrito.' || mensaje === 'Producto agregado al carrito.') {
       return 'green'; // Color verde para éxito
     }
+    return 'black'; // Color por defecto
   };
 
   if (error) return <p style={{ color: 'red' }}>{error}</p>;
@@ -66,7 +67,7 @@ const ProductoDetallado = () => {
           <div className="col-md-6">
             {producto.imagenes[0] && (
               <img
-                src={http://localhost:4000/images/${producto.imagenes[0]}}
+                src={`http://localhost:8080/images/${producto.imagenes[0]}`}
                 alt={producto.nombre}
                 className="w-100 mb-3"
                 style={{ height: '300px', objectFit: 'cover' }}
@@ -76,8 +77,8 @@ const ProductoDetallado = () => {
               {producto.imagenes.slice(1).map((img, index) => (
                 <img
                   key={index}
-                  src={http://localhost:4000/images/${img}}
-                  alt={Producto ${index + 1}}
+                  src={`http://localhost:8080/images/${img}`}
+                  alt={`Producto ${index + 1}`}
                   className="rounded"
                   style={{ width: '100px', height: '100px', objectFit: 'cover' }}
                 />
@@ -88,7 +89,7 @@ const ProductoDetallado = () => {
           {/* Detalles */}
           <div className="col-md-6">
             <h1 className="h3 mb-3">{producto.nombre}</h1>
-            <p className="display-4 mb-2">{producto.precio}</p>
+            <p className="display-4 mb-2">${producto.precio}</p>
             <p className="text-muted">{producto.descripcion}</p>
             <ul>
               <li><strong>Marca:</strong> {producto.marca}</li>

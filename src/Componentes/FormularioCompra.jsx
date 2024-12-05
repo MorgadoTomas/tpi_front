@@ -12,7 +12,11 @@ class FormularioCompra extends Component {
             compraId: null,
             carrito: [],
             error: '',
-            isSubmitting: false, // Nuevo estado para controlar el envío
+            isSubmitting: false,
+            nombreTitular: '',
+            numeroTarjeta: '',
+            fechaExpiracion: '',
+            codigoSeguridad: '',
         };
     }
 
@@ -57,6 +61,15 @@ class FormularioCompra extends Component {
         if (!idUsuario || !idMetodoPago || !direccion || !total) {
             this.setState({ error: 'Por favor, complete todos los campos.' });
             return;
+        }
+
+        // Si el método de pago es 2, verificar los datos de la tarjeta
+        if (idMetodoPago === '2') {
+            const { nombreTitular, numeroTarjeta, fechaExpiracion, codigoSeguridad } = this.state;
+            if (!nombreTitular || !numeroTarjeta || !fechaExpiracion || !codigoSeguridad) {
+                this.setState({ error: 'Por favor, complete todos los campos de la tarjeta.' });
+                return;
+            }
         }
 
         this.setState({ isSubmitting: true, error: '' }); // Desactivar el botón y limpiar errores
@@ -107,7 +120,7 @@ class FormularioCompra extends Component {
     };
 
     render() {
-        const { idUsuario, idMetodoPago, direccion, total, compraId, error, isSubmitting } = this.state;
+        const { idUsuario, idMetodoPago, direccion, total, compraId, error, isSubmitting, nombreTitular, numeroTarjeta, fechaExpiracion, codigoSeguridad } = this.state;
 
         return (
             <div className="container mt-4">
@@ -149,6 +162,55 @@ class FormularioCompra extends Component {
                             <label htmlFor="metodo2" className="form-check-label">Método de Pago 2</label>
                         </div>
                     </div>
+
+                    {idMetodoPago === '2' && (
+                        <div>
+                            <div className="mb-3">
+                                <label htmlFor="nombreTitular" className="form-label">Nombre del Titular:</label>
+                                <input
+                                    type="text"
+                                    id="nombreTitular"
+                                    className="form-control"
+                                    value={nombreTitular}
+                                    onChange={this.handleChange}
+                                    placeholder="Ingrese el nombre del titular"
+                                />
+                            </div>
+                            <div className="mb-3">
+                                <label htmlFor="numeroTarjeta" className="form-label">Número de Tarjeta:</label>
+                                <input
+                                    type="text"
+                                    id="numeroTarjeta"
+                                    className="form-control"
+                                    value={numeroTarjeta}
+                                    onChange={this.handleChange}
+                                    placeholder="Ingrese el número de tarjeta"
+                                />
+                            </div>
+                            <div className="mb-3">
+                                <label htmlFor="fechaExpiracion" className="form-label">Fecha de Expiración:</label>
+                                <input
+                                    type="month"
+                                    id="fechaExpiracion"
+                                    className="form-control"
+                                    value={fechaExpiracion}
+                                    onChange={this.handleChange}
+                                />
+                            </div>
+                            <div className="mb-3">
+                                <label htmlFor="codigoSeguridad" className="form-label">Código de Seguridad:</label>
+                                <input
+                                    type="text"
+                                    id="codigoSeguridad"
+                                    className="form-control"
+                                    value={codigoSeguridad}
+                                    onChange={this.handleChange}
+                                    placeholder="Ingrese el código de seguridad"
+                                />
+                            </div>
+                        </div>
+                    )}
+
                     <div className="mb-3">
                         <label htmlFor="direccion" className="form-label">Dirección:</label>
                         <input
