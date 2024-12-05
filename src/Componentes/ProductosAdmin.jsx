@@ -37,7 +37,7 @@ class ProductosAdmin extends Component {
         console.error("Error al cargar productos:", error);
       });
   };  
-  
+
   componentDidMount() {
     this.obtenerProductos(); // Cargar los productos cuando el componente se monta
   }
@@ -114,7 +114,7 @@ class ProductosAdmin extends Component {
         console.error('Error al agregar producto:', error);
       });
   };  
-
+  
   iniciarEdicion = (producto) => {
     this.setState({
       nuevoProducto: { ...producto },
