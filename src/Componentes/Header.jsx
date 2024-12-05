@@ -9,7 +9,8 @@ class Header extends Component {
     super(props);
     this.state = {
       searchTerm: '',
-      isLoggedIn: localStorage.getItem('token') !== null // Verificación inicial del token
+      isLoggedIn: this.checkLoginStatus(), // Verificación inicial del token
+      isAdmin: this.checkAdminStatus(), // Verificación inicial del estado admin
     };
   }
 
@@ -18,32 +19,44 @@ class Header extends Component {
     return localStorage.getItem('token') !== null;
   };
 
+  // Método para verificar si el usuario es admin
+  checkAdminStatus = () => {
+    return localStorage.getItem('isAdmin') === 'true';  // 'true' o 'false' en formato string
+  };
+
   handleSearchChange = (event) => {
     this.setState({ searchTerm: event.target.value });
     this.props.onSearch(event.target.value);
   };
 
   componentDidMount() {
-    this.updateLoginStatus();  // Aseguramos que el estado se establezca cuando se monta el componente
-
-    window.addEventListener('storage', this.handleStorageChange); // Escucha cambios en el almacenamiento local
+    // Verifica el estado inicial
+    this.updateLoginStatus();
+    
+    // Escucha cambios en el almacenamiento
+    window.addEventListener('storage', this.handleStorageChange);
   }
 
   componentWillUnmount() {
-    window.removeEventListener('storage', this.handleStorageChange); // Limpieza del evento
+    // Limpia el evento al desmontar el componente
+    window.removeEventListener('storage', this.handleStorageChange);
   }
 
   handleStorageChange = () => {
-    this.updateLoginStatus(); // Actualiza el estado cada vez que cambia el `localStorage`
+    // Actualiza el estado cuando el `localStorage` cambie
+    this.updateLoginStatus();
   };
 
   updateLoginStatus = () => {
-    // Actualiza el estado del login basado en el localStorage
-    this.setState({ isLoggedIn: this.checkLoginStatus() });
+    // Actualiza el estado del login y el admin basado en el `localStorage`
+    this.setState({
+      isLoggedIn: this.checkLoginStatus(),
+      isAdmin: this.checkAdminStatus(),
+    });
   };
 
   render() {
-    const { isLoggedIn } = this.state;
+    const { isLoggedIn, isAdmin } = this.state;
 
     return (
       <header className="bg-light py-3">
@@ -68,7 +81,14 @@ class Header extends Component {
               <ShoppingCart />
             </Link>
             {isLoggedIn ? (
-              <CerrarSesionButton />
+              <>
+                {isAdmin && (
+                  <Link to="/admin">
+                    <Button variant="outline-secondary">Panel Admin</Button>
+                  </Link>
+                )}
+                <CerrarSesionButton />
+              </>
             ) : (
               <Link to="/login">
                 <Button variant="outline-primary">Iniciar sesión</Button>
