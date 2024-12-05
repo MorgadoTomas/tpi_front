@@ -20,13 +20,14 @@ class Inicio extends Component {
     }
 
     axios
-      .get('http://localhost:4000/api/admin/productos')
-      .then((response) => {
-        this.setState({ productos: response.data.productos });
-      })
-      .catch((error) => {
-        console.error('Error al cargar los productos:', error);
-      });
+        .get('http://localhost:4000/api/home', { })
+        .then((response) => {
+            console.log('Productos cargados:', response.data.productos); // Verifica los productos
+            this.setState({ productos: response.data.productos });
+        })
+        .catch((error) => {
+            console.error('Error al cargar los productos:', error);
+        });    
   }
 
   render() {
@@ -54,12 +55,12 @@ class Inicio extends Component {
             <div className="col-md-4 mb-4" key={producto.id}>
               <Link to={`/producto/${producto.id}`} className="text-decoration-none">
                 <div className="card">
-                  <img
-                    src={`http://localhost:4000/images/${producto.imagenes ? producto.imagenes[0] : 'default.jpg'}`}
-                    className="card-img-top"
-                    alt={producto.nombre}
-                    style={{ height: '250px', objectFit: 'cover' }}
-                  />
+                <img
+                  src={`http://localhost:4000/public/images/${producto.imagenes ? producto.imagenes.split(',')[0] : 'default.jpg'}`}
+                  className="card-img-top"
+                  alt={producto.nombre}
+                  style={{ height: '250px', objectFit: 'cover' }}
+                />
                   <div className="card-body">
                     <h5 className="card-title">{producto.nombre}</h5>
                     <p className="card-text">{producto.descripcion.slice(0, 100)}...</p>
