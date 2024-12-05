@@ -62,7 +62,7 @@ class FormularioCompra extends Component {
         this.setState({ idMetodoPago: e.target.value });
     };
 
-    handleSubmit = async (e) => {
+    handleSubmit = (e) => {
         e.preventDefault();
 
         const { idUsuario, idMetodoPago, direccion, total, carrito, isSubmitting, nombreTitular, numeroTarjeta, fechaExpiracion, codigoSeguridad } = this.state;
@@ -91,14 +91,13 @@ class FormularioCompra extends Component {
 
         this.setState({ isSubmitting: true, error: '' });
 
-        try {
-            const compraResponse = await axios.post('http://localhost:4000/api/admin/carrito', {
-                id_usuario: idUsuario,
-                id_met_de_pago: idMetodoPago,
-                direccion,
-                total,
-            });
-
+        axios.post('http://localhost:4000/api/admin/carrito', {
+            id_usuario: idUsuario,
+            id_met_de_pago: idMetodoPago,
+            direccion,
+            total,
+        })
+        .then(compraResponse => {
             const compraIdGenerada = compraResponse.data.compraId;
             this.setState({ compraId: compraIdGenerada });
 
@@ -112,28 +111,32 @@ class FormularioCompra extends Component {
                 });
             });
 
-            await Promise.all(detallePromises);
+            return Promise.all(detallePromises)
+                .then(() => {
+                    const stockPromises = carrito.map((producto) => {
+                        const { id, cantidad } = producto;
+                        return axios.put('http://localhost:4000/api/admin/carrito', {
+                            stock: cantidad,
+                            id,
+                        });
+                    });
 
-            const stockPromises = carrito.map((producto) => {
-                const { id, cantidad } = producto;
-                return axios.put('http://localhost:4000/api/admin/carrito', {
-                    stock: cantidad,
-                    id,
+                    return Promise.all(stockPromises);
+                })
+                .then(() => {
+                    sessionStorage.removeItem('carrito');
+                    this.setState({ carrito: [] });
+
+                    alert(`Compra registrada con éxito. ID de la compra: ${compraIdGenerada}`);
+                })
+                .catch(err => {
+                    console.error('Error al procesar la compra:', err);
+                    this.setState({ error: 'Hubo un error al registrar la compra.' });
+                })
+                .finally(() => {
+                    this.setState({ isSubmitting: false });
                 });
-            });
-
-            await Promise.all(stockPromises);
-
-            sessionStorage.removeItem('carrito');
-            this.setState({ carrito: [] });
-
-            alert(`Compra registrada con éxito. ID de la compra: ${compraIdGenerada}`);
-        } catch (err) {
-            console.error('Error al procesar la compra:', err);
-            this.setState({ error: 'Hubo un error al registrar la compra.' });
-        } finally {
-            this.setState({ isSubmitting: false });
-        }
+        });
     };
 
     render() {
