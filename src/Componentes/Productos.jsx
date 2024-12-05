@@ -38,13 +38,14 @@ class Productos extends Component {
         };
 
         axios
-            .get('http://localhost:4000/api/home', { params })
-            .then((response) => {
-                this.setState({ productos: response.data.productos });
-            })
-            .catch((error) => {
-                console.error('Error al cargar los productos:', error);
-            });
+        .get('http://localhost:4000/api/home', { params })
+        .then((response) => {
+            console.log('Productos cargados:', response.data.productos); // Verifica los productos
+            this.setState({ productos: response.data.productos });
+        })
+        .catch((error) => {
+            console.error('Error al cargar los productos:', error);
+        });    
     }
 
     manejarCheckbox(categoria) {
