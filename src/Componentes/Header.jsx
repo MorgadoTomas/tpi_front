@@ -9,13 +9,17 @@ class Header extends Component {
     super(props);
     this.state = {
       searchTerm: '',
-      isLoggedIn: localStorage.getItem('token') !== null // Verificación inicial del token
+      isLoggedIn: this.checkLoginStatus(),
+      isAdmin: this.checkAdminStatus(),
     };
   }
 
-  // Método para verificar si el usuario está logueado
   checkLoginStatus = () => {
     return localStorage.getItem('token') !== null;
+  };
+
+  checkAdminStatus = () => {
+    return localStorage.getItem('isAdmin') === 'true';
   };
 
   handleSearchChange = (event) => {
@@ -24,32 +28,33 @@ class Header extends Component {
   };
 
   componentDidMount() {
-    this.updateLoginStatus();  // Aseguramos que el estado se establezca cuando se monta el componente
-
-    window.addEventListener('storage', this.handleStorageChange); // Escucha cambios en el almacenamiento local
+    this.updateLoginStatus();
+    window.addEventListener('storage', this.handleStorageChange);
   }
 
   componentWillUnmount() {
-    window.removeEventListener('storage', this.handleStorageChange); // Limpieza del evento
+    window.removeEventListener('storage', this.handleStorageChange);
   }
 
   handleStorageChange = () => {
-    this.updateLoginStatus(); // Actualiza el estado cada vez que cambia el `localStorage`
+    this.updateLoginStatus();
   };
 
   updateLoginStatus = () => {
-    // Actualiza el estado del login basado en el localStorage
-    this.setState({ isLoggedIn: this.checkLoginStatus() });
+    this.setState({
+      isLoggedIn: this.checkLoginStatus(),
+      isAdmin: this.checkAdminStatus(),
+    });
   };
 
   render() {
-    const { isLoggedIn } = this.state;
+    const { isLoggedIn, isAdmin } = this.state;
 
     return (
       <header className="bg-light py-3">
         <div className="container d-flex justify-content-between align-items-center">
           <Link to="/" className="h2 font-weight-bold text-decoration-none">
-            (LOGO)
+            TECHSHOP
           </Link>
 
           <div className="flex-grow-1 mx-4 position-relative">
@@ -68,7 +73,14 @@ class Header extends Component {
               <ShoppingCart />
             </Link>
             {isLoggedIn ? (
-              <CerrarSesionButton />
+              <>
+                {isAdmin && (
+                  <Link to="/admin">
+                    <Button variant="outline-secondary">Panel Admin</Button>
+                  </Link>
+                )}
+                <CerrarSesionButton />
+              </>
             ) : (
               <Link to="/login">
                 <Button variant="outline-primary">Iniciar sesión</Button>

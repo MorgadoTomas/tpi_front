@@ -38,13 +38,13 @@ class Productos extends Component {
         };
 
         axios
-            .get('http://localhost:8080/api/home', { params })
-            .then((response) => {
-                this.setState({ productos: response.data.productos });
-            })
-            .catch((error) => {
-                console.error('Error al cargar los productos:', error);
-            });
+        .get('http://localhost:4000/api/home', { params })
+        .then((response) => {
+            this.setState({ productos: response.data.productos });
+        })
+        .catch((error) => {
+            console.error('Error al cargar los productos:', error);
+        });    
     }
 
     manejarCheckbox(categoria) {
@@ -76,7 +76,6 @@ class Productos extends Component {
                 <h1 className="text-center mb-4">Productos</h1>
 
                 <div className="row">
-                    {/* Filtros */}
                     <div className="col-md-3">
                         <div className="card mb-3">
                             <div className="card-body">
@@ -117,7 +116,6 @@ class Productos extends Component {
                         </div>
                     </div>
 
-                    {/* Lista de productos */}
                     <div className="col-md-9">
                         <div className="row">
                             {productos.map((producto) => (
@@ -126,7 +124,7 @@ class Productos extends Component {
                                         <div className="card h-100">
                                             {producto.imagenes && (
                                                 <img
-                                                    src={`http://localhost:8080/public/images/${producto.imagenes.split(',')[0]}`}
+                                                    src={`http://localhost:4000/public/images/${producto.imagenes.split(',')[0]}`}
                                                     className="card-img-top"
                                                     alt={producto.nombre}
                                                 />

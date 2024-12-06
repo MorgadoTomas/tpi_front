@@ -11,13 +11,14 @@ const VentasAdmin = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchVentas = async () => {
-      try {
-        const response = await axios.get('http://localhost:8080/api/admin/ventas');
-        setVentas(response.data);
-      } catch (error) {
-        console.error('Error al obtener las ventas:', error);
-      }
+    const fetchVentas = () => {
+      axios.get('http://localhost:4000/api/admin/ventas')
+        .then((response) => {
+          setVentas(response.data);
+        })
+        .catch((error) => {
+          console.error('Error al obtener las ventas:', error);
+        });
     };
 
     fetchVentas();
@@ -33,7 +34,6 @@ const VentasAdmin = () => {
 
   return (
     <div className="d-flex min-vh-100 bg-light">
-      {/* Sidebar */}
       <aside className="mr-4" style={{ width: '250px' }}>
         <nav className="d-flex flex-column">
           <Button variant="light" className="text-left mb-2 d-flex align-items-center" onClick={() => navigate('/admin')}>
@@ -55,9 +55,7 @@ const VentasAdmin = () => {
         </nav>
       </aside>
 
-      {/* Main Content */}
       <main className="flex-grow-1 container">
-        {/* Filtro de ventas */}
         <div className="py-4">
           <h5>Administrar Ventas</h5>
           <Form className="d-flex gap-3">
@@ -70,7 +68,6 @@ const VentasAdmin = () => {
           </Form>
         </div>
 
-        {/* Sales Table */}
         <div className="py-4">
           <Table striped bordered hover responsive>
             <thead>

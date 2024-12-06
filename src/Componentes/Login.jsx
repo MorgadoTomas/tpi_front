@@ -15,7 +15,6 @@ class Login extends Component {
   }
 
   componentDidMount() {
-    // Verifica si el usuario ya está logueado
     if (localStorage.getItem('token')) {
       this.setState({ isLoggedIn: true });
     }
@@ -30,21 +29,17 @@ class Login extends Component {
     event.preventDefault();
     const { usuario, password } = this.state;
     const datos = { usuario, password };
-    const url = "http://localhost:8080/api/usuarios/login";
-  
-    // Realizamos la solicitud POST usando axios
+    const url = "http://localhost:4000/api/usuarios/login";
+    
     axios.post(url, datos)
       .then((response) => {
         if (response.data.token) {
-          // Si el login es exitoso, guarda el token, el usuario y la verificación de admin en el localStorage
           localStorage.setItem('token', response.data.token);
           localStorage.setItem('usuario', response.data.usuario);
-          localStorage.setItem('isAdmin', response.data.adminVerificacion); // Guardar si es admin          
-          
-          // Actualiza el estado para redirigir
+          localStorage.setItem('isAdmin', response.data.adminVerificacion);        
           this.setState({
             isLoggedIn: true,
-            isAdmin: response.data.adminVerificacion  // Guarda el estado del admin
+            isAdmin: response.data.adminVerificacion
           });
         }
       })
@@ -59,9 +54,9 @@ class Login extends Component {
   
     if (isLoggedIn) {
       if (isAdmin) {
-        return <Navigate to="/admin" />;  // Redirige a Admin si es admin
+        return <Navigate to="/admin" />;
       } else {
-        return <Navigate to="/" />;  // Redirige a la página de inicio si no es admin
+        return <Navigate to="/" />;
       }
     }
   

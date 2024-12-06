@@ -10,7 +10,7 @@ class UsuariosAdmin extends Component {
     this.state = {
       usuarios: [],
       filtro: '',
-      filtroPor: 'nombre', // Campo por el cual se realizará el filtro
+      filtroPor: 'nombre',
     };
   }
 
@@ -21,7 +21,7 @@ class UsuariosAdmin extends Component {
   cargarUsuarios = () => {
     const token = localStorage.getItem('token');
     axios
-      .get('http://localhost:8080/api/usuarios/usuarios', {
+      .get('http://localhost:4000/api/usuarios/usuarios', {
         headers: {
           Authorization: `Bearer ${token}`,
         },

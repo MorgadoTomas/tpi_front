@@ -1,4 +1,3 @@
-//prueba
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -7,43 +6,36 @@ class CarritoProductos extends Component {
     super(props);
     this.state = {
       carrito: [],
-      totalCompra: 0, // Agregamos el totalCompra en el estado
+      totalCompra: 0,
     };
   }
 
   componentDidMount() {
-    // Cargar el carrito desde sessionStorage
     const carritoGuardado = JSON.parse(sessionStorage.getItem('carrito')) || [];
-
-    // Asegurarse de que la cantidad de cada producto sea 1 al cargar
     const carritoInicializado = carritoGuardado.map((producto) => ({
       ...producto,
-      cantidad: producto.cantidad || 1, // Si no tiene cantidad, inicializar en 1
+      cantidad: producto.cantidad || 1,
     }));
 
-    // Calculamos el total de la compra
     const totalCompra = carritoInicializado.reduce(
       (acc, producto) => acc + parseFloat(producto.precio) * producto.cantidad,
       0
     ).toFixed(2);
 
-    this.setState({ carrito: carritoInicializado, totalCompra }); // Guardamos el total en el estado
+    this.setState({ carrito: carritoInicializado, totalCompra });
   }
 
-  // Función para actualizar la cantidad de un producto en el carrito
   actualizarCantidad(index, cantidad) {
-    if (cantidad < 1) return; // Evitar cantidades negativas
+    if (cantidad < 1) return;
     const carritoActualizado = [...this.state.carrito];
     const producto = carritoActualizado[index];
 
-    // Limitar la cantidad al stock disponible
     if (cantidad > producto.stock) {
-      cantidad = producto.stock; // Si la cantidad es mayor que el stock, se ajusta a la cantidad máxima disponible
+      cantidad = producto.stock;
     }
 
     carritoActualizado[index].cantidad = cantidad;
 
-    // Recalculamos el total
     const totalCompra = carritoActualizado.reduce(
       (acc, producto) => acc + parseFloat(producto.precio) * producto.cantidad,
       0
@@ -53,7 +45,6 @@ class CarritoProductos extends Component {
     sessionStorage.setItem('carrito', JSON.stringify(carritoActualizado));
   }
 
-  // Función para eliminar un producto del carrito
   eliminarProducto(index) {
     const carritoActualizado = this.state.carrito.filter((_, i) => i !== index);
     const totalCompra = carritoActualizado.reduce(
@@ -79,7 +70,7 @@ class CarritoProductos extends Component {
               <div key={index} className="row mb-3">
                 <div className="col-md-3">
                   <img
-                    src={`http://localhost:8080/images/${producto.imagenes[0]}`}
+                    src={`http://localhost:4000/images/${producto.imagenes[0]}`}
                     alt={producto.nombre}
                     className="w-100"
                     style={{ height: '150px', objectFit: 'cover' }}
@@ -125,7 +116,7 @@ class CarritoProductos extends Component {
                 pathname: '/formulario-compra',
                 state: {
                   carrito: carrito,
-                  totalCompra: totalCompra, // Ahora se pasa el totalCompra
+                  totalCompra: totalCompra,
                 },
               }}
               className="btn btn-success mt-3"
