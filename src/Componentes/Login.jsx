@@ -11,12 +11,18 @@ class Login extends Component {
       password: '',
       error: '',
       isLoggedIn: false,
+      isAdmin: false,
     };
   }
 
   componentDidMount() {
-    if (localStorage.getItem('token')) {
-      this.setState({ isLoggedIn: true });
+    const token = localStorage.getItem('token');
+    const isAdmin = localStorage.getItem('isAdmin');
+    if (token) {
+      this.setState({
+        isLoggedIn: true,
+        isAdmin: isAdmin === 'true', // Asegúrate de que este valor sea booleano
+      });
     }
   }
 
@@ -30,17 +36,22 @@ class Login extends Component {
     const { usuario, password } = this.state;
     const datos = { usuario, password };
     const url = "http://localhost:4000/api/usuarios/login";
-    
+  
     axios.post(url, datos)
       .then((response) => {
-        if (response.data.token) {
+        // Imprimir toda la respuesta para depuración
+        console.log('Respuesta de la API:', response.data);
+        
+        if (response.data.token && typeof response.data.adminVerificacion !== 'undefined') {
           localStorage.setItem('token', response.data.token);
           localStorage.setItem('usuario', response.data.usuario);
-          localStorage.setItem('isAdmin', response.data.adminVerificacion);        
+          localStorage.setItem('isAdmin', response.data.adminVerificacion.toString()); // Convertir a string 'true' o 'false'
           this.setState({
             isLoggedIn: true,
-            isAdmin: response.data.adminVerificacion
+            isAdmin: response.data.adminVerificacion,
           });
+        } else {
+          this.setState({ error: 'Error al obtener datos de la respuesta' });
         }
       })
       .catch((error) => {
@@ -51,15 +62,15 @@ class Login extends Component {
 
   render() {
     const { usuario, password, error, isLoggedIn, isAdmin } = this.state;
-  
+
     if (isLoggedIn) {
       if (isAdmin) {
         return <Navigate to="/admin" />;
       } else {
-        return <Navigate to="/" />;
+        return <Navigate to="/inicio" />;
       }
     }
-  
+
     return (
       <div>
         <Form onSubmit={this.iniciarSesion} className="max-w-md mx-auto space-y-4">
@@ -93,7 +104,7 @@ class Login extends Component {
         </Form>
       </div>
     );
-  }  
+  }
 }
 
 export default Login;

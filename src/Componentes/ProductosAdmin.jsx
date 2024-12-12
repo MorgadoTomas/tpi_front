@@ -15,11 +15,11 @@ class ProductosAdmin extends Component {
         stock: '',
         descripcion: '',
         marca: '',
-        imagen: null,
       },
       productos: [],
       categorias: [],
       editando: false,
+      imagenes: [],
     };
   }
 
@@ -90,40 +90,46 @@ class ProductosAdmin extends Component {
     this.setState({ imagenes: e.target.files });
   };
 
-  agregarProducto = () => {
-    const { nuevoProducto, imagenes } = this.state;
-    const camposRequeridos = ['nombre', 'categoria', 'precio', 'stock', 'descripcion', 'marca'];
-    
-    for (let campo of camposRequeridos) {
-      if (!nuevoProducto[campo] || nuevoProducto[campo].trim() === '') {
-        alert(`Por favor, completa el campo ${campo}`);
-        return;
-      }
-    }
-
-    if (!imagenes || imagenes.length === 0) {
-      alert('Por favor, carga al menos una imagen');
+  agregarProducto = (event) => {
+    event.preventDefault();
+  
+    // Obtener los valores del formulario
+    const nombre = event.target.nombre.value;
+    const categoria = event.target.categoria.value;
+    const precio = event.target.precio.value;
+    const stock = event.target.stock.value;
+    const descripcion = event.target.descripcion.value;
+    const marca = event.target.marca.value;
+    const imagenes = event.target.imagen.files;
+  
+    // Validación básica
+    if (!nombre || !categoria || !precio || !stock || !descripcion || !marca || imagenes.length === 0) {
+      alert("Por favor, llena todos los campos y selecciona al menos una imagen.");
       return;
     }
-
+  
+    // Crear FormData para enviar datos y las imágenes
     const formData = new FormData();
-    formData.append('nombre', nuevoProducto.nombre);
-    formData.append('stock', nuevoProducto.stock);
-    formData.append('precio', nuevoProducto.precio);
-    formData.append('descrip', nuevoProducto.descripcion);
-    formData.append('marca', nuevoProducto.marca);
-    formData.append('categoria', nuevoProducto.categoria);
-
+    formData.append('nombre', nombre);
+    formData.append('categoria', categoria);
+    formData.append('precio', precio);
+    formData.append('stock', stock);
+    formData.append('descripcion', descripcion);
+    formData.append('marca', marca);
+  
+    // Añadir las imágenes al FormData
     Array.from(imagenes).forEach(imagen => {
       formData.append('imagen', imagen);
     });
-
+  
+    // Obtener el token de autorización
     const token = localStorage.getItem('token');
     if (!token) {
       alert("No estás autenticado.");
       return;
     }
-
+  
+    // Realizar la solicitud POST
     axios.post('http://localhost:4000/api/admin/productos', formData, {
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -131,24 +137,15 @@ class ProductosAdmin extends Component {
       },
     })
     .then(response => {
-      this.setState({
-        nuevoProducto: {
-          nombre: '',
-          categoria: '',
-          precio: '',
-          stock: '',
-          descripcion: '',
-          marca: '',
-          imagen: null,
-        },
-        imagenes: [],
-      });
-      this.obtenerProductos();
+      // Mostrar éxito
+      alert("Producto agregado correctamente.");
+      // Limpiar formulario o realizar alguna acción después de agregar el producto
     })
     .catch(error => {
       console.error('Error al agregar producto:', error);
+      alert("Hubo un error al agregar el producto. Intenta nuevamente.");
     });
-  };
+  };  
 
   iniciarEdicion = (producto) => {
     this.setState({
@@ -201,7 +198,7 @@ class ProductosAdmin extends Component {
             </Link>
           </nav>
         </aside>
-  
+
         <main className="flex-grow-1 container">
           <div className="py-4">
             <h5>{this.state.editando ? "Editar Producto" : "Agregar Nuevo Producto"}</h5>
@@ -269,7 +266,7 @@ class ProductosAdmin extends Component {
               </Button>
             </Form>
           </div>
-  
+
           <div className="py-4">
             <Table striped bordered hover responsive>
               <thead>
@@ -286,7 +283,7 @@ class ProductosAdmin extends Component {
                   <tr key={producto.id}>
                     <td>{producto.nombre}</td>
                     <td>{producto.categoria}</td>
-                    <td>${producto.precio}</td>
+                    <td>{producto.precio}</td>
                     <td>{producto.stock}</td>
                     <td>
                       <Button variant="warning" onClick={() => this.iniciarEdicion(producto)}>
