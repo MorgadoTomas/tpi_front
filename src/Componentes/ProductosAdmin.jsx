@@ -18,7 +18,7 @@ class ProductosAdmin extends Component {
         imagen: null,
       },
       productos: [],
-      categorias: [], // Estado para almacenar las categorías
+      categorias: [],
       editando: false,
     };
   }
@@ -30,17 +30,16 @@ class ProductosAdmin extends Component {
       return;
     }
 
-    // Verificar si el usuario es administrador
     axios.post('http://localhost:4000/api/check-admin', {}, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(response => {
         if (response.data.isAdmin) {
-          this.obtenerProductos();  // Solo obtener productos si es admin
-          this.obtenerCategorias(); // Obtener categorías
+          this.obtenerProductos();
+          this.obtenerCategorias();
         } else {
           alert("No eres un administrador. Acceso denegado.");
-          window.location.href = '/';  // Redirige a la página principal
+          window.location.href = '/';
         }
       })
       .catch(error => {
@@ -56,11 +55,8 @@ class ProductosAdmin extends Component {
       return;
     }
 
-    // Realizar solicitud GET con el token en la cabecera
     axios.get('http://localhost:4000/api/admin/productos', {
-      headers: {
-        'Authorization': `Bearer ${token}` // Token en la cabecera
-      }
+      headers: { 'Authorization': `Bearer ${token}` }
     })
     .then(response => {
       this.setState({ productos: response.data.productos });
@@ -71,12 +67,9 @@ class ProductosAdmin extends Component {
   };
 
   obtenerCategorias = () => {
-    // Solicitar categorías al backend
     const token = localStorage.getItem('token');
     axios.get('http://localhost:4000/api/admin/categorias', {
-      headers: {
-        'Authorization': `Bearer ${token}` // Token en la cabecera
-      }
+      headers: { 'Authorization': `Bearer ${token}` }
     })
     .then(response => {
       this.setState({ categorias: response.data.categorias });
@@ -89,10 +82,7 @@ class ProductosAdmin extends Component {
   handleInputChange = (event) => {
     const { name, value } = event.target;
     this.setState({
-      nuevoProducto: {
-        ...this.state.nuevoProducto,
-        [name]: value
-      }
+      nuevoProducto: { ...this.state.nuevoProducto, [name]: value }
     });
   };
 
@@ -104,48 +94,43 @@ class ProductosAdmin extends Component {
     const { nuevoProducto, imagenes } = this.state;
     const camposRequeridos = ['nombre', 'categoria', 'precio', 'stock', 'descripcion', 'marca'];
     
-    // Validar campos requeridos
     for (let campo of camposRequeridos) {
       if (!nuevoProducto[campo] || nuevoProducto[campo].trim() === '') {
         alert(`Por favor, completa el campo ${campo}`);
         return;
       }
     }
-  
+
     if (!imagenes || imagenes.length === 0) {
       alert('Por favor, carga al menos una imagen');
       return;
     }
-  
-    // Crear un objeto FormData para enviar el producto y sus archivos
+
     const formData = new FormData();
     formData.append('nombre', nuevoProducto.nombre);
     formData.append('stock', nuevoProducto.stock);
     formData.append('precio', nuevoProducto.precio);
     formData.append('descrip', nuevoProducto.descripcion);
     formData.append('marca', nuevoProducto.marca);
-    formData.append('categoria', nuevoProducto.categoria);  // Asegúrate de incluir la categoría
-  
-    // Agregar todas las imágenes seleccionadas
+    formData.append('categoria', nuevoProducto.categoria);
+
     Array.from(imagenes).forEach(imagen => {
       formData.append('imagen', imagen);
     });
-  
+
     const token = localStorage.getItem('token');
     if (!token) {
       alert("No estás autenticado.");
       return;
     }
-  
-    // Enviar el formulario con los datos y las imágenes al servidor
+
     axios.post('http://localhost:4000/api/admin/productos', formData, {
       headers: {
-        'Authorization': `Bearer ${token}`,  // Pasar el token de autenticación en los headers
-        'Content-Type': 'multipart/form-data', // Necesario para enviar imágenes
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'multipart/form-data',
       },
     })
     .then(response => {
-      // Limpiar el formulario y obtener productos después de agregar el nuevo producto
       this.setState({
         nuevoProducto: {
           nombre: '',
@@ -158,8 +143,7 @@ class ProductosAdmin extends Component {
         },
         imagenes: [],
       });
-  
-      this.obtenerProductos(); // Actualizar lista de productos
+      this.obtenerProductos();
     })
     .catch(error => {
       console.error('Error al agregar producto:', error);
@@ -181,11 +165,8 @@ class ProductosAdmin extends Component {
       return;
     }
 
-    // Eliminar producto usando el token en la cabecera
     axios.delete(`http://localhost:4000/api/admin/productos/${productoId}`, {
-      headers: {
-        'Authorization': `Bearer ${token}` // Token en la cabecera
-      }
+      headers: { 'Authorization': `Bearer ${token}` }
     })
     .then(response => {
       this.setState((prevState) => ({

@@ -11,56 +11,51 @@ class UsuariosAdmin extends Component {
       usuarios: [],
       filtro: '',
       filtroPor: 'nombre',
-      isAdmin: false, // Para verificar si el usuario es admin
+      isAdmin: false,
     };
   }
 
   componentDidMount() {
-    this.checkAdminStatus(); // Verifica si el usuario es admin
-    this.cargarUsuarios();   // Carga los usuarios solo si es admin
+    this.checkAdminStatus();
+    this.cargarUsuarios();
   }
 
   checkAdminStatus = () => {
     const token = localStorage.getItem('token');
     if (!token) {
       alert("No estás autenticado.");
-      window.location.href = '/'; // Redirige a la página principal si no está autenticado
+      window.location.href = '/';
       return;
     }
 
-    axios
-      .post('http://localhost:4000/api/check-admin', {}, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then(response => {
-        if (response.data.isAdmin) {
-          this.setState({ isAdmin: true }); // Establece que el usuario es admin
-        } else {
-          alert("No eres un administrador. Acceso denegado.");
-          window.location.href = '/'; // Redirige si no es administrador
-        }
-      })
-      .catch(error => {
-        console.error('Error al verificar el admin:', error);
-        alert("Hubo un error al verificar los permisos.");
-        window.location.href = '/'; // Redirige si hay error
-      });
+    axios.post('http://localhost:4000/api/check-admin', {}, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then(response => {
+      if (response.data.isAdmin) {
+        this.setState({ isAdmin: true });
+      } else {
+        alert("No eres un administrador. Acceso denegado.");
+        window.location.href = '/';
+      }
+    })
+    .catch(() => {
+      alert("Hubo un error al verificar los permisos.");
+      window.location.href = '/';
+    });
   }
 
   cargarUsuarios = () => {
     const token = localStorage.getItem('token');
-    axios
-      .get('http://localhost:4000/api/usuarios/usuarios', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((response) => {
-        this.setState({ usuarios: response.data.usuarios });
-      })
-      .catch((error) => {
-        console.error('Error al cargar usuarios:', error);
-      });
+    axios.get('http://localhost:4000/api/usuarios/usuarios', {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then(response => {
+      this.setState({ usuarios: response.data.usuarios });
+    })
+    .catch(error => {
+      console.error('Error al cargar usuarios:', error);
+    });
   };
 
   handleFilterChange = (event) => {
@@ -73,34 +68,32 @@ class UsuariosAdmin extends Component {
 
   handleToggleAdmin = (userId, currentStatus) => {
     const token = localStorage.getItem('token');
-  
     if (!token) {
       alert("No se ha encontrado el token. Por favor, inicia sesión nuevamente.");
       return;
     }
-  
-    // Cambia true/false por 1/0
-    const newStatus = currentStatus ? 0 : 1;  // Si currentStatus es true (admin), se pone 0 (usuario normal), y viceversa.
-  
+
+    const newStatus = currentStatus ? 0 : 1;
+
     axios.put(`http://localhost:4000/api/usuarios/admin/${userId}`, 
       { admin: newStatus }, 
       { headers: { Authorization: `Bearer ${token}` } })
-      .then((response) => {
+      .then(() => {
         alert(`Usuario actualizado como ${newStatus === 1 ? 'admin' : 'usuario normal'}`);
-        this.cargarUsuarios(); // Recarga la lista de usuarios
+        this.cargarUsuarios();
       })
-      .catch((error) => {
+      .catch(error => {
         const errorMessage = error.response?.data?.message || "Hubo un error al actualizar el rol.";
-        console.error('Error al cambiar el rol de admin:', error.response || error);
+        console.error(error);
         alert(errorMessage);
       });
-  };  
+  };
 
   render() {
     const { usuarios, filtro, filtroPor, isAdmin } = this.state;
 
     if (!isAdmin) {
-      return <div>No tienes permisos para acceder a esta página.</div>; // Mensaje si no es admin
+      return <div>No tienes permisos para acceder a esta página.</div>;
     }
 
     const usuariosFiltrados = usuarios.filter((usuario) => {
