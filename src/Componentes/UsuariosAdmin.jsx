@@ -11,11 +11,40 @@ class UsuariosAdmin extends Component {
       usuarios: [],
       filtro: '',
       filtroPor: 'nombre',
+      isAdmin: false, // Para verificar si el usuario es admin
     };
   }
 
   componentDidMount() {
-    this.cargarUsuarios();
+    this.checkAdminStatus(); // Verifica si el usuario es admin
+    this.cargarUsuarios();   // Carga los usuarios solo si es admin
+  }
+
+  checkAdminStatus = () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert("No estás autenticado.");
+      window.location.href = '/'; // Redirige a la página principal si no está autenticado
+      return;
+    }
+
+    axios
+      .post('http://localhost:4000/api/check-admin', {}, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then(response => {
+        if (response.data.isAdmin) {
+          this.setState({ isAdmin: true }); // Establece que el usuario es admin
+        } else {
+          alert("No eres un administrador. Acceso denegado.");
+          window.location.href = '/'; // Redirige si no es administrador
+        }
+      })
+      .catch(error => {
+        console.error('Error al verificar el admin:', error);
+        alert("Hubo un error al verificar los permisos.");
+        window.location.href = '/'; // Redirige si hay error
+      });
   }
 
   cargarUsuarios = () => {
@@ -42,8 +71,37 @@ class UsuariosAdmin extends Component {
     this.setState({ filtroPor: event.target.value });
   };
 
+  handleToggleAdmin = (userId, currentStatus) => {
+    const token = localStorage.getItem('token');
+  
+    if (!token) {
+      alert("No se ha encontrado el token. Por favor, inicia sesión nuevamente.");
+      return;
+    }
+  
+    // Cambia true/false por 1/0
+    const newStatus = currentStatus ? 0 : 1;  // Si currentStatus es true (admin), se pone 0 (usuario normal), y viceversa.
+  
+    axios.put(`http://localhost:4000/api/usuarios/admin/${userId}`, 
+      { admin: newStatus }, 
+      { headers: { Authorization: `Bearer ${token}` } })
+      .then((response) => {
+        alert(`Usuario actualizado como ${newStatus === 1 ? 'admin' : 'usuario normal'}`);
+        this.cargarUsuarios(); // Recarga la lista de usuarios
+      })
+      .catch((error) => {
+        const errorMessage = error.response?.data?.message || "Hubo un error al actualizar el rol.";
+        console.error('Error al cambiar el rol de admin:', error.response || error);
+        alert(errorMessage);
+      });
+  };  
+
   render() {
-    const { usuarios, filtro, filtroPor } = this.state;
+    const { usuarios, filtro, filtroPor, isAdmin } = this.state;
+
+    if (!isAdmin) {
+      return <div>No tienes permisos para acceder a esta página.</div>; // Mensaje si no es admin
+    }
 
     const usuariosFiltrados = usuarios.filter((usuario) => {
       const campo = usuario[filtroPor]?.toLowerCase() || '';
@@ -134,6 +192,7 @@ class UsuariosAdmin extends Component {
                   <th>Email</th>
                   <th>Usuario</th>
                   <th>Admin</th>
+                  <th>Acción</th>
                 </tr>
               </thead>
               <tbody>
@@ -145,6 +204,13 @@ class UsuariosAdmin extends Component {
                     <td>{usuario.mail}</td>
                     <td>{usuario.usuario}</td>
                     <td>{usuario.admin ? 'Sí' : 'No'}</td>
+                    <td>
+                      <Button 
+                        variant={usuario.admin ? "danger" : "success"}
+                        onClick={() => this.handleToggleAdmin(usuario.id, usuario.admin)}>
+                        {usuario.admin ? 'Quitar Admin' : 'Hacer Admin'}
+                      </Button>
+                    </td>
                   </tr>
                 ))}
               </tbody>

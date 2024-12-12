@@ -18,27 +18,73 @@ class ProductosAdmin extends Component {
         imagen: null,
       },
       productos: [],
+      categorias: [], // Estado para almacenar las categorías
       editando: false,
     };
   }
 
-  obtenerProductos = () => {
-    axios.get('http://localhost:4000/api/admin/productos')
+  componentDidMount() {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert("No estás autenticado.");
+      return;
+    }
+
+    // Verificar si el usuario es administrador
+    axios.post('http://localhost:4000/api/check-admin', {}, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
       .then(response => {
-        if (Array.isArray(response.data.productos)) {
-          this.setState({ productos: response.data.productos });
+        if (response.data.isAdmin) {
+          this.obtenerProductos();  // Solo obtener productos si es admin
+          this.obtenerCategorias(); // Obtener categorías
         } else {
-          console.error("La respuesta de la API no tiene la propiedad 'productos' como un arreglo.");
+          alert("No eres un administrador. Acceso denegado.");
+          window.location.href = '/';  // Redirige a la página principal
         }
       })
       .catch(error => {
-        console.error("Error al cargar productos:", error);
+        console.error('Error al verificar el admin:', error);
+        alert("Hubo un error al verificar los permisos.");
       });
-  };  
-
-  componentDidMount() {
-    this.obtenerProductos();
   }
+
+  obtenerProductos = () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert("No estás autenticado.");
+      return;
+    }
+
+    // Realizar solicitud GET con el token en la cabecera
+    axios.get('http://localhost:4000/api/admin/productos', {
+      headers: {
+        'Authorization': `Bearer ${token}` // Token en la cabecera
+      }
+    })
+    .then(response => {
+      this.setState({ productos: response.data.productos });
+    })
+    .catch(error => {
+      console.error("Error al cargar productos:", error);
+    });
+  };
+
+  obtenerCategorias = () => {
+    // Solicitar categorías al backend
+    const token = localStorage.getItem('token');
+    axios.get('http://localhost:4000/api/admin/categorias', {
+      headers: {
+        'Authorization': `Bearer ${token}` // Token en la cabecera
+      }
+    })
+    .then(response => {
+      this.setState({ categorias: response.data.categorias });
+    })
+    .catch(error => {
+      console.error('Error al obtener las categorías:', error);
+    });
+  };
 
   handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -57,6 +103,8 @@ class ProductosAdmin extends Component {
   agregarProducto = () => {
     const { nuevoProducto, imagenes } = this.state;
     const camposRequeridos = ['nombre', 'categoria', 'precio', 'stock', 'descripcion', 'marca'];
+    
+    // Validar campos requeridos
     for (let campo of camposRequeridos) {
       if (!nuevoProducto[campo] || nuevoProducto[campo].trim() === '') {
         alert(`Por favor, completa el campo ${campo}`);
@@ -69,44 +117,55 @@ class ProductosAdmin extends Component {
       return;
     }
   
+    // Crear un objeto FormData para enviar el producto y sus archivos
     const formData = new FormData();
     formData.append('nombre', nuevoProducto.nombre);
     formData.append('stock', nuevoProducto.stock);
     formData.append('precio', nuevoProducto.precio);
     formData.append('descrip', nuevoProducto.descripcion);
     formData.append('marca', nuevoProducto.marca);
-    formData.append('categoria', nuevoProducto.categoria);
+    formData.append('categoria', nuevoProducto.categoria);  // Asegúrate de incluir la categoría
   
+    // Agregar todas las imágenes seleccionadas
     Array.from(imagenes).forEach(imagen => {
       formData.append('imagen', imagen);
     });
   
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert("No estás autenticado.");
+      return;
+    }
+  
+    // Enviar el formulario con los datos y las imágenes al servidor
     axios.post('http://localhost:4000/api/admin/productos', formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
+        'Authorization': `Bearer ${token}`,  // Pasar el token de autenticación en los headers
+        'Content-Type': 'multipart/form-data', // Necesario para enviar imágenes
       },
     })
-      .then(response => {
-        this.setState({
-          nuevoProducto: {
-            nombre: '',
-            categoria: '',
-            precio: '',
-            stock: '',
-            descripcion: '',
-            marca: '',
-            imagen: null,
-          },
-          imagenes: [],
-        });
-  
-        this.obtenerProductos();
-      })
-      .catch(error => {
-        console.error('Error al agregar producto:', error);
+    .then(response => {
+      // Limpiar el formulario y obtener productos después de agregar el nuevo producto
+      this.setState({
+        nuevoProducto: {
+          nombre: '',
+          categoria: '',
+          precio: '',
+          stock: '',
+          descripcion: '',
+          marca: '',
+          imagen: null,
+        },
+        imagenes: [],
       });
-  };  
   
+      this.obtenerProductos(); // Actualizar lista de productos
+    })
+    .catch(error => {
+      console.error('Error al agregar producto:', error);
+    });
+  };
+
   iniciarEdicion = (producto) => {
     this.setState({
       nuevoProducto: { ...producto },
@@ -116,15 +175,26 @@ class ProductosAdmin extends Component {
   };
 
   eliminarProducto = (productoId) => {
-    axios.delete(`http://localhost:4000/api/admin/productos/${productoId}`)
-        .then(response => {
-            this.setState((prevState) => ({
-                productos: prevState.productos.filter(producto => producto.id !== productoId)
-            }));
-        })
-        .catch(error => {
-            console.error('Error al eliminar el producto:', error);
-        });
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert("No estás autenticado.");
+      return;
+    }
+
+    // Eliminar producto usando el token en la cabecera
+    axios.delete(`http://localhost:4000/api/admin/productos/${productoId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}` // Token en la cabecera
+      }
+    })
+    .then(response => {
+      this.setState((prevState) => ({
+        productos: prevState.productos.filter(producto => producto.id !== productoId)
+      }));
+    })
+    .catch(error => {
+      console.error('Error al eliminar el producto:', error);
+    });
   };
 
   render() {
@@ -150,143 +220,103 @@ class ProductosAdmin extends Component {
             </Link>
           </nav>
         </aside>
-
+  
         <main className="flex-grow-1 container">
           <div className="py-4">
             <h5>{this.state.editando ? "Editar Producto" : "Agregar Nuevo Producto"}</h5>
             <Form className="d-flex flex-column gap-3">
-              <div className="d-flex flex-wrap gap-3">
-                <FormControl
-                  placeholder="Nombre del producto"
-                  name="nombre"
-                  value={this.state.nuevoProducto.nombre || ''}
-                  onChange={this.handleInputChange}
-                  style={{ maxWidth: '300px' }}
-                />
-                <Form.Group className="w-100">
-                  <Form.Label>Categoría</Form.Label>
-                  <Form.Control
-                    as="select"
-                    name="categoria"
-                    value={this.state.nuevoProducto.categoria || ''}
-                    onChange={this.handleInputChange}
-                  >
-                    <option value="">Selecciona una categoría</option>
-                    <option value="1">Teclado</option>
-                    <option value="2">Mouse</option>
-                    <option value="3">Auricular</option>
-                    <option value="4">Monitor</option>
-                    <option value="5">Micrófono</option>
-                    <option value="6">Placa de video</option>
-                    <option value="7">Motherboard</option>
-                    <option value="8">RAM</option>
-                    <option value="9">Microprocesador</option>
-                    <option value="10">Discos</option>
-                    <option value="11">Sillas</option>
-                    <option value="12">Gabinetes</option>
-                    <option value="13">Fuentes</option>
-                    <option value="14">Joysticks</option>
-                    <option value="15">Webcams</option>
-                    <option value="16">Pad</option>
-                    <option value="17">Parlante</option>
-                  </Form.Control>
-                </Form.Group>
-                <FormControl
-                  placeholder="Precio"
-                  name="precio"
-                  value={this.state.nuevoProducto.precio || ''}
-                  onChange={this.handleInputChange}
-                  style={{ maxWidth: '150px' }}
-                />
-                <FormControl
-                  placeholder="Stock"
-                  name="stock"
-                  value={this.state.nuevoProducto.stock || ''}
-                  onChange={this.handleInputChange}
-                  style={{ maxWidth: '150px' }}
-                />
-              </div>
-
-              <div className="d-flex flex-wrap gap-3">
-                <FormControl
-                  placeholder="Descripción"
-                  name="descripcion"
-                  value={this.state.nuevoProducto.descripcion || ''}
-                  onChange={this.handleInputChange}
-                  style={{ maxWidth: '350px' }}
-                />
-                <FormControl
-                  placeholder="Marca"
-                  name="marca"
-                  value={this.state.nuevoProducto.marca || ''}
-                  onChange={this.handleInputChange}
-                  style={{ maxWidth: '200px' }}
-                />
-              </div>
-
-              <Form.Group>
-                <Form.Label>Cargar Imagen</Form.Label>
+              <FormControl
+                type="text"
+                placeholder="Nombre del Producto"
+                name="nombre"
+                value={this.state.nuevoProducto.nombre}
+                onChange={this.handleInputChange}
+              />
+              <Form.Group controlId="categoria">
+                <Form.Label>Categoría</Form.Label>
                 <Form.Control
-                  type="file"
-                  onChange={this.handleFileChange}
-                  multiple
-                />
+                  as="select"
+                  name="categoria"
+                  value={this.state.nuevoProducto.categoria}
+                  onChange={this.handleInputChange}
+                >
+                  <option value="">Selecciona una categoría</option>
+                  {this.state.categorias.map((categoria) => (
+                    <option key={categoria.id} value={categoria.nombre}>{categoria.nombre}</option>
+                  ))}
+                </Form.Control>
               </Form.Group>
-
-              <div className="d-flex justify-content-end">
-                <Button variant="dark" onClick={this.agregarProducto}>
-                  {this.state.editando ? "Guardar Cambios" : "Agregar"}
-                </Button>
-              </div>
+              <FormControl
+                type="number"
+                placeholder="Precio"
+                name="precio"
+                value={this.state.nuevoProducto.precio}
+                onChange={this.handleInputChange}
+              />
+              <FormControl
+                type="number"
+                placeholder="Stock"
+                name="stock"
+                value={this.state.nuevoProducto.stock}
+                onChange={this.handleInputChange}
+              />
+              <FormControl
+                type="text"
+                placeholder="Descripción"
+                name="descripcion"
+                value={this.state.nuevoProducto.descripcion}
+                onChange={this.handleInputChange}
+              />
+              <FormControl
+                type="text"
+                placeholder="Marca"
+                name="marca"
+                value={this.state.nuevoProducto.marca}
+                onChange={this.handleInputChange}
+              />
+              <input
+                type="file"
+                name="imagen"
+                onChange={this.handleFileChange}
+                multiple
+              />
+              <Button
+                variant="primary"
+                onClick={this.state.editando ? this.editarProducto : this.agregarProducto}
+              >
+                {this.state.editando ? "Guardar Cambios" : "Agregar Producto"}
+              </Button>
             </Form>
           </div>
-
+  
           <div className="py-4">
             <Table striped bordered hover responsive>
               <thead>
                 <tr>
                   <th>Nombre</th>
-                  <th>Categoría</th>
+                  <th>Categoria</th>
                   <th>Precio</th>
                   <th>Stock</th>
-                  <th>Descripción</th>
-                  <th>Marca</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
               <tbody>
-                {this.state.productos.length > 0 ? (
-                  this.state.productos.map((producto) => (
-                    <tr key={producto.id}>
-                      <td>{producto.nombre}</td>
-                      <td>{producto.categoria}</td>
-                      <td>{producto.precio}</td>
-                      <td>{producto.stock}</td>
-                      <td>{producto.descripcion}</td>
-                      <td>{producto.marca}</td>
-                      <td>
-                        <div className="d-flex justify-content-around">
-                          <Button
-                            variant="warning"
-                            onClick={() => this.iniciarEdicion(producto)}
-                          >
-                            <Edit2 />
-                          </Button>
-                          <Button
-                            variant="danger"
-                            onClick={() => this.eliminarProducto(producto.id)}
-                          >
-                            <Trash2 />
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="7">No hay productos disponibles</td>
+                {this.state.productos.map((producto) => (
+                  <tr key={producto.id}>
+                    <td>{producto.nombre}</td>
+                    <td>{producto.categoria}</td>
+                    <td>${producto.precio}</td>
+                    <td>{producto.stock}</td>
+                    <td>
+                      <Button variant="warning" onClick={() => this.iniciarEdicion(producto)}>
+                        <Edit2 />
+                      </Button>
+                      <Button variant="danger" onClick={() => this.eliminarProducto(producto.id)}>
+                        <Trash2 />
+                      </Button>
+                    </td>
                   </tr>
-                )}
+                ))}
               </tbody>
             </Table>
           </div>
