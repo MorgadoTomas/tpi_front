@@ -16,11 +16,6 @@ class UsuariosAdmin extends Component {
   }
 
   componentDidMount() {
-    this.checkAdminStatus();
-    this.cargarUsuarios();
-  }
-
-  checkAdminStatus = () => {
     const token = localStorage.getItem('token');
     if (!token) {
       alert("No estás autenticado.");
@@ -34,6 +29,7 @@ class UsuariosAdmin extends Component {
     .then(response => {
       if (response.data.isAdmin) {
         this.setState({ isAdmin: true });
+        this.cargarUsuarios();
       } else {
         alert("No eres un administrador. Acceso denegado.");
         window.location.href = '/';

@@ -67,7 +67,7 @@ class Login extends Component {
       if (isAdmin) {
         return <Navigate to="/admin" />;
       } else {
-        return <Navigate to="/inicio" />;
+        return <Navigate to="/" />;
       }
     }
 
